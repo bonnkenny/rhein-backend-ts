@@ -23,8 +23,14 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
 });
 
+import { RosesModule } from './roses/roses.module';
+
+import { MenusModule } from './menus/menus.module';
+
 @Module({
   imports: [
+    MenusModule,
+    RosesModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig, authConfig, appConfig, mailConfig, fileConfig],
