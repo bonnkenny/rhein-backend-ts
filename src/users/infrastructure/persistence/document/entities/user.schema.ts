@@ -5,11 +5,11 @@ import { now, HydratedDocument } from 'mongoose';
 // We duplicate these rules because you can choose not to use adapters
 // in your project and return an schema entity directly in response.
 import { Exclude, Expose, Type } from 'class-transformer';
-import { AuthProvidersEnum } from '../../../../../auth/auth-providers.enum';
-import { FileSchemaClass } from '../../../../../files/infrastructure/persistence/document/entities/file.schema';
-import { EntityDocumentHelper } from '../../../../../utils/document-entity-helper';
-import { StatusSchema } from '../../../../../statuses/infrastructure/persistence/document/entities/status.schema';
-import { RoleSchema } from '../../../../../roles/infrastructure/persistence/document/entities/role.schema';
+import { AuthProvidersEnum } from '@src/auth/auth-providers.enum';
+import { FileSchemaClass } from '@src/files/infrastructure/persistence/document/entities/file.schema';
+import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
+import { StatusSchema } from '@src/statuses/infrastructure/persistence/document/entities/status.schema';
+import { RoleSchema } from '@src/roles/infrastructure/persistence/document/entities/role.schema';
 import { ApiProperty } from '@nestjs/swagger';
 
 export type UserSchemaDocument = HydratedDocument<UserSchemaClass>;
