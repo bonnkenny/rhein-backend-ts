@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Types } from 'mongoose';
+// import { Types } from 'mongoose';
+import { MenuSchemaClass } from '@src/menus/infrastructure/persistence/document/entities/menu.schema';
+import { Menu } from '@src/menus/domain/menu';
 
 export class Rose {
   @ApiProperty({
@@ -20,9 +22,12 @@ export class Rose {
   })
   description?: string;
   @ApiProperty({
-    type: [Types.ObjectId],
+    type: [String],
   })
   menus?: string[];
+
+  @ApiProperty({ type: [MenuSchemaClass] })
+  menuDocs?: Menu[];
 
   @ApiProperty()
   createdAt: Date;

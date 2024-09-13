@@ -43,6 +43,7 @@ export class RosesController {
     type: Rose,
   })
   create(@Body() createRoseDto: CreateRoseDto) {
+    console.log('createRoseDto', createRoseDto);
     return this.rosesService.create(createRoseDto);
   }
 

@@ -1,4 +1,4 @@
-import { IsEnum, IsString, MaxLength } from 'class-validator';
+import { IsEnum, IsString, IsArray, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 // import { Menu } from '@src/menus/domain/menu';
 
@@ -20,5 +20,7 @@ export class CreateRoseDto {
   description?: string;
 
   @ApiProperty({ type: [String] })
+  @IsArray()
+  @IsString({ each: true })
   menus?: string[];
 }

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { now, HydratedDocument } from 'mongoose';
+import { now, HydratedDocument, model } from 'mongoose';
 import { EntityDocumentHelper } from '../../../../../utils/document-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -31,3 +31,5 @@ export class MenuSchemaClass extends EntityDocumentHelper {
 }
 
 export const MenuSchema = SchemaFactory.createForClass(MenuSchemaClass);
+
+export const MenuModel = model<MenuSchemaClass>('Menu', MenuSchema);

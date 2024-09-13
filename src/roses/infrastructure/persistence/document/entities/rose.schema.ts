@@ -1,8 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { now, HydratedDocument, Types } from 'mongoose';
+import { now, HydratedDocument, Types, model } from 'mongoose';
 import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
-import { MenuSchemaClass } from '@src/menus/infrastructure/persistence/document/entities/menu.schema';
+import {
+  MenuSchemaClass,
+  MenuModel,
+} from '@src/menus/infrastructure/persistence/document/entities/menu.schema';
 
 export type RoseSchemaDocument = HydratedDocument<RoseSchemaClass>;
 
@@ -31,8 +34,10 @@ export class RoseSchemaClass extends EntityDocumentHelper {
   type?: string;
 
   @ApiProperty()
-  @Prop({ type: [{ type: Types.ObjectId, ref: MenuSchemaClass.name }] })
+  @Prop({ type: [{ type: Types.ObjectId, ref: MenuModel }] })
   menus?: Types.ObjectId[];
+
+  menuDocs?: MenuSchemaClass[];
 
   @ApiProperty()
   @Prop({ default: now })
@@ -44,3 +49,6 @@ export class RoseSchemaClass extends EntityDocumentHelper {
 }
 
 export const RoseSchema = SchemaFactory.createForClass(RoseSchemaClass);
+export const RoseModel = model<RoseSchemaClass>('Rose', RoseSchema);
+// 添加虚拟字段
+RoseSchema.virtual('menuDocs');

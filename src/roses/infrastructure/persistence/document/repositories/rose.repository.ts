@@ -7,6 +7,10 @@ import { RoseRepository } from '../../rose.repository';
 import { Rose } from '../../../../domain/rose';
 import { RoseMapper } from '../mappers/rose.mapper';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import {
+  MenuModel,
+  // MenuSchemaClass,
+} from '@src/menus/infrastructure/persistence/document/entities/menu.schema';
 
 @Injectable()
 export class RoseDocumentRepository implements RoseRepository {
@@ -30,7 +34,14 @@ export class RoseDocumentRepository implements RoseRepository {
     const entityObjects = await this.roseModel
       .find()
       .skip((paginationOptions.page - 1) * paginationOptions.limit)
-      .limit(paginationOptions.limit);
+      .limit(paginationOptions.limit)
+      .populate({
+        model: MenuModel,
+        path: 'menus',
+      })
+      .exec();
+
+    console.log('entityObjects', entityObjects);
 
     return entityObjects.map((entityObject) =>
       RoseMapper.toDomain(entityObject),

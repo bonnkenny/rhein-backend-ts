@@ -1,5 +1,7 @@
 import { Rose } from '@src/roses/domain/rose';
 import { RoseSchemaClass } from '../entities/rose.schema';
+import { Types } from 'mongoose';
+import { MenuMapper } from '@src/menus/infrastructure/persistence/document/mappers/menu.mapper';
 // import { ObjectId } from 'mongoose';
 // import { MenuSchemaClass } from '@src/menus/infrastructure/persistence/document/entities/menu.schema';
 
@@ -10,9 +12,13 @@ export class RoseMapper {
     domainEntity.name = raw.name;
     domainEntity.description = raw.description;
     domainEntity.type = raw.type;
-    console.log('raw.menus', raw.menus);
+
     if (raw?.menus && raw.menus.length) {
       domainEntity.menus = raw.menus.map((menu) => menu.toString());
+    }
+    console.log('raw.menuDocs', raw.menuDocs);
+    if (raw?.menuDocs && raw.menuDocs.length) {
+      domainEntity.menuDocs = raw.menuDocs.map(MenuMapper.toDomain);
     }
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
@@ -29,8 +35,15 @@ export class RoseMapper {
     persistenceSchema.description = domainEntity?.description ?? '';
     persistenceSchema.type = domainEntity.type;
     // let menu:MenuSchemaClass | undefined = undefined;
+    if (domainEntity?.menus?.length) {
+      persistenceSchema.menus = domainEntity.menus.map(
+        (menu) => new Types.ObjectId(menu),
+      );
+    }
     persistenceSchema.createdAt = domainEntity.createdAt;
     persistenceSchema.updatedAt = domainEntity.updatedAt;
+
+    console.log('persistenceSchema rose', persistenceSchema);
 
     return persistenceSchema;
   }
