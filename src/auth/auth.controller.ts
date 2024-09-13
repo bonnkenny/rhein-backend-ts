@@ -1,14 +1,14 @@
 import {
   Body,
   Controller,
-  Get,
+  // Get,
   HttpCode,
   HttpStatus,
   Request,
   Post,
   UseGuards,
   Patch,
-  Delete,
+  // Delete,
   SerializeOptions,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -19,7 +19,7 @@ import { AuthConfirmEmailDto } from './dto/auth-confirm-email.dto';
 import { AuthResetPasswordDto } from './dto/auth-reset-password.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
+// import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
 import { NullableType } from '../utils/types/nullable.type';
 import { User } from '../users/domain/user';
@@ -45,11 +45,11 @@ export class AuthController {
     return this.service.validateLogin(loginDto);
   }
 
-  @Post('email/register')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<void> {
-    return this.service.register(createUserDto);
-  }
+  // @Post('email/register')
+  // @HttpCode(HttpStatus.NO_CONTENT)
+  // async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<void> {
+  //   return this.service.register(createUserDto);
+  // }
 
   @Post('email/confirm')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -84,19 +84,19 @@ export class AuthController {
     );
   }
 
-  @ApiBearerAuth()
-  @SerializeOptions({
-    groups: ['me'],
-  })
-  @Get('me')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiOkResponse({
-    type: User,
-  })
-  @HttpCode(HttpStatus.OK)
-  public me(@Request() request): Promise<NullableType<User>> {
-    return this.service.me(request.user);
-  }
+  // @ApiBearerAuth()
+  // @SerializeOptions({
+  //   groups: ['me'],
+  // })
+  // @Get('me')
+  // @UseGuards(AuthGuard('jwt'))
+  // @ApiOkResponse({
+  //   type: User,
+  // })
+  // @HttpCode(HttpStatus.OK)
+  // public me(@Request() request): Promise<NullableType<User>> {
+  //   return this.service.me(request.user);
+  // }
 
   @ApiBearerAuth()
   @ApiOkResponse({
@@ -142,11 +142,11 @@ export class AuthController {
     return this.service.update(request.user, userDto);
   }
 
-  @ApiBearerAuth()
-  @Delete('me')
-  @UseGuards(AuthGuard('jwt'))
-  @HttpCode(HttpStatus.NO_CONTENT)
-  public async delete(@Request() request): Promise<void> {
-    return this.service.softDelete(request.user);
-  }
+  // @ApiBearerAuth()
+  // @Delete('me')
+  // @UseGuards(AuthGuard('jwt'))
+  // @HttpCode(HttpStatus.NO_CONTENT)
+  // public async delete(@Request() request): Promise<void> {
+  //   return this.service.softDelete(request.user);
+  // }
 }
