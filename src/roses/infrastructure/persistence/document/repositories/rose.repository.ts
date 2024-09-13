@@ -1,16 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { NullableType } from '../../../../../utils/types/nullable.type';
+import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RoseSchemaClass } from '../entities/rose.schema';
 import { RoseRepository } from '../../rose.repository';
-import { Rose } from '../../../../domain/rose';
+import { Rose } from '@src/roses/domain/rose';
 import { RoseMapper } from '../mappers/rose.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
-import {
-  MenuModel,
-  // MenuSchemaClass,
-} from '@src/menus/infrastructure/persistence/document/entities/menu.schema';
+import { IPaginationOptions } from '@src/utils/types/pagination-options';
 
 @Injectable()
 export class RoseDocumentRepository implements RoseRepository {
@@ -35,10 +31,7 @@ export class RoseDocumentRepository implements RoseRepository {
       .find()
       .skip((paginationOptions.page - 1) * paginationOptions.limit)
       .limit(paginationOptions.limit)
-      .populate({
-        model: MenuModel,
-        path: 'menus',
-      })
+      .populate('menuEntities')
       .exec();
 
     console.log('entityObjects', entityObjects);

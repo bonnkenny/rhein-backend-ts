@@ -16,9 +16,9 @@ export class RoseMapper {
     if (raw?.menus && raw.menus.length) {
       domainEntity.menus = raw.menus.map((menu) => menu.toString());
     }
-    console.log('raw.menuDocs', raw.menuDocs);
-    if (raw?.menuDocs && raw.menuDocs.length) {
-      domainEntity.menuDocs = raw.menuDocs.map(MenuMapper.toDomain);
+    console.log('raw.menuDocs', raw.menuEntities);
+    if (raw?.menuEntities && raw.menuEntities.length) {
+      domainEntity.menuEntities = raw.menuEntities.map(MenuMapper.toDomain);
     }
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;

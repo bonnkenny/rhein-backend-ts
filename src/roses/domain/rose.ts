@@ -27,7 +27,7 @@ export class Rose {
   menus?: string[];
 
   @ApiProperty({ type: [MenuSchemaClass] })
-  menuDocs?: Menu[];
+  menuEntities?: Menu[];
 
   @ApiProperty()
   createdAt: Date;

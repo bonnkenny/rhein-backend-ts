@@ -1,11 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { now, HydratedDocument, Types, model } from 'mongoose';
+import { now, HydratedDocument, Types } from 'mongoose';
 import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  MenuSchemaClass,
-  MenuModel,
-} from '@src/menus/infrastructure/persistence/document/entities/menu.schema';
+import { MenuSchemaClass } from '@src/menus/infrastructure/persistence/document/entities/menu.schema';
 
 export type RoseSchemaDocument = HydratedDocument<RoseSchemaClass>;
 
@@ -34,10 +31,10 @@ export class RoseSchemaClass extends EntityDocumentHelper {
   type?: string;
 
   @ApiProperty()
-  @Prop({ type: [{ type: Types.ObjectId, ref: MenuModel }] })
+  @Prop({ type: [{ type: Types.ObjectId, ref: MenuSchemaClass.name }] })
   menus?: Types.ObjectId[];
 
-  menuDocs?: MenuSchemaClass[];
+  menuEntities?: MenuSchemaClass[];
 
   @ApiProperty()
   @Prop({ default: now })
@@ -49,6 +46,10 @@ export class RoseSchemaClass extends EntityDocumentHelper {
 }
 
 export const RoseSchema = SchemaFactory.createForClass(RoseSchemaClass);
-export const RoseModel = model<RoseSchemaClass>('Rose', RoseSchema);
 // 添加虚拟字段
-RoseSchema.virtual('menuDocs');
+RoseSchema.virtual('menuEntities', {
+  ref: 'MenuSchemaClass',
+  localField: 'menus',
+  foreignField: '_id',
+  justOne: false,
+});
