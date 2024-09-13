@@ -8,9 +8,9 @@ import { Exclude, Expose, Type } from 'class-transformer';
 import { AuthProvidersEnum } from '@src/auth/auth-providers.enum';
 import { FileSchemaClass } from '@src/files/infrastructure/persistence/document/entities/file.schema';
 import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
-import { StatusSchema } from '@src/statuses/infrastructure/persistence/document/entities/status.schema';
-import { RoleSchema } from '@src/roles/infrastructure/persistence/document/entities/role.schema';
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 
 export type UserSchemaDocument = HydratedDocument<UserSchemaClass>;
 
@@ -89,21 +89,23 @@ export class UserSchemaClass extends EntityDocumentHelper {
   photo?: FileSchemaClass | null;
 
   @ApiProperty({
-    type: () => RoleSchema,
+    type: Number,
+    enum: Object.values(BaseRoleEnum),
   })
   @Prop({
-    type: RoleSchema,
+    type: Number,
+    default: BaseRoleEnum.ADMIN,
+    nullable: false,
   })
-  role?: RoleSchema | null;
+  baseRole: number;
 
-  @ApiProperty({
-    type: () => StatusSchema,
-  })
+  @ApiProperty({ type: Number, enum: Object.values(UserStatusEnum) })
   @Prop({
-    type: StatusSchema,
+    type: Number,
+    default: UserStatusEnum.ACTIVE,
+    nullable: false,
   })
-  status?: StatusSchema;
-
+  status: number;
   @ApiProperty()
   @Prop({ default: now })
   createdAt: Date;

@@ -23,11 +23,11 @@ import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import { UsersService } from '../users/users.service';
 import { AllConfigType } from '../config/config.type';
 import { MailService } from '../mail/mail.service';
-import { RoleEnum } from '../roles/roles.enum';
 import { Session } from '../session/domain/session';
 import { SessionService } from '../session/session.service';
-import { StatusEnum } from '../statuses/statuses.enum';
 import { User } from '../users/domain/user';
+import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 
 @Injectable()
 export class AuthService {
@@ -95,7 +95,7 @@ export class AuthService {
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: user.id,
-      role: user.role,
+      baseRole: user.baseRole,
       sessionId: session.id,
       hash,
     });
@@ -135,12 +135,8 @@ export class AuthService {
     } else if (userByEmail) {
       user = userByEmail;
     } else if (socialData.id) {
-      const role = {
-        id: RoleEnum.user,
-      };
-      const status = {
-        id: StatusEnum.active,
-      };
+      const baseRole = BaseRoleEnum.ADMIN;
+      const status = UserStatusEnum.ACTIVE;
 
       user = await this.usersService.create({
         email: socialEmail ?? null,
@@ -148,7 +144,7 @@ export class AuthService {
         lastName: socialData.lastName ?? null,
         socialId: socialData.id,
         provider: authProvider,
-        role,
+        baseRole,
         status,
       });
 
@@ -180,7 +176,7 @@ export class AuthService {
       tokenExpires,
     } = await this.getTokensData({
       id: user.id,
-      role: user.role,
+      baseRole: user.baseRole,
       sessionId: session.id,
       hash,
     });
@@ -197,12 +193,11 @@ export class AuthService {
     const user = await this.usersService.create({
       ...dto,
       email: dto.email,
-      role: {
-        id: RoleEnum.user,
-      },
-      status: {
-        id: StatusEnum.inactive,
-      },
+      // role: {
+      //   id: RoleEnum.user,
+      // },
+      baseRole: BaseRoleEnum.SUPPLIER,
+      status: UserStatusEnum.ACTIVE,
     });
 
     const hash = await this.jwtService.signAsync(
@@ -253,7 +248,7 @@ export class AuthService {
 
     if (
       !user ||
-      user?.status?.id?.toString() !== StatusEnum.inactive.toString()
+      user?.status?.toString() !== UserStatusEnum.INACTIVE.toString()
     ) {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
@@ -261,9 +256,7 @@ export class AuthService {
       });
     }
 
-    user.status = {
-      id: StatusEnum.active,
-    };
+    user.status = UserStatusEnum.ACTIVE;
 
     await this.usersService.update(user.id, user);
   }
@@ -303,9 +296,7 @@ export class AuthService {
     }
 
     user.email = newEmail;
-    user.status = {
-      id: StatusEnum.active,
-    };
+    user.status = UserStatusEnum.ACTIVE;
 
     await this.usersService.update(user.id, user);
   }
@@ -512,7 +503,7 @@ export class AuthService {
 
     const user = await this.usersService.findById(session.user.id);
 
-    if (!user?.role) {
+    if (!user?.baseRole) {
       throw new UnauthorizedException();
     }
 
@@ -522,9 +513,7 @@ export class AuthService {
 
     const { token, refreshToken, tokenExpires } = await this.getTokensData({
       id: session.user.id,
-      role: {
-        id: user.role.id,
-      },
+      baseRole: session.user.baseRole,
       sessionId: session.id,
       hash,
     });
@@ -546,7 +535,7 @@ export class AuthService {
 
   private async getTokensData(data: {
     id: User['id'];
-    role: User['role'];
+    baseRole: User['baseRole'];
     sessionId: Session['id'];
     hash: Session['hash'];
   }) {
@@ -560,7 +549,7 @@ export class AuthService {
       await this.jwtService.signAsync(
         {
           id: data.id,
-          role: data.role,
+          baseRole: data.baseRole,
           sessionId: data.sessionId,
         },
         {

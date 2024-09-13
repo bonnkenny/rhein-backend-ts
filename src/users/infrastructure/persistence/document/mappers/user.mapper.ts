@@ -1,11 +1,7 @@
-import { User } from '../../../../domain/user';
+import { User } from '@src/users/domain/user';
 import { UserSchemaClass } from '../entities/user.schema';
-import { FileSchemaClass } from '../../../../../files/infrastructure/persistence/document/entities/file.schema';
-import { FileMapper } from '../../../../../files/infrastructure/persistence/document/mappers/file.mapper';
-import { Role } from '../../../../../roles/domain/role';
-import { Status } from '../../../../../statuses/domain/status';
-import { RoleSchema } from '../../../../../roles/infrastructure/persistence/document/entities/role.schema';
-import { StatusSchema } from '../../../../../statuses/infrastructure/persistence/document/entities/status.schema';
+import { FileSchemaClass } from '@src/files/infrastructure/persistence/document/entities/file.schema';
+import { FileMapper } from '@src/files/infrastructure/persistence/document/mappers/file.mapper';
 
 export class UserMapper {
   static toDomain(raw: UserSchemaClass): User {
@@ -24,15 +20,8 @@ export class UserMapper {
       domainEntity.photo = null;
     }
 
-    if (raw.role) {
-      domainEntity.role = new Role();
-      domainEntity.role.id = raw.role._id;
-    }
-
-    if (raw.status) {
-      domainEntity.status = new Status();
-      domainEntity.status.id = raw.status._id;
-    }
+    domainEntity.baseRole = raw.baseRole;
+    domainEntity.status = raw.status;
 
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
@@ -42,13 +31,6 @@ export class UserMapper {
   }
 
   static toPersistence(domainEntity: User): UserSchemaClass {
-    let role: RoleSchema | undefined = undefined;
-
-    if (domainEntity.role) {
-      role = new RoleSchema();
-      role._id = domainEntity.role.id.toString();
-    }
-
     let photo: FileSchemaClass | undefined = undefined;
 
     if (domainEntity.photo) {
@@ -56,18 +38,12 @@ export class UserMapper {
       photo._id = domainEntity.photo.id;
       photo.path = domainEntity.photo.path;
     }
-
-    let status: StatusSchema | undefined = undefined;
-
-    if (domainEntity.status) {
-      status = new StatusSchema();
-      status._id = domainEntity.status.id.toString();
-    }
-
     const persistenceSchema = new UserSchemaClass();
     if (domainEntity.id && typeof domainEntity.id === 'string') {
       persistenceSchema._id = domainEntity.id;
     }
+    persistenceSchema.status = Number(domainEntity.status);
+    persistenceSchema.baseRole = Number(domainEntity.baseRole);
     persistenceSchema.email = domainEntity.email;
     persistenceSchema.password = domainEntity.password;
     persistenceSchema.previousPassword = domainEntity.previousPassword;
@@ -76,8 +52,8 @@ export class UserMapper {
     persistenceSchema.firstName = domainEntity.firstName;
     persistenceSchema.lastName = domainEntity.lastName;
     persistenceSchema.photo = photo;
-    persistenceSchema.role = role;
-    persistenceSchema.status = status;
+    // persistenceSchema.role = role;
+    // persistenceSchema.status = status;
     persistenceSchema.createdAt = domainEntity.createdAt;
     persistenceSchema.updatedAt = domainEntity.updatedAt;
     persistenceSchema.deletedAt = domainEntity.deletedAt;

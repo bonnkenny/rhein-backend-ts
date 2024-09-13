@@ -1,8 +1,8 @@
 import { Exclude, Expose } from 'class-transformer';
 import { FileType } from '../../files/domain/file';
-import { Role } from '../../roles/domain/role';
-import { Status } from '../../statuses/domain/status';
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 
 const idType = String;
 
@@ -57,14 +57,17 @@ export class User {
   photo?: FileType | null;
 
   @ApiProperty({
-    type: () => Role,
+    type: Number,
+    enum: Object.values(BaseRoleEnum),
   })
-  role?: Role | null;
+  baseRole?: number;
 
   @ApiProperty({
-    type: () => Status,
+    type: Number,
+    enum: Object.values(UserStatusEnum),
+    description: 'Means:Active or Inactive, Values:1 or -1',
   })
-  status?: Status;
+  status?: number;
 
   @ApiProperty()
   createdAt: Date;

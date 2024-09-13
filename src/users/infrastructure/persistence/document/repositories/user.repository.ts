@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 
-import { NullableType } from '../../../../../utils/types/nullable.type';
-import { FilterUserDto, SortUserDto } from '../../../../dto/query-user.dto';
-import { User } from '../../../../domain/user';
+import { NullableType } from '@src/utils/types/nullable.type';
+import { FilterUserDto, SortUserDto } from '@src/users/dto/query-user.dto';
+import { User } from '@src/users/domain/user';
 import { UserRepository } from '../../user.repository';
 import { UserSchemaClass } from '../entities/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { UserMapper } from '../mappers/user.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { IPaginationOptions } from '@src/utils/types/pagination-options';
 
 @Injectable()
 export class UsersDocumentRepository implements UserRepository {
@@ -34,9 +34,9 @@ export class UsersDocumentRepository implements UserRepository {
     paginationOptions: IPaginationOptions;
   }): Promise<User[]> {
     const where: FilterQuery<UserSchemaClass> = {};
-    if (filterOptions?.roles?.length) {
-      where['role._id'] = {
-        $in: filterOptions.roles.map((role) => role.id.toString()),
+    if (filterOptions?.name) {
+      where['name'] = {
+        $regex: new RegExp(filterOptions.name, 'i'),
       };
     }
 

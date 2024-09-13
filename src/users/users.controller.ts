@@ -21,8 +21,8 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { Roles } from '../roles/roles.decorator';
-import { RoleEnum } from '../roles/roles.enum';
+// import { Roles } from '../roles/roles.decorator';
+// import { RoleEnum } from '../roles/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
 
 import {
@@ -33,12 +33,17 @@ import { NullableType } from '../utils/types/nullable.type';
 import { QueryUserDto } from './dto/query-user.dto';
 import { User } from './domain/user';
 import { UsersService } from './users.service';
-import { RolesGuard } from '../roles/roles.guard';
+// import { RolesGuard } from '../roles/roles.guard';
 import { infinityPagination } from '../utils/infinity-pagination';
+import { BaseRolesGuard } from '@src/utils/guards/base-roles.guard';
+import { BaseRoles } from '@src/utils/guards/base-roles.decorator';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+import { GroupTypes } from '@src/utils/enums/groups.enum';
 
 @ApiBearerAuth()
-@Roles(RoleEnum.admin)
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+@BaseRoles(BaseRoleEnum.ADMIN, BaseRoleEnum.SUPER)
+// @UseGuards(AuthGuard('jwt'), RolesGuard)
+@UseGuards(AuthGuard('jwt'), BaseRolesGuard)
 @ApiTags('Users')
 @Controller({
   path: 'users',
@@ -51,7 +56,7 @@ export class UsersController {
     type: User,
   })
   @SerializeOptions({
-    groups: ['admin'],
+    groups: [GroupTypes.ADMIN],
   })
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -63,7 +68,7 @@ export class UsersController {
     type: InfinityPaginationResponse(User),
   })
   @SerializeOptions({
-    groups: ['admin'],
+    groups: [GroupTypes.ADMIN],
   })
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -93,7 +98,7 @@ export class UsersController {
     type: User,
   })
   @SerializeOptions({
-    groups: ['admin'],
+    groups: [GroupTypes.ADMIN],
   })
   @Get(':id')
   @HttpCode(HttpStatus.OK)
@@ -110,7 +115,7 @@ export class UsersController {
     type: User,
   })
   @SerializeOptions({
-    groups: ['admin'],
+    groups: [GroupTypes.ADMIN],
   })
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
