@@ -20,6 +20,7 @@ export class UsersDocumentRepository implements UserRepository {
   async create(data: User): Promise<User> {
     const persistenceModel = UserMapper.toPersistence(data);
     const createdUser = new this.usersModel(persistenceModel);
+    console.log('user persistenceModel', persistenceModel);
     const userObject = await createdUser.save();
     return UserMapper.toDomain(userObject);
   }
@@ -53,8 +54,15 @@ export class UsersDocumentRepository implements UserRepository {
         ),
       )
       .skip((paginationOptions.page - 1) * paginationOptions.limit)
-      .limit(paginationOptions.limit);
-
+      .limit(paginationOptions.limit)
+      .populate({
+        path: 'roles',
+        populate: {
+          path: 'menuEntities',
+        },
+      })
+      .exec();
+    console.log('user entities', userObjects);
     return userObjects.map((userObject) => UserMapper.toDomain(userObject));
   }
 

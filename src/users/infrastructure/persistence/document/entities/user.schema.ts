@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { now, HydratedDocument } from 'mongoose';
+import { now, HydratedDocument, Types } from 'mongoose';
 
 // We use class-transformer in schema and domain entity.
 // We duplicate these rules because you can choose not to use adapters
@@ -12,6 +12,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 import { GroupTypesEnum } from '@src/utils/enums/groups.enum';
+import { RoleSchemaClass } from '@src/roles/infrastructure/persistence/document/entities/role.schema';
 
 export type UserSchemaDocument = HydratedDocument<UserSchemaClass>;
 
@@ -116,6 +117,17 @@ export class UserSchemaClass extends EntityDocumentHelper {
     nullable: false,
   })
   status: number;
+
+  @ApiProperty()
+  @Prop({
+    type: [{ type: Types.ObjectId, ref: RoleSchemaClass.name }],
+    default: [],
+  })
+  roleIds: Types.ObjectId[];
+
+  @ApiProperty()
+  roles?: RoleSchemaClass[];
+
   @ApiProperty()
   @Prop({ default: now })
   createdAt: Date;
@@ -135,4 +147,11 @@ UserSchema.virtual('previousPassword').get(function () {
   return this.password;
 });
 
-UserSchema.index({ 'role._id': 1 });
+UserSchema.index({ baseRole: 1 });
+
+UserSchema.virtual('roles', {
+  ref: RoleSchemaClass.name,
+  localField: 'roleIds',
+  foreignField: '_id',
+  justOne: false,
+});

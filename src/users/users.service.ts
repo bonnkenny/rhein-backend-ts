@@ -63,7 +63,7 @@ export class UsersService {
       clonedPayload.photo = fileObject;
     }
 
-    if (clonedPayload.baseRole) {
+    if (!!clonedPayload.baseRole) {
       const roleObject = Object.values(BaseRoleEnum)
         .map(String)
         .includes(String(clonedPayload.baseRole));
@@ -75,9 +75,11 @@ export class UsersService {
           },
         });
       }
+    } else {
+      clonedPayload.baseRole = Number(BaseRoleEnum.SUPPLIER);
     }
 
-    if (clonedPayload.status) {
+    if (!!clonedPayload.status) {
       const statusObject = Object.values(UserStatusEnum)
         .map(String)
         .includes(String(clonedPayload.status));
@@ -89,6 +91,8 @@ export class UsersService {
           },
         });
       }
+    } else {
+      clonedPayload.status = Number(UserStatusEnum.ACTIVE);
     }
 
     return this.usersRepository.create(clonedPayload);

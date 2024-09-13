@@ -1,10 +1,12 @@
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsArray,
   // decorators here
   IsEmail,
   IsNotEmpty,
   IsOptional,
+  IsString,
   MinLength,
 } from 'class-validator';
 import { FileDto } from '@src/files/dto/file.dto';
@@ -41,12 +43,27 @@ export class CreateUserDto {
 
   @ApiPropertyOptional({ type: Number, enum: Object.values(BaseRoleEnum) })
   @IsOptional()
+  @Transform((v) => {
+    return !!v?.value
+      ? BaseRoleEnum[v.value.toString().toUpperCase()]
+      : undefined;
+  })
   baseRole?: number;
 
   @ApiPropertyOptional({ type: Number, enum: Object.values(UserStatusEnum) })
   @IsOptional()
+  @Transform((v) => {
+    return !!v?.value
+      ? UserStatusEnum[v.value.toString().toUpperCase()]
+      : undefined;
+  })
   // @Type(() => StatusDto)
   status?: number;
+
+  @ApiPropertyOptional({ type: () => [String] })
+  @IsArray()
+  @IsString({ each: true })
+  roleIds?: string[];
 
   hash?: string | null;
 }

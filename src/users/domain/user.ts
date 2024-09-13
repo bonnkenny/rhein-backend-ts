@@ -3,6 +3,7 @@ import { FileType } from '../../files/domain/file';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
+import { Role } from '@src/roles/domain/role';
 
 const idType = String;
 
@@ -68,6 +69,11 @@ export class User {
     description: 'Means:Active or Inactive, Values:1 or -1',
   })
   status?: number;
+  @ApiProperty({ type: [String] })
+  roleIds?: string[];
+
+  @ApiProperty({ type: [Role] })
+  roles?: Role[];
 
   @ApiProperty()
   createdAt: Date;

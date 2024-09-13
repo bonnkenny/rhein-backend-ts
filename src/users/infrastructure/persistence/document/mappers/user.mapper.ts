@@ -2,6 +2,8 @@ import { User } from '@src/users/domain/user';
 import { UserSchemaClass } from '../entities/user.schema';
 import { FileSchemaClass } from '@src/files/infrastructure/persistence/document/entities/file.schema';
 import { FileMapper } from '@src/files/infrastructure/persistence/document/mappers/file.mapper';
+import { Types } from 'mongoose';
+import { RoleMapper } from '@src/roles/infrastructure/persistence/document/mappers/role.mapper';
 
 export class UserMapper {
   static toDomain(raw: UserSchemaClass): User {
@@ -23,6 +25,14 @@ export class UserMapper {
     domainEntity.baseRole = raw.baseRole;
     domainEntity.status = raw.status;
 
+    if (!!raw.roleIds && raw.roleIds.length) {
+      domainEntity.roleIds = raw.roleIds.map((roleId) => roleId.toString());
+    }
+
+    if (!!raw?.roles && raw.roles.length) {
+      domainEntity.roles = raw.roles.map(RoleMapper.toDomain);
+    }
+
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
     domainEntity.deletedAt = raw.deletedAt;
@@ -39,6 +49,12 @@ export class UserMapper {
       photo.path = domainEntity.photo.path;
     }
     const persistenceSchema = new UserSchemaClass();
+    if (!!domainEntity?.roleIds && domainEntity.roleIds.length) {
+      persistenceSchema.roleIds = domainEntity.roleIds.map(
+        (v) => new Types.ObjectId(v),
+      );
+    }
+
     if (domainEntity.id && typeof domainEntity.id === 'string') {
       persistenceSchema._id = domainEntity.id;
     }
