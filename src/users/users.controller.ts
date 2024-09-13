@@ -38,7 +38,7 @@ import { infinityPagination } from '../utils/infinity-pagination';
 import { BaseRolesGuard } from '@src/utils/guards/base-roles.guard';
 import { BaseRoles } from '@src/utils/guards/base-roles.decorator';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
-import { GroupTypes } from '@src/utils/enums/groups.enum';
+import { GroupTypesEnum } from '@src/utils/enums/groups.enum';
 
 @ApiBearerAuth()
 @BaseRoles(BaseRoleEnum.ADMIN, BaseRoleEnum.SUPER)
@@ -56,7 +56,7 @@ export class UsersController {
     type: User,
   })
   @SerializeOptions({
-    groups: [GroupTypes.ADMIN],
+    groups: [GroupTypesEnum.ADMIN],
   })
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -68,7 +68,7 @@ export class UsersController {
     type: InfinityPaginationResponse(User),
   })
   @SerializeOptions({
-    groups: [GroupTypes.ADMIN],
+    groups: [GroupTypesEnum.ADMIN],
   })
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -98,7 +98,7 @@ export class UsersController {
     type: User,
   })
   @SerializeOptions({
-    groups: [GroupTypes.ADMIN],
+    groups: [GroupTypesEnum.ADMIN],
   })
   @Get(':id')
   @HttpCode(HttpStatus.OK)
@@ -115,7 +115,7 @@ export class UsersController {
     type: User,
   })
   @SerializeOptions({
-    groups: [GroupTypes.ADMIN],
+    groups: [GroupTypesEnum.ADMIN],
   })
   @Patch(':id')
   @HttpCode(HttpStatus.OK)

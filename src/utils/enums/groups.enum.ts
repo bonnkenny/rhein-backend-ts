@@ -1,7 +1,7 @@
 /**
  * use for SerializeOptions.options.groups
  */
-export enum GroupTypes {
+export enum GroupTypesEnum {
   ADMIN = 'admin',
   ME = 'me',
 }

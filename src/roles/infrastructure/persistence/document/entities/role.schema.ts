@@ -3,8 +3,9 @@ import { now, HydratedDocument, Types } from 'mongoose';
 import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
 import { MenuSchemaClass } from '@src/menus/infrastructure/persistence/document/entities/menu.schema';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 
-export type RoseSchemaDocument = HydratedDocument<RoseSchemaClass>;
+export type RoleSchemaDocument = HydratedDocument<RoleSchemaClass>;
 
 @Schema({
   timestamps: true,
@@ -13,7 +14,7 @@ export type RoseSchemaDocument = HydratedDocument<RoseSchemaClass>;
     getters: true,
   },
 })
-export class RoseSchemaClass extends EntityDocumentHelper {
+export class RoleSchemaClass extends EntityDocumentHelper {
   @ApiProperty()
   @Prop({ required: true })
   name: string;
@@ -25,14 +26,15 @@ export class RoseSchemaClass extends EntityDocumentHelper {
   @ApiProperty()
   @Prop({
     required: true,
-    enum: ['admin', 'supplier', 'super'],
-    default: 'admin',
+    type: Number,
+    enum: Object.values(BaseRoleEnum).map(Number),
+    default: BaseRoleEnum.ADMIN,
   })
-  type?: string;
+  type: number;
 
   @ApiProperty()
   @Prop({ type: [{ type: Types.ObjectId, ref: MenuSchemaClass.name }] })
-  menus?: Types.ObjectId[];
+  menuIds?: Types.ObjectId[];
 
   menuEntities?: MenuSchemaClass[];
 
@@ -45,11 +47,11 @@ export class RoseSchemaClass extends EntityDocumentHelper {
   updatedAt: Date;
 }
 
-export const RoseSchema = SchemaFactory.createForClass(RoseSchemaClass);
-// 添加虚拟字段
-RoseSchema.virtual('menuEntities', {
-  ref: 'MenuSchemaClass',
-  localField: 'menus',
+export const RoleSchema = SchemaFactory.createForClass(RoleSchemaClass);
+
+RoleSchema.virtual('menuEntities', {
+  ref: MenuSchemaClass.name,
+  localField: 'menuIds',
   foreignField: '_id',
   justOne: false,
 });

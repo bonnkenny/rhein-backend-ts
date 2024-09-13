@@ -9,9 +9,9 @@ import {
   UseGuards,
   Query,
 } from '@nestjs/common';
-import { RosesService } from './roses.service';
-import { CreateRoseDto } from './dto/create-rose.dto';
-import { UpdateRoseDto } from './dto/update-rose.dto';
+import { RolesService } from './roles.service';
+import { CreateRoleDto } from './dto/create-role.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -19,41 +19,41 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { Rose } from './domain/rose';
+import { Role } from './domain/role';
 import { AuthGuard } from '@nestjs/passport';
 import {
   InfinityPaginationResponse,
   InfinityPaginationResponseDto,
 } from '../utils/dto/infinity-pagination-response.dto';
 import { infinityPagination } from '../utils/infinity-pagination';
-import { FindAllRosesDto } from './dto/find-all-roses.dto';
+import { FindAllRolesDto } from './dto/find-all-roles.dto';
 
-@ApiTags('Roses')
+@ApiTags('Roles')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 @Controller({
-  path: 'roses',
+  path: 'roles',
   version: '1',
 })
-export class RosesController {
-  constructor(private readonly rosesService: RosesService) {}
+export class RolesController {
+  constructor(private readonly rolesService: RolesService) {}
 
   @Post()
   @ApiCreatedResponse({
-    type: Rose,
+    type: Role,
   })
-  create(@Body() createRoseDto: CreateRoseDto) {
-    console.log('createRoseDto', createRoseDto);
-    return this.rosesService.create(createRoseDto);
+  create(@Body() createRoleDto: CreateRoleDto) {
+    console.log('CreateRoleDto', CreateRoleDto);
+    return this.rolesService.create(createRoleDto);
   }
 
   @Get()
   @ApiOkResponse({
-    type: InfinityPaginationResponse(Rose),
+    type: InfinityPaginationResponse(Role),
   })
   async findAll(
-    @Query() query: FindAllRosesDto,
-  ): Promise<InfinityPaginationResponseDto<Rose>> {
+    @Query() query: FindAllRolesDto,
+  ): Promise<InfinityPaginationResponseDto<Role>> {
     const page = query?.page ?? 1;
     let limit = query?.limit ?? 10;
     if (limit > 50) {
@@ -61,7 +61,7 @@ export class RosesController {
     }
 
     return infinityPagination(
-      await this.rosesService.findAllWithPagination({
+      await this.rolesService.findAllWithPagination({
         paginationOptions: {
           page,
           limit,
@@ -78,10 +78,10 @@ export class RosesController {
     required: true,
   })
   @ApiOkResponse({
-    type: Rose,
+    type: Role,
   })
   findOne(@Param('id') id: string) {
-    return this.rosesService.findOne(id);
+    return this.rolesService.findOne(id);
   }
 
   @Patch(':id')
@@ -91,10 +91,10 @@ export class RosesController {
     required: true,
   })
   @ApiOkResponse({
-    type: Rose,
+    type: Role,
   })
-  update(@Param('id') id: string, @Body() updateRoseDto: UpdateRoseDto) {
-    return this.rosesService.update(id, updateRoseDto);
+  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
+    return this.rolesService.update(id, updateRoleDto);
   }
 
   @Delete(':id')
@@ -104,6 +104,6 @@ export class RosesController {
     required: true,
   })
   remove(@Param('id') id: string) {
-    return this.rosesService.remove(id);
+    return this.rolesService.remove(id);
   }
 }

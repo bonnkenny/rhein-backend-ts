@@ -11,6 +11,7 @@ import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
+import { GroupTypesEnum } from '@src/utils/enums/groups.enum';
 
 export type UserSchemaDocument = HydratedDocument<UserSchemaClass>;
 
@@ -30,7 +31,10 @@ export class UserSchemaClass extends EntityDocumentHelper {
     type: String,
     unique: true,
   })
-  @Expose({ groups: ['me', 'admin'], toPlainOnly: true })
+  @Expose({
+    groups: [GroupTypesEnum.ADMIN, GroupTypesEnum.ME],
+    toPlainOnly: true,
+  })
   email: string | null;
 
   @Exclude({ toPlainOnly: true })
@@ -44,7 +48,10 @@ export class UserSchemaClass extends EntityDocumentHelper {
     type: String,
     example: 'email',
   })
-  @Expose({ groups: ['me', 'admin'], toPlainOnly: true })
+  @Expose({
+    groups: [GroupTypesEnum.ADMIN, GroupTypesEnum.ME],
+    toPlainOnly: true,
+  })
   @Prop({
     default: AuthProvidersEnum.email,
   })
@@ -54,7 +61,10 @@ export class UserSchemaClass extends EntityDocumentHelper {
     type: String,
     example: '1234567890',
   })
-  @Expose({ groups: ['me', 'admin'], toPlainOnly: true })
+  @Expose({
+    groups: [GroupTypesEnum.ADMIN, GroupTypesEnum.ME],
+    toPlainOnly: true,
+  })
   @Prop({
     type: String,
     default: null,
