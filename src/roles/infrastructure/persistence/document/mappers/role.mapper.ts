@@ -1,22 +1,20 @@
-import { Rose } from '@src/roses/domain/rose';
-import { RoseSchemaClass } from '../entities/rose.schema';
-import { Types } from 'mongoose';
+import { Role } from '@src/roles/domain/role';
+import { RoleSchemaClass } from '../entities/role.schema';
 import { MenuMapper } from '@src/menus/infrastructure/persistence/document/mappers/menu.mapper';
-// import { ObjectId } from 'mongoose';
-// import { MenuSchemaClass } from '@src/menus/infrastructure/persistence/document/entities/menu.schema';
+import { Types } from 'mongoose';
 
-export class RoseMapper {
-  public static toDomain(raw: RoseSchemaClass): Rose {
-    const domainEntity = new Rose();
+export class RoleMapper {
+  public static toDomain(raw: RoleSchemaClass): Role {
+    const domainEntity = new Role();
     domainEntity.id = raw._id.toString();
     domainEntity.name = raw.name;
     domainEntity.description = raw.description;
     domainEntity.type = raw.type;
 
-    if (raw?.menus && raw.menus.length) {
-      domainEntity.menus = raw.menus.map((menu) => menu.toString());
+    if (raw?.menuIds && raw.menuIds.length) {
+      domainEntity.menuIds = raw.menuIds.map((menu) => menu.toString());
     }
-    console.log('raw.menuDocs', raw.menuEntities);
+    console.log('raw.menus', raw.menuIds);
     if (raw?.menuEntities && raw.menuEntities.length) {
       domainEntity.menuEntities = raw.menuEntities.map(MenuMapper.toDomain);
     }
@@ -26,24 +24,23 @@ export class RoseMapper {
     return domainEntity;
   }
 
-  public static toPersistence(domainEntity: Rose): RoseSchemaClass {
-    const persistenceSchema = new RoseSchemaClass();
+  public static toPersistence(domainEntity: Role): RoleSchemaClass {
+    const persistenceSchema = new RoleSchemaClass();
     if (domainEntity.id) {
       persistenceSchema._id = domainEntity.id;
     }
+
     persistenceSchema.name = domainEntity.name;
     persistenceSchema.description = domainEntity?.description ?? '';
     persistenceSchema.type = domainEntity.type;
     // let menu:MenuSchemaClass | undefined = undefined;
-    if (domainEntity?.menus?.length) {
-      persistenceSchema.menus = domainEntity.menus.map(
+    if (domainEntity?.menuIds?.length) {
+      persistenceSchema.menuIds = domainEntity.menuIds.map(
         (menu) => new Types.ObjectId(menu),
       );
     }
     persistenceSchema.createdAt = domainEntity.createdAt;
     persistenceSchema.updatedAt = domainEntity.updatedAt;
-
-    console.log('persistenceSchema rose', persistenceSchema);
 
     return persistenceSchema;
   }

@@ -1,22 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-// import { Types } from 'mongoose';
 import { MenuSchemaClass } from '@src/menus/infrastructure/persistence/document/entities/menu.schema';
 import { Menu } from '@src/menus/domain/menu';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 
-export class Rose {
+export class Role {
   @ApiProperty({
     type: String,
   })
   id: string;
-  @ApiProperty({
-    type: String,
-  })
+
   name: string;
   @ApiProperty({
-    type: String,
-    enum: ['admin', 'supplier', 'super'],
+    type: Number,
+    enum: Object.values(BaseRoleEnum),
   })
-  type?: string;
+  type: number;
   @ApiProperty({
     type: String,
   })
@@ -24,7 +22,7 @@ export class Rose {
   @ApiProperty({
     type: [String],
   })
-  menus?: string[];
+  menuIds?: string[];
 
   @ApiProperty({ type: [MenuSchemaClass] })
   menuEntities?: Menu[];
