@@ -12,7 +12,7 @@ export abstract class MenuRepository {
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
-  }): Promise<Menu[]>;
+  }): Promise<[Menu[], number]>;
 
   abstract findById(id: Menu['id']): Promise<NullableType<Menu>>;
 

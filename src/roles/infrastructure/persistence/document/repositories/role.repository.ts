@@ -28,17 +28,18 @@ export class RoleDocumentRepository implements RoleRepository {
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
-  }): Promise<Role[]> {
+  }): Promise<[Role[], number]> {
     const entityObjects = await this.roleModel
       .find()
       .skip((paginationOptions.page - 1) * paginationOptions.limit)
       .limit(paginationOptions.limit)
       .populate('menuEntities')
       .exec();
-
-    return entityObjects.map((entityObject) =>
-      RoleMapper.toDomain(entityObject),
-    );
+    const total = await this.roleModel.countDocuments();
+    return [
+      entityObjects.map((entityObject) => RoleMapper.toDomain(entityObject)),
+      total,
+    ];
   }
 
   async findById(id: Role['id']): Promise<NullableType<Role>> {

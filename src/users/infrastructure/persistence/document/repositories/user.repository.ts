@@ -33,14 +33,14 @@ export class UsersDocumentRepository implements UserRepository {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-  }): Promise<User[]> {
+  }): Promise<[User[], number]> {
     const where: FilterQuery<UserSchemaClass> = {};
     if (filterOptions?.name) {
       where['name'] = {
         $regex: new RegExp(filterOptions.name, 'i'),
       };
     }
-
+    const count = await this.usersModel.countDocuments(where);
     const userObjects = await this.usersModel
       .find(where)
       .sort(
@@ -63,7 +63,10 @@ export class UsersDocumentRepository implements UserRepository {
       })
       .exec();
     console.log('user entities', userObjects);
-    return userObjects.map((userObject) => UserMapper.toDomain(userObject));
+    return [
+      userObjects.map((userObject) => UserMapper.toDomain(userObject)),
+      count,
+    ];
   }
 
   async findById(id: User['id']): Promise<NullableType<User>> {

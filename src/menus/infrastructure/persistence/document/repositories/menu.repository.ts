@@ -26,15 +26,16 @@ export class MenuDocumentRepository implements MenuRepository {
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
-  }): Promise<Menu[]> {
+  }): Promise<[Menu[], number]> {
     const entityObjects = await this.menuModel
       .find()
       .skip((paginationOptions.page - 1) * paginationOptions.limit)
       .limit(paginationOptions.limit);
-
-    return entityObjects.map((entityObject) =>
-      MenuMapper.toDomain(entityObject),
-    );
+    const total = await this.menuModel.countDocuments();
+    return [
+      entityObjects.map((entityObject) => MenuMapper.toDomain(entityObject)),
+      total,
+    ];
   }
 
   async findById(id: Menu['id']): Promise<NullableType<Menu>> {

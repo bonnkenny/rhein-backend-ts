@@ -12,7 +12,7 @@ export abstract class RoleRepository {
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
-  }): Promise<Role[]>;
+  }): Promise<[Role[], number]>;
 
   abstract findById(id: Role['id']): Promise<NullableType<Role>>;
 

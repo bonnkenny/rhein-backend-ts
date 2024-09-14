@@ -12,13 +12,18 @@ export class InfinityFindAllDto {
   @Transform(({ value }) => (value ? Number(value) : 1))
   @IsNumber()
   @IsOptional()
-  page?: number;
+  page: number;
 
   @ApiPropertyOptional()
   @Transform(sizeChecker)
   @IsNumber()
   @IsOptional()
-  limit?: number;
+  limit: number;
+
+  constructor() {
+    this.page = this.page ?? 1;
+    this.limit = this.limit ?? 10;
+  }
 }
 
 export class InfinitySortDto<T> {

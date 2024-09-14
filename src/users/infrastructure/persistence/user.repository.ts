@@ -33,7 +33,7 @@ export abstract class UserRepository {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-  }): Promise<User[]>;
+  }): Promise<[User[], number]>;
 
   abstract findById(id: User['id']): Promise<NullableType<User>>;
   abstract findByEmail(email: User['email']): Promise<NullableType<User>>;

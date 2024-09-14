@@ -22,10 +22,15 @@ import {
 import { Menu } from './domain/menu';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  InfinityApiResponseDto,
   InfinityPaginationResponse,
+  // InfinityPaginationResponse,
   InfinityPaginationResponseDto,
-} from '../utils/dto/infinity-pagination-response.dto';
-import { infinityPagination } from '../utils/infinity-pagination';
+} from '../utils/dto/infinity-base-response.dto';
+import {
+  infinityPagination,
+  infinityResponse,
+} from '../utils/infinity-response';
 import { FindAllMenusDto } from './dto/find-all-menus.dto';
 
 @ApiTags('Menus')
@@ -40,10 +45,10 @@ export class MenusController {
 
   @Post()
   @ApiCreatedResponse({
-    type: Menu,
+    type: InfinityApiResponseDto<Menu>,
   })
   create(@Body() createMenuDto: CreateMenuDto) {
-    return this.menusService.create(createMenuDto);
+    return infinityResponse(this.menusService.create(createMenuDto));
   }
 
   @Get()
@@ -53,21 +58,16 @@ export class MenusController {
   async findAll(
     @Query() query: FindAllMenusDto,
   ): Promise<InfinityPaginationResponseDto<Menu>> {
-    const page = query?.page ?? 1;
-    let limit = query?.limit ?? 10;
-    if (limit > 50) {
-      limit = 50;
-    }
-
-    return infinityPagination(
-      await this.menusService.findAllWithPagination({
-        paginationOptions: {
-          page,
-          limit,
-        },
-      }),
-      { page, limit },
-    );
+    const { page, limit } = query || {};
+    console.log('page', page);
+    console.log('limit', limit);
+    const [items, total] = await this.menusService.findAllWithPagination({
+      paginationOptions: {
+        page,
+        limit,
+      },
+    });
+    return infinityPagination(items, total, { page, limit });
   }
 
   @Get(':id')

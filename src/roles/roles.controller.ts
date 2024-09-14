@@ -24,8 +24,11 @@ import { AuthGuard } from '@nestjs/passport';
 import {
   InfinityPaginationResponse,
   InfinityPaginationResponseDto,
-} from '../utils/dto/infinity-pagination-response.dto';
-import { infinityPagination } from '../utils/infinity-pagination';
+} from '../utils/dto/infinity-base-response.dto';
+import {
+  infinityPagination,
+  // infinityResponse,
+} from '../utils/infinity-response';
 import { FindAllRolesDto } from './dto/find-all-roles.dto';
 
 @ApiTags('Roles')
@@ -54,21 +57,14 @@ export class RolesController {
   async findAll(
     @Query() query: FindAllRolesDto,
   ): Promise<InfinityPaginationResponseDto<Role>> {
-    const page = query?.page ?? 1;
-    let limit = query?.limit ?? 10;
-    if (limit > 50) {
-      limit = 50;
-    }
-
-    return infinityPagination(
-      await this.rolesService.findAllWithPagination({
-        paginationOptions: {
-          page,
-          limit,
-        },
-      }),
-      { page, limit },
-    );
+    const { page, limit } = query || {};
+    const [items, total] = await this.rolesService.findAllWithPagination({
+      paginationOptions: {
+        page,
+        limit,
+      },
+    });
+    return infinityPagination(items, total, query);
   }
 
   @Get(':id')

@@ -25,16 +25,21 @@ import {
 // import { RoleEnum } from '../roles/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
 
+// import {
+//   InfinityPaginationResponse,
+//   InfinityPaginationResponseDto,
+// } from '../utils/dto/infinity-pagination-response.dto';
 import {
   InfinityPaginationResponse,
   InfinityPaginationResponseDto,
-} from '../utils/dto/infinity-pagination-response.dto';
+} from '../utils/dto/infinity-base-response.dto';
 import { NullableType } from '../utils/types/nullable.type';
 import { QueryUserDto } from './dto/query-user.dto';
 import { User } from './domain/user';
 import { UsersService } from './users.service';
 // import { RolesGuard } from '../roles/roles.guard';
-import { infinityPagination } from '../utils/infinity-pagination';
+// import { infinityPagination } from '../utils/infinity-pagination';
+import { infinityPagination } from '../utils/infinity-response';
 import { BaseRolesGuard } from '@src/utils/guards/base-roles.guard';
 import { BaseRoles } from '@src/utils/guards/base-roles.decorator';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
@@ -76,22 +81,16 @@ export class UsersController {
     @Query() query: QueryUserDto,
   ): Promise<InfinityPaginationResponseDto<User>> {
     const page = query?.page ?? 1;
-    let limit = query?.limit ?? 10;
-    if (limit > 50) {
-      limit = 50;
-    }
-
-    return infinityPagination(
-      await this.usersService.findManyWithPagination({
-        filterOptions: query?.filters,
-        sortOptions: query?.sort,
-        paginationOptions: {
-          page,
-          limit,
-        },
-      }),
-      { page, limit },
-    );
+    const limit = query?.limit ?? 10;
+    const [items, total] = await this.usersService.findManyWithPagination({
+      filterOptions: query?.filters,
+      sortOptions: query?.sort,
+      paginationOptions: {
+        page,
+        limit,
+      },
+    });
+    return infinityPagination(items, total, query);
   }
 
   @ApiOkResponse({
