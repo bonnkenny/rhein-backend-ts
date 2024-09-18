@@ -15,8 +15,8 @@ export class RoleMapper {
       domainEntity.menuIds = raw.menuIds.map((menu) => menu.toString());
     }
     console.log('raw.menus', raw.menuIds);
-    if (raw?.menuEntities && raw.menuEntities.length) {
-      domainEntity.menuEntities = raw.menuEntities.map(MenuMapper.toDomain);
+    if (raw?.menus && raw.menus.length) {
+      domainEntity.menus = raw.menus.map(MenuMapper.toDomain);
     }
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;

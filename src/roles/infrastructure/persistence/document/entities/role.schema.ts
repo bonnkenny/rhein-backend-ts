@@ -36,7 +36,7 @@ export class RoleSchemaClass extends EntityDocumentHelper {
   @Prop({ type: [{ type: Types.ObjectId, ref: MenuSchemaClass.name }] })
   menuIds?: Types.ObjectId[];
 
-  menuEntities?: MenuSchemaClass[];
+  menus?: MenuSchemaClass[];
 
   @ApiProperty()
   @Prop({ default: now })
@@ -49,7 +49,7 @@ export class RoleSchemaClass extends EntityDocumentHelper {
 
 export const RoleSchema = SchemaFactory.createForClass(RoleSchemaClass);
 
-RoleSchema.virtual('menuEntities', {
+RoleSchema.virtual('menus', {
   ref: MenuSchemaClass.name,
   localField: 'menuIds',
   foreignField: '_id',

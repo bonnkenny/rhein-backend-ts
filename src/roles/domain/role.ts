@@ -25,7 +25,8 @@ export class Role {
   menuIds?: string[];
 
   @ApiProperty({ type: [MenuSchemaClass] })
-  menuEntities?: Menu[];
+  // menuEntities?: Menu[];
+  menus?: Menu[];
 
   @ApiProperty()
   createdAt: Date;

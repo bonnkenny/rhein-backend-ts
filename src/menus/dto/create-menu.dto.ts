@@ -11,4 +11,8 @@ export class CreateMenuDto {
   @ApiProperty({ type: String })
   @IsNotEmpty()
   path: string;
+
+  @ApiProperty({ type: String })
+  @IsNotEmpty()
+  parentId: string;
 }

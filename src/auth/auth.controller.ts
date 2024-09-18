@@ -21,9 +21,14 @@ import { AuthUpdateDto } from './dto/auth-update.dto';
 import { AuthGuard } from '@nestjs/passport';
 // import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
-import { NullableType } from '../utils/types/nullable.type';
+// import { NullableType } from '../utils/types/nullable.type';
 import { User } from '../users/domain/user';
 import { RefreshResponseDto } from './dto/refresh-response.dto';
+import { infinityResponse } from '../utils/infinity-response';
+import {
+  InfinityApiResponse,
+  InfinityApiResponseDto,
+} from '@src/utils/dto/infinity-base-response.dto';
 
 @ApiTags('Auth')
 @Controller({
@@ -38,11 +43,14 @@ export class AuthController {
   })
   @Post('email/login')
   @ApiOkResponse({
-    type: LoginResponseDto,
+    type: InfinityApiResponse(LoginResponseDto),
   })
   @HttpCode(HttpStatus.OK)
-  public login(@Body() loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
-    return this.service.validateLogin(loginDto);
+  async login(
+    @Body() loginDto: AuthEmailLoginDto,
+  ): Promise<InfinityApiResponseDto<LoginResponseDto>> {
+    const loginResponse = await this.service.validateLogin(loginDto);
+    return infinityResponse(loginResponse);
   }
 
   // @Post('email/register')
@@ -108,11 +116,14 @@ export class AuthController {
   @Post('refresh')
   @UseGuards(AuthGuard('jwt-refresh'))
   @HttpCode(HttpStatus.OK)
-  public refresh(@Request() request): Promise<RefreshResponseDto> {
-    return this.service.refreshToken({
+  async refresh(
+    @Request() request,
+  ): Promise<InfinityApiResponseDto<Omit<LoginResponseDto, 'user'>>> {
+    const refreshToken = await this.service.refreshToken({
       sessionId: request.user.sessionId,
       hash: request.user.hash,
     });
+    return infinityResponse(refreshToken);
   }
 
   @ApiBearerAuth()
@@ -133,13 +144,14 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: User,
+    type: InfinityApiResponse(User),
   })
-  public update(
+  async update(
     @Request() request,
     @Body() userDto: AuthUpdateDto,
-  ): Promise<NullableType<User>> {
-    return this.service.update(request.user, userDto);
+  ): Promise<InfinityApiResponseDto<User | null>> {
+    const updated = await this.service.update(request.user, userDto);
+    return infinityResponse(updated);
   }
 
   // @ApiBearerAuth()

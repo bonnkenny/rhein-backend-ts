@@ -39,6 +39,6 @@ export class InfinitySortDto<T> {
 
   constructor() {
     this.orderBy = this.orderBy ?? 'createdAt';
-    this.order = this.order ?? -1;
+    this.order = this.order ?? 'DESC';
   }
 }

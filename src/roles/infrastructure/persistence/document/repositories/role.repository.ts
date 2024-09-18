@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { RoleSchemaClass } from '../entities/role.schema';
 import { RoleRepository } from '../../role.repository';
 import { Role } from '@src/roles/domain/role';
 import { RoleMapper } from '../mappers/role.mapper';
 import { IPaginationOptions } from '@src/utils/types/pagination-options';
+import { FindAllRolesDto } from '@src/roles/dto/find-all-roles.dto';
 
 @Injectable()
 export class RoleDocumentRepository implements RoleRepository {
@@ -33,7 +34,7 @@ export class RoleDocumentRepository implements RoleRepository {
       .find()
       .skip((paginationOptions.page - 1) * paginationOptions.limit)
       .limit(paginationOptions.limit)
-      .populate('menuEntities')
+      .populate('menus')
       .exec();
     const total = await this.roleModel.countDocuments();
     return [
@@ -58,7 +59,7 @@ export class RoleDocumentRepository implements RoleRepository {
     const entity = await this.roleModel.findOne(filter);
 
     if (!entity) {
-      throw new Error('Record not found');
+      throw new NotFoundException('Record not found');
     }
 
     const entityObject = await this.roleModel.findOneAndUpdate(
@@ -75,5 +76,18 @@ export class RoleDocumentRepository implements RoleRepository {
 
   async remove(id: Role['id']): Promise<void> {
     await this.roleModel.deleteOne({ _id: id });
+  }
+
+  async findAll({
+    filterOptions,
+  }: {
+    filterOptions: FindAllRolesDto | null | undefined;
+  }): Promise<Role[]> {
+    const where: FilterQuery<Role> = {};
+    if (filterOptions?.ids) {
+      where['id'] = { $in: filterOptions.ids };
+    }
+    const entities = await this.roleModel.find(where).populate('menus');
+    return entities.map(RoleMapper.toDomain);
   }
 }

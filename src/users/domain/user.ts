@@ -4,6 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 import { Role } from '@src/roles/domain/role';
+import { Menu } from '@src/menus/domain/menu';
 
 const idType = String;
 
@@ -83,4 +84,7 @@ export class User {
 
   @ApiProperty()
   deletedAt: Date;
+
+  @ApiProperty()
+  menus?: Menu[];
 }

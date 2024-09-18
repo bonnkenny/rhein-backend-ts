@@ -22,6 +22,10 @@ export class MenuSchemaClass extends EntityDocumentHelper {
   path: string;
 
   @ApiProperty()
+  @Prop({ default: null })
+  parentId: string;
+
+  @ApiProperty()
   @Prop({ default: now })
   createdAt: Date;
 

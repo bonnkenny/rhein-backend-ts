@@ -58,7 +58,7 @@ export class UsersDocumentRepository implements UserRepository {
       .populate({
         path: 'roles',
         populate: {
-          path: 'menuEntities',
+          path: 'menus',
         },
       })
       .exec();
@@ -74,11 +74,28 @@ export class UsersDocumentRepository implements UserRepository {
     return userObject ? UserMapper.toDomain(userObject) : null;
   }
 
-  async findByEmail(email: User['email']): Promise<NullableType<User>> {
+  async findByEmail({
+    email,
+    withRoleMenu,
+  }: {
+    email: User['email'];
+    withRoleMenu?: boolean;
+  }): Promise<NullableType<User>> {
     if (!email) return null;
+    withRoleMenu = withRoleMenu ?? false;
 
     const userObject = await this.usersModel.findOne({ email });
-    return userObject ? UserMapper.toDomain(userObject) : null;
+    if (!userObject) return null;
+    if (!withRoleMenu) {
+      return UserMapper.toDomain(userObject);
+    }
+    const userWithMenus = await userObject.populate({
+      path: 'roles',
+      populate: {
+        path: 'menus',
+      },
+    });
+    return UserMapper.toDomain(userWithMenus);
   }
 
   async findBySocialIdAndProvider({

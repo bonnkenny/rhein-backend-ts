@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -22,14 +23,18 @@ import {
 import { Role } from './domain/role';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  InfinityApiResponse,
+  InfinityApiResponseDto,
   InfinityPaginationResponse,
   InfinityPaginationResponseDto,
 } from '../utils/dto/infinity-base-response.dto';
 import {
   infinityPagination,
+  infinityResponse,
   // infinityResponse,
 } from '../utils/infinity-response';
 import { FindAllRolesDto } from './dto/find-all-roles.dto';
+import { NullableType } from '@src/utils/types/nullable.type';
 
 @ApiTags('Roles')
 @ApiBearerAuth()
@@ -43,11 +48,14 @@ export class RolesController {
 
   @Post()
   @ApiCreatedResponse({
-    type: Role,
+    type: InfinityApiResponse(Role),
   })
-  create(@Body() createRoleDto: CreateRoleDto) {
+  async create(
+    @Body() createRoleDto: CreateRoleDto,
+  ): Promise<InfinityApiResponseDto<Role>> {
     console.log('CreateRoleDto', CreateRoleDto);
-    return this.rolesService.create(createRoleDto);
+    const created = await this.rolesService.create(createRoleDto);
+    return infinityResponse(created);
   }
 
   @Get()
@@ -74,10 +82,18 @@ export class RolesController {
     required: true,
   })
   @ApiOkResponse({
-    type: Role,
+    type: InfinityApiResponse(Role),
   })
-  findOne(@Param('id') id: string) {
-    return this.rolesService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+  ): InfinityApiResponseDto<Promise<NullableType<Role>>> {
+    const role = this.rolesService.findOne(id);
+    if (!role) {
+      throw new NotFoundException({
+        message: 'Role not found',
+      });
+    }
+    return infinityResponse(role);
   }
 
   @Patch(':id')
@@ -87,10 +103,10 @@ export class RolesController {
     required: true,
   })
   @ApiOkResponse({
-    type: Role,
+    type: InfinityApiResponse(Role),
   })
   update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    return this.rolesService.update(id, updateRoleDto);
+    return infinityResponse(this.rolesService.update(id, updateRoleDto));
   }
 
   @Delete(':id')

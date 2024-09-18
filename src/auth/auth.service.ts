@@ -28,6 +28,8 @@ import { SessionService } from '../session/session.service';
 import { User } from '../users/domain/user';
 import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+import { Role } from '@src/roles/domain/role';
+import { Menu } from '@src/menus/domain/menu';
 
 @Injectable()
 export class AuthService {
@@ -40,7 +42,10 @@ export class AuthService {
   ) {}
 
   async validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
-    const user = await this.usersService.findByEmail(loginDto.email);
+    const user = await this.usersService.findByEmail({
+      email: loginDto.email,
+      withROleMenu: true,
+    });
 
     if (!user) {
       throw new UnprocessableEntityException({
@@ -100,6 +105,15 @@ export class AuthService {
       hash,
     });
 
+    const roles: Role[] = user?.roles || [];
+    const menus: Record<string, Menu> = {};
+    for (const role of roles) {
+      for (const menu of role?.menus || []) {
+        menus[menu.id] = menu;
+      }
+      delete role.menus;
+    }
+    user.menus = Object.values(menus);
     return {
       refreshToken,
       token,
@@ -117,7 +131,7 @@ export class AuthService {
     let userByEmail: NullableType<User> = null;
 
     if (socialEmail) {
-      userByEmail = await this.usersService.findByEmail(socialEmail);
+      userByEmail = await this.usersService.findByEmail({ email: socialEmail });
     }
 
     if (socialData.id) {
@@ -302,7 +316,7 @@ export class AuthService {
   }
 
   async forgotPassword(email: string): Promise<void> {
-    const user = await this.usersService.findByEmail(email);
+    const user = await this.usersService.findByEmail({ email });
 
     if (!user) {
       throw new UnprocessableEntityException({
@@ -441,7 +455,10 @@ export class AuthService {
     }
 
     if (userDto.email && userDto.email !== currentUser.email) {
-      const userByEmail = await this.usersService.findByEmail(userDto.email);
+      const userByEmail = await this.usersService.findByEmail({
+        email: userDto.email,
+        withROleMenu: true,
+      });
 
       if (userByEmail && userByEmail.id !== currentUser.id) {
         throw new UnprocessableEntityException({

@@ -16,9 +16,22 @@ export class Menu {
   })
   path: string;
 
+  @ApiProperty({
+    type: String,
+  })
+  parentId: string;
+
   @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()
   updatedAt: Date;
+}
+
+export class MenuTree extends Menu {
+  @ApiProperty({
+    type: () => [MenuTree],
+    default: [],
+  })
+  children: MenuTree[];
 }

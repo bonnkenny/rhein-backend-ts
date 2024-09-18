@@ -35,9 +35,9 @@ export class UsersService {
     }
 
     if (clonedPayload.email) {
-      const userObject = await this.usersRepository.findByEmail(
-        clonedPayload.email,
-      );
+      const userObject = await this.usersRepository.findByEmail({
+        email: clonedPayload.email ?? null,
+      });
       if (userObject) {
         throw new UnprocessableEntityException({
           status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -118,8 +118,17 @@ export class UsersService {
     return this.usersRepository.findById(id);
   }
 
-  findByEmail(email: User['email']): Promise<NullableType<User>> {
-    return this.usersRepository.findByEmail(email);
+  findByEmail({
+    email,
+    withROleMenu,
+  }: {
+    email: User['email'];
+    withROleMenu?: boolean;
+  }): Promise<NullableType<User>> {
+    return this.usersRepository.findByEmail({
+      email,
+      withRoleMenu: withROleMenu ?? false,
+    });
   }
 
   findBySocialIdAndProvider({
@@ -150,9 +159,9 @@ export class UsersService {
     }
 
     if (clonedPayload.email) {
-      const userObject = await this.usersRepository.findByEmail(
-        clonedPayload.email,
-      );
+      const userObject = await this.usersRepository.findByEmail({
+        email: clonedPayload.email,
+      });
 
       if (userObject && userObject.id !== id) {
         throw new UnprocessableEntityException({

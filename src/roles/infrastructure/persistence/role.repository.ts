@@ -2,6 +2,7 @@ import { DeepPartial } from '@src/utils/types/deep-partial.type';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { IPaginationOptions } from '@src/utils/types/pagination-options';
 import { Role } from '../../domain/role';
+import { FindAllRolesDto } from '@src/roles/dto/find-all-roles.dto';
 
 export abstract class RoleRepository {
   abstract create(
@@ -22,4 +23,10 @@ export abstract class RoleRepository {
   ): Promise<Role | null>;
 
   abstract remove(id: Role['id']): Promise<void>;
+
+  abstract findAll({
+    filterOptions,
+  }: {
+    filterOptions: FindAllRolesDto | null | undefined;
+  }): Promise<Role[]>;
 }
