@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, MaxLength } from 'class-validator';
+import { IsMongoId, IsNotEmpty, MaxLength } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { Types } from 'mongoose';
 
 export class CreateMenuDto {
   // Don't forget to use the class-validator decorators in the DTO properties.
@@ -10,9 +12,14 @@ export class CreateMenuDto {
 
   @ApiProperty({ type: String })
   @IsNotEmpty()
+  @Transform(({ value }) => {
+    const trimmedValue = value.trim();
+    return trimmedValue.startsWith('/') ? trimmedValue : '/' + trimmedValue;
+  })
   path: string;
 
-  @ApiProperty({ type: String })
+  @ApiProperty({ type: Types.ObjectId })
   @IsNotEmpty()
+  @IsMongoId({ message: 'parentId must be a valid ObjectId' })
   parentId: string;
 }

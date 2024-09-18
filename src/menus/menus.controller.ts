@@ -80,7 +80,7 @@ export class MenusController {
     type: Menu,
   })
   findOne(@Param('id') id: string) {
-    return this.menusService.findOne(id);
+    return infinityResponse(this.menusService.findOne(id));
   }
 
   @Patch(':id')
@@ -93,7 +93,7 @@ export class MenusController {
     type: Menu,
   })
   update(@Param('id') id: string, @Body() updateMenuDto: UpdateMenuDto) {
-    return this.menusService.update(id, updateMenuDto);
+    return infinityResponse(this.menusService.update(id, updateMenuDto));
   }
 
   @Delete(':id')

@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { now, HydratedDocument } from 'mongoose';
-import { EntityDocumentHelper } from '../../../../../utils/document-entity-helper';
+import { now, HydratedDocument, Types } from 'mongoose';
+import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
 
 export type MenuSchemaDocument = HydratedDocument<MenuSchemaClass>;
@@ -22,8 +22,8 @@ export class MenuSchemaClass extends EntityDocumentHelper {
   path: string;
 
   @ApiProperty()
-  @Prop({ default: null })
-  parentId: string;
+  @Prop({ default: null, type: Types.ObjectId })
+  parentId: Types.ObjectId;
 
   @ApiProperty()
   @Prop({ default: now })

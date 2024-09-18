@@ -2,11 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
   IsEnum,
+  IsMongoId,
   IsNumber,
   IsString,
   MaxLength,
 } from 'class-validator';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+import { Types } from 'mongoose';
 
 export class CreateRoleDto {
   // Don't forget to use the class-validator decorators in the DTO properties.
@@ -29,8 +31,8 @@ export class CreateRoleDto {
   @MaxLength(100)
   description?: string;
 
-  @ApiProperty({ type: [String] })
+  @ApiProperty({ type: [Types.ObjectId] })
   @IsArray()
-  @IsString({ each: true })
+  @IsMongoId({ each: true, message: 'Invalid menu id' })
   menuIds?: string[];
 }
