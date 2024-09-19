@@ -3,7 +3,6 @@ import {
   IsArray,
   IsEnum,
   IsMongoId,
-  IsNumber,
   IsString,
   MaxLength,
 } from 'class-validator';
@@ -18,13 +17,13 @@ export class CreateRoleDto {
   name: string;
 
   @ApiProperty({
-    type: Number,
-    enum: [BaseRoleEnum.ADMIN, BaseRoleEnum.SUPPLIER],
+    type: String,
+    enum: Object.keys(BaseRoleEnum),
     description: 'Base role type: Admin or Supplier,values:2 or 3',
   })
-  @IsNumber()
-  @IsEnum([BaseRoleEnum.ADMIN, BaseRoleEnum.SUPPLIER])
-  type: number;
+  @IsString()
+  @IsEnum(Object.keys(BaseRoleEnum))
+  type: string;
 
   @ApiProperty({ type: String })
   @IsString()

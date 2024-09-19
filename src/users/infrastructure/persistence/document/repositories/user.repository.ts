@@ -35,10 +35,9 @@ export class UsersDocumentRepository implements UserRepository {
     paginationOptions: IPaginationOptions;
   }): Promise<[User[], number]> {
     const where: FilterQuery<UserSchemaClass> = {};
-    if (filterOptions?.name) {
-      where['name'] = {
-        $regex: new RegExp(filterOptions.name, 'i'),
-      };
+    if (!!filterOptions?.username) {
+      const regex = new RegExp(filterOptions?.username, 'i'); // 不区分大小写的搜索
+      where['$or'] = [{ firstName: regex }, { lastName: regex }];
     }
     const count = await this.usersModel.countDocuments(where);
     const userObjects = await this.usersModel

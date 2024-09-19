@@ -13,7 +13,7 @@ export class FilterUserDto {
   @IsOptional()
   // @ValidateNested({ each: true })
   // @Type(() => RoleDto)
-  name?: string | null;
+  username?: string;
 }
 
 export class SortUserDto extends InfinitySortDto<User> {}

@@ -11,6 +11,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+import { Transform } from 'class-transformer';
 
 export class UpdateRoleDto extends PartialType(CreateRoleDto) {
   @ApiProperty({ type: String })
@@ -21,11 +22,14 @@ export class UpdateRoleDto extends PartialType(CreateRoleDto) {
 
   @ApiProperty({
     type: String,
-    enum: [BaseRoleEnum.ADMIN, BaseRoleEnum.SUPPLIER],
+    enum: Object.keys(BaseRoleEnum),
   })
   @IsOptional()
-  @IsEnum([BaseRoleEnum.ADMIN, BaseRoleEnum.SUPPLIER])
-  type?: number;
+  @IsEnum(Object.keys(BaseRoleEnum))
+  @Transform(({ value }) => {
+    return BaseRoleEnum[value];
+  })
+  type?: string;
 
   @ApiProperty({ type: String })
   @IsString()

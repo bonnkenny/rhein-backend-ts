@@ -11,10 +11,10 @@ export class Role {
 
   name: string;
   @ApiProperty({
-    type: Number,
-    enum: Object.values(BaseRoleEnum),
+    type: String,
+    enum: Object.keys(BaseRoleEnum),
   })
-  type: number;
+  type: string;
   @ApiProperty({
     type: String,
   })

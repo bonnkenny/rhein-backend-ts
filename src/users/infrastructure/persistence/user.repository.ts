@@ -19,7 +19,7 @@ export abstract class UserRepository {
       | 'createdAt'
       | 'deletedAt'
       | 'updatedAt'
-      | 'photo'
+      | 'avatar'
       | 'socialId'
       | 'roleIds'
     >,

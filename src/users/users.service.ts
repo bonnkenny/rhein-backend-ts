@@ -173,9 +173,9 @@ export class UsersService {
       }
     }
 
-    if (clonedPayload.photo?.id) {
+    if (clonedPayload.avatar?.id) {
       const fileObject = await this.filesService.findById(
-        clonedPayload.photo.id,
+        clonedPayload.avatar.id,
       );
       if (!fileObject) {
         throw new UnprocessableEntityException({
@@ -185,7 +185,7 @@ export class UsersService {
           },
         });
       }
-      clonedPayload.photo = fileObject;
+      clonedPayload.avatar = fileObject;
     }
 
     if (clonedPayload.baseRole) {

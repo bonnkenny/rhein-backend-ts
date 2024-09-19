@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import ms from 'ms';
 import crypto from 'crypto';
+import _ from 'lodash';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
@@ -104,7 +105,7 @@ export class AuthService {
       sessionId: session.id,
       hash,
     });
-
+    // append menus to user
     const roles: Role[] = user?.roles || [];
     const menus: Record<string, Menu> = {};
     for (const role of roles) {
@@ -114,6 +115,11 @@ export class AuthService {
       delete role.menus;
     }
     user.menus = Object.values(menus);
+    const roleTitles: Record<number, string> = [];
+    for (const role of roles) {
+      const roleType = _.findKey(BaseRoleEnum, (v) => v === Number(role.type));
+      roleTitles[role.id] = roleType?.toLowerCase();
+    }
     return {
       refreshToken,
       token,

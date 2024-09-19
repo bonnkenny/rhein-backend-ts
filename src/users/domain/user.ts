@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { FileType } from '../../files/domain/file';
+import { FileType } from '@src/files/domain/file';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
@@ -54,9 +54,15 @@ export class User {
   lastName: string | null;
 
   @ApiProperty({
+    type: String,
+    example: 'John Doe',
+  })
+  username?: string;
+
+  @ApiProperty({
     type: () => FileType,
   })
-  photo?: FileType | null;
+  avatar?: FileType | null;
 
   @ApiProperty({
     type: Number,

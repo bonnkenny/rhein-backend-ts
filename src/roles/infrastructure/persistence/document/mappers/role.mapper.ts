@@ -2,6 +2,7 @@ import { Role } from '@src/roles/domain/role';
 import { RoleSchemaClass } from '../entities/role.schema';
 import { MenuMapper } from '@src/menus/infrastructure/persistence/document/mappers/menu.mapper';
 import { Types } from 'mongoose';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 
 export class RoleMapper {
   public static toDomain(raw: RoleSchemaClass): Role {
@@ -9,8 +10,9 @@ export class RoleMapper {
     domainEntity.id = raw._id.toString();
     domainEntity.name = raw.name;
     domainEntity.description = raw.description;
-    domainEntity.type = raw.type;
-
+    domainEntity.type = raw.type.toString();
+    console.log('domain,type', domainEntity.type);
+    console.log('raw,type', raw.type);
     if (raw?.menuIds && raw.menuIds.length) {
       domainEntity.menuIds = raw.menuIds.map((menu) => menu.toString());
     }
@@ -32,7 +34,9 @@ export class RoleMapper {
 
     persistenceSchema.name = domainEntity.name;
     persistenceSchema.description = domainEntity?.description ?? '';
-    persistenceSchema.type = domainEntity.type;
+    if (!!domainEntity?.type) {
+      persistenceSchema.type = BaseRoleEnum[domainEntity.type];
+    }
     // let menu:MenuSchemaClass | undefined = undefined;
     if (domainEntity?.menuIds?.length) {
       persistenceSchema.menuIds = domainEntity.menuIds.map(

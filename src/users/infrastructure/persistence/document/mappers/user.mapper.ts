@@ -16,10 +16,11 @@ export class UserMapper {
     domainEntity.socialId = raw.socialId;
     domainEntity.firstName = raw.firstName;
     domainEntity.lastName = raw.lastName;
-    if (raw.photo) {
-      domainEntity.photo = FileMapper.toDomain(raw.photo);
-    } else if (raw.photo === null) {
-      domainEntity.photo = null;
+    domainEntity.username = raw?.username;
+    if (raw.avatar) {
+      domainEntity.avatar = FileMapper.toDomain(raw.avatar);
+    } else if (raw.avatar === null) {
+      domainEntity.avatar = null;
     }
 
     domainEntity.baseRole = raw.baseRole;
@@ -43,10 +44,10 @@ export class UserMapper {
   static toPersistence(domainEntity: User): UserSchemaClass {
     let photo: FileSchemaClass | undefined = undefined;
 
-    if (domainEntity.photo) {
+    if (domainEntity.avatar) {
       photo = new FileSchemaClass();
-      photo._id = domainEntity.photo.id;
-      photo.path = domainEntity.photo.path;
+      photo._id = domainEntity.avatar.id;
+      photo.path = domainEntity.avatar.path;
     }
     const persistenceSchema = new UserSchemaClass();
     if (!!domainEntity?.roleIds && domainEntity.roleIds.length) {
@@ -67,7 +68,7 @@ export class UserMapper {
     persistenceSchema.socialId = domainEntity.socialId;
     persistenceSchema.firstName = domainEntity.firstName;
     persistenceSchema.lastName = domainEntity.lastName;
-    persistenceSchema.photo = photo;
+    persistenceSchema.avatar = photo;
     // persistenceSchema.role = role;
     // persistenceSchema.status = status;
     persistenceSchema.createdAt = domainEntity.createdAt;

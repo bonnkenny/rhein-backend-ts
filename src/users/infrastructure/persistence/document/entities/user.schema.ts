@@ -97,7 +97,7 @@ export class UserSchemaClass extends EntityDocumentHelper {
     type: FileSchemaClass,
   })
   @Type(() => FileSchemaClass)
-  photo?: FileSchemaClass | null;
+  avatar?: FileSchemaClass | null;
 
   @ApiProperty({
     type: Number,
@@ -139,16 +139,20 @@ export class UserSchemaClass extends EntityDocumentHelper {
   @ApiProperty()
   @Prop()
   deletedAt: Date;
+
+  username?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserSchemaClass);
 
+UserSchema.index({ baseRole: 1 });
+
 UserSchema.virtual('previousPassword').get(function () {
   return this.password;
 });
-
-UserSchema.index({ baseRole: 1 });
-
+UserSchema.virtual('username').get(function () {
+  return `${this.firstName} ${this.lastName}`;
+});
 UserSchema.virtual('roles', {
   ref: RoleSchemaClass.name,
   localField: 'roleIds',

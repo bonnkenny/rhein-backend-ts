@@ -55,3 +55,8 @@ RoleSchema.virtual('menus', {
   foreignField: '_id',
   justOne: false,
 });
+
+RoleSchema.path('type').get(function (v) {
+  console.log('asdssssss');
+  return BaseRoleEnum[v] ?? undefined;
+});

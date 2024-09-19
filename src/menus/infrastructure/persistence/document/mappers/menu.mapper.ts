@@ -8,7 +8,9 @@ export class MenuMapper {
     domainEntity.id = raw._id.toString();
     domainEntity.name = raw.name;
     domainEntity.path = raw.path;
-    domainEntity.parentId = raw.parentId.toString();
+    if (!!raw.parentId) {
+      domainEntity.parentId = raw.parentId.toString();
+    }
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
 
