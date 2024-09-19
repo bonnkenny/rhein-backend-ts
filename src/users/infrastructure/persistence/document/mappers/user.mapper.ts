@@ -23,7 +23,7 @@ export class UserMapper {
       domainEntity.avatar = null;
     }
 
-    domainEntity.baseRole = raw.baseRole;
+    domainEntity.baseRole = raw.baseRole?.toString();
     domainEntity.status = raw.status;
 
     if (!!raw.roleIds && raw.roleIds.length) {

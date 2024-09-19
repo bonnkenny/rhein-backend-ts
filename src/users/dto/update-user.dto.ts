@@ -38,10 +38,10 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   photo?: FileDto | null;
 
-  @ApiPropertyOptional({ type: Number, enum: Object.values(BaseRoleEnum) })
+  @ApiPropertyOptional({ type: String, enum: Object.values(BaseRoleEnum) })
   @IsOptional()
   // @Type(() => RoleDto)
-  baseRole?: number;
+  baseRole?: string;
 
   @ApiPropertyOptional({ type: Number, enum: Object.values(UserStatusEnum) })
   @IsOptional()

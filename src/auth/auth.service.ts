@@ -14,7 +14,7 @@ import bcrypt from 'bcryptjs';
 import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
 import { AuthProvidersEnum } from './auth-providers.enum';
-import { SocialInterface } from '../social/interfaces/social.interface';
+// import { SocialInterface } from '../social/interfaces/social.interface';
 import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { NullableType } from '../utils/types/nullable.type';
 import { LoginResponseDto } from './dto/login-response.dto';
@@ -99,12 +99,13 @@ export class AuthService {
       hash,
     });
 
-    const { token, refreshToken, tokenExpires } = await this.getTokensData({
-      id: user.id,
-      baseRole: user.baseRole,
-      sessionId: session.id,
-      hash,
-    });
+    const { accessToken, refreshToken, tokenExpires } =
+      await this.getTokensData({
+        id: user.id,
+        baseRole: user.baseRole,
+        sessionId: session.id,
+        hash,
+      });
     // append menus to user
     const roles: Role[] = user?.roles || [];
     const menus: Record<string, Menu> = {};
@@ -122,92 +123,92 @@ export class AuthService {
     }
     return {
       refreshToken,
-      token,
-      tokenExpires,
-      user,
+      accessToken,
+      expires: tokenExpires,
+      ...user,
     };
   }
 
-  async validateSocialLogin(
-    authProvider: string,
-    socialData: SocialInterface,
-  ): Promise<LoginResponseDto> {
-    let user: NullableType<User> = null;
-    const socialEmail = socialData.email?.toLowerCase();
-    let userByEmail: NullableType<User> = null;
-
-    if (socialEmail) {
-      userByEmail = await this.usersService.findByEmail({ email: socialEmail });
-    }
-
-    if (socialData.id) {
-      user = await this.usersService.findBySocialIdAndProvider({
-        socialId: socialData.id,
-        provider: authProvider,
-      });
-    }
-
-    if (user) {
-      if (socialEmail && !userByEmail) {
-        user.email = socialEmail;
-      }
-      await this.usersService.update(user.id, user);
-    } else if (userByEmail) {
-      user = userByEmail;
-    } else if (socialData.id) {
-      const baseRole = BaseRoleEnum.ADMIN;
-      const status = UserStatusEnum.ACTIVE;
-
-      user = await this.usersService.create({
-        email: socialEmail ?? null,
-        firstName: socialData.firstName ?? null,
-        lastName: socialData.lastName ?? null,
-        socialId: socialData.id,
-        provider: authProvider,
-        baseRole,
-        status,
-      });
-
-      user = await this.usersService.findById(user.id);
-    }
-
-    if (!user) {
-      throw new UnprocessableEntityException({
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
-        errors: {
-          user: 'userNotFound',
-        },
-      });
-    }
-
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
-
-    const session = await this.sessionService.create({
-      user,
-      hash,
-    });
-
-    const {
-      token: jwtToken,
-      refreshToken,
-      tokenExpires,
-    } = await this.getTokensData({
-      id: user.id,
-      baseRole: user.baseRole,
-      sessionId: session.id,
-      hash,
-    });
-
-    return {
-      refreshToken,
-      token: jwtToken,
-      tokenExpires,
-      user,
-    };
-  }
+  // async validateSocialLogin(
+  //   authProvider: string,
+  //   socialData: SocialInterface,
+  // ): Promise<LoginResponseDto> {
+  //   let user: NullableType<User> = null;
+  //   const socialEmail = socialData.email?.toLowerCase();
+  //   let userByEmail: NullableType<User> = null;
+  //
+  //   if (socialEmail) {
+  //     userByEmail = await this.usersService.findByEmail({ email: socialEmail });
+  //   }
+  //
+  //   if (socialData.id) {
+  //     user = await this.usersService.findBySocialIdAndProvider({
+  //       socialId: socialData.id,
+  //       provider: authProvider,
+  //     });
+  //   }
+  //
+  //   if (user) {
+  //     if (socialEmail && !userByEmail) {
+  //       user.email = socialEmail;
+  //     }
+  //     await this.usersService.update(user.id, user);
+  //   } else if (userByEmail) {
+  //     user = userByEmail;
+  //   } else if (socialData.id) {
+  //     const baseRole = BaseRoleEnum.ADMIN;
+  //     const status = UserStatusEnum.ACTIVE;
+  //
+  //     user = await this.usersService.create({
+  //       email: socialEmail ?? null,
+  //       firstName: socialData.firstName ?? null,
+  //       lastName: socialData.lastName ?? null,
+  //       socialId: socialData.id,
+  //       provider: authProvider,
+  //       baseRole,
+  //       status,
+  //     });
+  //
+  //     user = await this.usersService.findById(user.id);
+  //   }
+  //
+  //   if (!user) {
+  //     throw new UnprocessableEntityException({
+  //       status: HttpStatus.UNPROCESSABLE_ENTITY,
+  //       errors: {
+  //         user: 'userNotFound',
+  //       },
+  //     });
+  //   }
+  //
+  //   const hash = crypto
+  //     .createHash('sha256')
+  //     .update(randomStringGenerator())
+  //     .digest('hex');
+  //
+  //   const session = await this.sessionService.create({
+  //     user,
+  //     hash,
+  //   });
+  //
+  //   const {
+  //     token: jwtToken,
+  //     refreshToken,
+  //     tokenExpires,
+  //   } = await this.getTokensData({
+  //     id: user.id,
+  //     baseRole: user.baseRole,
+  //     sessionId: session.id,
+  //     hash,
+  //   });
+  //
+  //   return {
+  //     refreshToken,
+  //     token: jwtToken,
+  //     tokenExpires,
+  //     user,
+  //   };
+  // }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
     const user = await this.usersService.create({
@@ -216,7 +217,7 @@ export class AuthService {
       // role: {
       //   id: RoleEnum.user,
       // },
-      baseRole: BaseRoleEnum.SUPPLIER,
+      baseRole: _.findKey(BaseRoleEnum, (v) => v === BaseRoleEnum.SUPPLIER),
       status: UserStatusEnum.ACTIVE,
     });
 
@@ -508,7 +509,9 @@ export class AuthService {
 
   async refreshToken(
     data: Pick<JwtRefreshPayloadType, 'sessionId' | 'hash'>,
-  ): Promise<Omit<LoginResponseDto, 'user'>> {
+  ): Promise<
+    Pick<LoginResponseDto, 'accessToken' | 'refreshToken' | 'expires'>
+  > {
     const session = await this.sessionService.findById(data.sessionId);
 
     if (!session) {
@@ -534,17 +537,18 @@ export class AuthService {
       hash,
     });
 
-    const { token, refreshToken, tokenExpires } = await this.getTokensData({
-      id: session.user.id,
-      baseRole: session.user.baseRole,
-      sessionId: session.id,
-      hash,
-    });
+    const { accessToken, refreshToken, tokenExpires } =
+      await this.getTokensData({
+        id: session.user.id,
+        baseRole: session.user.baseRole,
+        sessionId: session.id,
+        hash,
+      });
 
     return {
-      token,
+      accessToken,
       refreshToken,
-      tokenExpires,
+      expires: tokenExpires,
     };
   }
 
@@ -597,7 +601,7 @@ export class AuthService {
     ]);
 
     return {
-      token,
+      accessToken: token,
       refreshToken,
       tokenExpires,
     };

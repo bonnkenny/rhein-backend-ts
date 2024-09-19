@@ -118,7 +118,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async refresh(
     @Request() request,
-  ): Promise<InfinityApiResponseDto<Omit<LoginResponseDto, 'user'>>> {
+  ): Promise<
+    InfinityApiResponseDto<
+      Pick<LoginResponseDto, 'accessToken' | 'refreshToken' | 'expires'>
+    >
+  > {
     const refreshToken = await this.service.refreshToken({
       sessionId: request.user.sessionId,
       hash: request.user.hash,

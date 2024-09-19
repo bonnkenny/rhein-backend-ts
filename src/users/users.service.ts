@@ -15,6 +15,7 @@ import { IPaginationOptions } from '../utils/types/pagination-options';
 import { DeepPartial } from '../utils/types/deep-partial.type';
 import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+import _ from 'lodash';
 
 @Injectable()
 export class UsersService {
@@ -64,7 +65,7 @@ export class UsersService {
     }
 
     if (!!clonedPayload.baseRole) {
-      const roleObject = Object.values(BaseRoleEnum)
+      const roleObject = Object.keys(BaseRoleEnum)
         .map(String)
         .includes(String(clonedPayload.baseRole));
       if (!roleObject) {
@@ -76,7 +77,10 @@ export class UsersService {
         });
       }
     } else {
-      clonedPayload.baseRole = Number(BaseRoleEnum.SUPPLIER);
+      clonedPayload.baseRole = _.findKey(
+        BaseRoleEnum,
+        (v) => v === BaseRoleEnum.SUPPLIER,
+      );
     }
 
     if (!!clonedPayload.status) {

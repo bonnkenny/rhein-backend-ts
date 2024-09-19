@@ -41,14 +41,14 @@ export class CreateUserDto {
   @IsOptional()
   photo?: FileDto | null;
 
-  @ApiPropertyOptional({ type: Number, enum: Object.values(BaseRoleEnum) })
+  @ApiPropertyOptional({ type: String, enum: Object.keys(BaseRoleEnum) })
   @IsOptional()
   @Transform((v) => {
     return !!v?.value
       ? BaseRoleEnum[v.value.toString().toUpperCase()]
       : undefined;
   })
-  baseRole?: number;
+  baseRole?: string;
 
   @ApiPropertyOptional({ type: Number, enum: Object.values(UserStatusEnum) })
   @IsOptional()

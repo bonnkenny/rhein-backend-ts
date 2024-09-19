@@ -1,7 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
 import { FileType } from '@src/files/domain/file';
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+// import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 import { Role } from '@src/roles/domain/role';
 import { Menu } from '@src/menus/domain/menu';
@@ -65,10 +65,9 @@ export class User {
   avatar?: FileType | null;
 
   @ApiProperty({
-    type: Number,
-    enum: Object.values(BaseRoleEnum),
+    type: String,
   })
-  baseRole?: number;
+  baseRole?: string;
 
   @ApiProperty({
     type: Number,
