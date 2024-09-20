@@ -5,6 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { LabelType } from '@src/utils/types/order-types';
 import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
 import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
+import { FileSchemaClass } from '@src/files/infrastructure/persistence/document/entities/file.schema';
 
 export type OrderMaterialTemplateSchemaDocument =
   HydratedDocument<OrderMaterialTemplateSchemaClass>;
@@ -21,7 +22,7 @@ export class OrderMaterialTemplateSchemaClass extends EntityDocumentHelper {
   @Prop({ required: true, enum: Object.values(OrderTypeEnum) })
   orderType: number;
   @ApiProperty({ type: Object })
-  @Prop({ required: true })
+  @Prop({ required: true, type: { en: String, ch: String } })
   label: LabelType;
 
   @ApiProperty()
@@ -43,7 +44,10 @@ export class OrderMaterialTemplateSchemaClass extends EntityDocumentHelper {
   @Prop({ default: null, required: true })
   filledAt: Date;
 
-  @Prop({ type: Types.ObjectId, default: [] })
+  @Prop({
+    type: [{ type: Types.ObjectId, ref: FileSchemaClass.name }],
+    default: [],
+  })
   files: Array<Types.ObjectId>;
 
   @ApiProperty()

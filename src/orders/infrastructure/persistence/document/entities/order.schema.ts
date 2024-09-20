@@ -29,6 +29,14 @@ export class OrderSchemaClass extends EntityDocumentHelper {
   @Prop()
   orderType: number;
 
+  @ApiProperty({ type: String })
+  @Prop({ required: true, default: null })
+  email: string;
+
+  @ApiProperty({ type: Types.ObjectId })
+  @Prop({ default: null })
+  userId?: Types.ObjectId;
+
   @ApiProperty()
   @Prop({ maxlength: 1000 })
   remark: string;
@@ -58,5 +66,6 @@ export const OrderSchema = SchemaFactory.createForClass(OrderSchemaClass);
 
 OrderSchema.index({ orderType: 1 });
 OrderSchema.index({ orderNo: 1 });
+OrderSchema.index({ email: 1 });
 OrderSchema.index({ checkStatus: 1 });
 OrderSchema.index({ fillStatus: 1 });

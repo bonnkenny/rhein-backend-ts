@@ -3,6 +3,7 @@ import { now, HydratedDocument, Types } from 'mongoose';
 import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
 import { LabelType } from '@src/utils/types/order-types';
+import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
 
 export type OrderMaterialSchemaDocument =
   HydratedDocument<OrderMaterialSchemaClass>;
@@ -20,7 +21,7 @@ export class OrderMaterialSchemaClass extends EntityDocumentHelper {
   orderId: string;
 
   @ApiProperty({ type: Object })
-  @Prop({ required: true })
+  @Prop({ required: true, type: { en: String, ch: String } })
   label: LabelType;
 
   @ApiProperty()
@@ -36,8 +37,8 @@ export class OrderMaterialSchemaClass extends EntityDocumentHelper {
   isRequired: boolean;
 
   @ApiProperty()
-  @Prop()
-  columns: Array<any>;
+  @Prop({ type: [[{ type: OrderMaterialColumn }]] })
+  columns: Array<Array<OrderMaterialColumn>>;
 
   @Prop({ type: Types.ObjectId })
   files: Array<Types.ObjectId>;
