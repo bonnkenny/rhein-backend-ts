@@ -28,15 +28,20 @@ export class OrderMaterialDocumentRepository
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
-  }): Promise<OrderMaterial[]> {
+  }): Promise<[OrderMaterial[], number]> {
+    const total = await this.orderMaterialModel.countDocuments();
+
     const entityObjects = await this.orderMaterialModel
       .find()
       .skip((paginationOptions.page - 1) * paginationOptions.limit)
       .limit(paginationOptions.limit);
 
-    return entityObjects.map((entityObject) =>
-      OrderMaterialMapper.toDomain(entityObject),
-    );
+    return [
+      entityObjects.map((entityObject) =>
+        OrderMaterialMapper.toDomain(entityObject),
+      ),
+      total,
+    ];
   }
 
   async findById(

@@ -12,7 +12,7 @@ export abstract class OrderRepository {
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
-  }): Promise<Order[]>;
+  }): Promise<[Order[], number]>;
 
   abstract findById(id: Order['id']): Promise<NullableType<Order>>;
 

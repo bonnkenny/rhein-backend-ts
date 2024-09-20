@@ -33,3 +33,18 @@ export class IsRuleType implements ValidatorConstraintInterface {
     return 'The rule must be of type RuleType.';
   }
 }
+
+@ValidatorConstraint({ async: false })
+export class IsColumnsType implements ValidatorConstraintInterface {
+  validate(rule: any): boolean {
+    if (typeof rule !== 'object' || rule === null) {
+      return false;
+    }
+    const keys = Object.keys(rule);
+    return 'rule' in keys && 'message' in keys && 'trigger' in keys;
+  }
+
+  defaultMessage(): string {
+    return 'The rule must be of type RuleType.';
+  }
+}

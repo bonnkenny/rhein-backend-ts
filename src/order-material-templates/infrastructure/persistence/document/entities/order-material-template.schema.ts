@@ -3,6 +3,8 @@ import { now, HydratedDocument, Types } from 'mongoose';
 import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
 import { LabelType } from '@src/utils/types/order-types';
+import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
+import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
 
 export type OrderMaterialTemplateSchemaDocument =
   HydratedDocument<OrderMaterialTemplateSchemaClass>;
@@ -15,6 +17,9 @@ export type OrderMaterialTemplateSchemaDocument =
   },
 })
 export class OrderMaterialTemplateSchemaClass extends EntityDocumentHelper {
+  @ApiProperty()
+  @Prop({ required: true, enum: Object.values(OrderTypeEnum) })
+  orderType: number;
   @ApiProperty({ type: Object })
   @Prop({ required: true })
   label: LabelType;
@@ -33,7 +38,7 @@ export class OrderMaterialTemplateSchemaClass extends EntityDocumentHelper {
 
   @ApiProperty()
   @Prop()
-  columns: Array<any>;
+  columns: Array<Array<OrderMaterialColumn>>;
 
   @Prop({ default: null, required: true })
   filledAt: Date;

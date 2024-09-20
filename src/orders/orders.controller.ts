@@ -24,8 +24,8 @@ import { AuthGuard } from '@nestjs/passport';
 import {
   InfinityPaginationResponse,
   InfinityPaginationResponseDto,
-} from '../utils/dto/infinity-pagination-response.dto';
-import { infinityPagination } from '../utils/infinity-pagination';
+} from '../utils/dto/infinity-base-response.dto';
+import { infinityPagination } from '../utils/infinity-response';
 import { FindAllOrdersDto } from './dto/find-all-orders.dto';
 
 @ApiTags('Orders')
@@ -58,16 +58,13 @@ export class OrdersController {
     if (limit > 50) {
       limit = 50;
     }
-
-    return infinityPagination(
-      await this.ordersService.findAllWithPagination({
-        paginationOptions: {
-          page,
-          limit,
-        },
-      }),
-      { page, limit },
-    );
+    const [items, total] = await this.ordersService.findAllWithPagination({
+      paginationOptions: {
+        page,
+        limit,
+      },
+    });
+    return infinityPagination(items, total, { page, limit });
   }
 
   @Get(':id')

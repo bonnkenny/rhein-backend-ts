@@ -13,7 +13,7 @@ import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 import { GroupTypesEnum } from '@src/utils/enums/groups.enum';
 import { RoleSchemaClass } from '@src/roles/infrastructure/persistence/document/entities/role.schema';
-import { _ } from 'lodash';
+import { findKey } from 'lodash';
 
 export type UserSchemaDocument = HydratedDocument<UserSchemaClass>;
 
@@ -161,7 +161,7 @@ UserSchema.virtual('roles', {
   justOne: false,
 });
 UserSchema.path('baseRole').get((value) => {
-  return _.findKey(BaseRoleEnum, (v) => v === value);
+  return findKey(BaseRoleEnum, (v) => v === value);
 });
 
 UserSchema.path('baseRole').set((value) => {

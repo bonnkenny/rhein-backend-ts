@@ -24,8 +24,8 @@ import { AuthGuard } from '@nestjs/passport';
 import {
   InfinityPaginationResponse,
   InfinityPaginationResponseDto,
-} from '../utils/dto/infinity-pagination-response.dto';
-import { infinityPagination } from '../utils/infinity-pagination';
+} from '../utils/dto/infinity-base-response.dto';
+import { infinityPagination } from '../utils/infinity-response';
 import { FindAllOrderMaterialTemplatesDto } from './dto/find-all-order-material-templates.dto';
 
 @ApiTags('Ordermaterialtemplates')
@@ -65,15 +65,18 @@ export class OrderMaterialTemplatesController {
       limit = 50;
     }
 
-    return infinityPagination(
+    const [items, total] =
       await this.orderMaterialTemplatesService.findAllWithPagination({
         paginationOptions: {
           page,
           limit,
         },
-      }),
-      { page, limit },
-    );
+      });
+
+    return infinityPagination(items, total, {
+      page,
+      limit,
+    });
   }
 
   @Get(':id')

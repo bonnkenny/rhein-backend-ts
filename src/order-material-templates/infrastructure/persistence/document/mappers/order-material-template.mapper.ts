@@ -11,11 +11,7 @@ export class OrderMaterialTemplateMapper {
     domainEntity.id = raw._id.toString();
     domainEntity.orderType =
       findKey(OrderTypeEnum, raw.orderType)?.toString() || '';
-    domainEntity.prop = raw.prop;
-    domainEntity.label = raw.label;
-    domainEntity.rules = raw.rules;
-    domainEntity.valueType = raw.valueType;
-    domainEntity.label = raw.label;
+
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
 
@@ -29,10 +25,7 @@ export class OrderMaterialTemplateMapper {
     if (domainEntity.id && typeof domainEntity.id === 'string') {
       persistenceSchema._id = domainEntity.id;
     }
-    persistenceSchema.prop = domainEntity.prop;
-    persistenceSchema.label = domainEntity.label;
-    persistenceSchema.rules = domainEntity.rules;
-    persistenceSchema.valueType = domainEntity.valueType;
+
     if (domainEntity.orderType) {
       persistenceSchema.orderType = OrderTypeEnum[domainEntity.orderType];
     }

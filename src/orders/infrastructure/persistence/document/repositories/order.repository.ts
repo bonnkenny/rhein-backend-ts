@@ -26,15 +26,17 @@ export class OrderDocumentRepository implements OrderRepository {
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
-  }): Promise<Order[]> {
+  }): Promise<[Order[], number]> {
+    const total = await this.orderModel.countDocuments();
     const entityObjects = await this.orderModel
       .find()
       .skip((paginationOptions.page - 1) * paginationOptions.limit)
       .limit(paginationOptions.limit);
 
-    return entityObjects.map((entityObject) =>
-      OrderMapper.toDomain(entityObject),
-    );
+    return [
+      entityObjects.map((entityObject) => OrderMapper.toDomain(entityObject)),
+      total,
+    ];
   }
 
   async findById(id: Order['id']): Promise<NullableType<Order>> {

@@ -1,6 +1,6 @@
-import { DeepPartial } from '../../../utils/types/deep-partial.type';
-import { NullableType } from '../../../utils/types/nullable.type';
-import { IPaginationOptions } from '../../../utils/types/pagination-options';
+import { DeepPartial } from '@src/utils/types/deep-partial.type';
+import { NullableType } from '@src/utils/types/nullable.type';
+import { IPaginationOptions } from '@src/utils/types/pagination-options';
 import { OrderMaterial } from '../../domain/order-material';
 
 export abstract class OrderMaterialRepository {
@@ -12,7 +12,7 @@ export abstract class OrderMaterialRepository {
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
-  }): Promise<OrderMaterial[]>;
+  }): Promise<[OrderMaterial[], number]>;
 
   abstract findById(
     id: OrderMaterial['id'],

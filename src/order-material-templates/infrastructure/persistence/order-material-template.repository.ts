@@ -12,7 +12,7 @@ export abstract class OrderMaterialTemplateRepository {
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
-  }): Promise<OrderMaterialTemplate[]>;
+  }): Promise<[OrderMaterialTemplate[], number]>;
 
   abstract findById(
     id: OrderMaterialTemplate['id'],

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { NullableType } from '../../../../../utils/types/nullable.type';
+import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OrderMaterialTemplateSchemaClass } from '../entities/order-material-template.schema';
 import { OrderMaterialTemplateRepository } from '../../order-material-template.repository';
 import { OrderMaterialTemplate } from '../../../../domain/order-material-template';
 import { OrderMaterialTemplateMapper } from '../mappers/order-material-template.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { IPaginationOptions } from '@src/utils/types/pagination-options';
 
 @Injectable()
 export class OrderMaterialTemplateDocumentRepository
@@ -28,15 +28,19 @@ export class OrderMaterialTemplateDocumentRepository
     paginationOptions,
   }: {
     paginationOptions: IPaginationOptions;
-  }): Promise<OrderMaterialTemplate[]> {
+  }): Promise<[OrderMaterialTemplate[], number]> {
+    const total = await this.orderMaterialTemplateModel.countDocuments();
     const entityObjects = await this.orderMaterialTemplateModel
       .find()
       .skip((paginationOptions.page - 1) * paginationOptions.limit)
       .limit(paginationOptions.limit);
 
-    return entityObjects.map((entityObject) =>
-      OrderMaterialTemplateMapper.toDomain(entityObject),
-    );
+    return [
+      entityObjects.map((entityObject) =>
+        OrderMaterialTemplateMapper.toDomain(entityObject),
+      ),
+      total,
+    ];
   }
 
   async findById(

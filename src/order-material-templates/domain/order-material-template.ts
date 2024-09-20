@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LabelType, RuleType } from '@src/utils/types/order-types';
+import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
 
 export class OrderMaterialTemplate {
   @ApiProperty({
@@ -10,14 +10,9 @@ export class OrderMaterialTemplate {
     type: String,
   })
   orderType: string;
-  @ApiProperty()
-  prop: string;
-  @ApiProperty()
-  label: LabelType;
-  @ApiProperty()
-  rules: RuleType[];
-  @ApiProperty()
-  valueType: string;
+
+  columns: Array<Array<OrderMaterialColumn>>;
+
   @ApiProperty()
   createdAt: Date;
   @ApiProperty()
