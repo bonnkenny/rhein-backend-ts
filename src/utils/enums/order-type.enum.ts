@@ -1,0 +1,6 @@
+export enum OrderTypeEnum {
+  MATERIAL_PRODUCER = 1,
+  MATERIAL_PROCESSOR = 2,
+  TRADER = 3,
+  PRODUCT_PRODUCER = 4,
+}

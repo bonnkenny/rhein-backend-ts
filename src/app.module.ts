@@ -27,8 +27,20 @@ import { MenusModule } from './menus/menus.module';
 
 import { RolesModule } from './roles/roles.module';
 
+import { OrdersModule } from './orders/orders.module';
+
+import { OrderMaterialsModule } from './order-materials/order-materials.module';
+
+import { OrderMaterialTemplatesModule } from './order-material-templates/order-material-templates.module';
+
+// import { OrderMaterialColumnsModule } from './order-material-columns/order-material-columns.module';
+
 @Module({
   imports: [
+    // OrderMaterialColumnsModule,
+    OrderMaterialTemplatesModule,
+    OrderMaterialsModule,
+    OrdersModule,
     RolesModule,
     MenusModule,
     ConfigModule.forRoot({
