@@ -2,6 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 // import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
 import { Transform } from 'class-transformer';
 import { Types } from 'mongoose';
+import { IsOptional } from 'class-validator';
+import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
 
 export class Order {
   @ApiProperty({
@@ -21,6 +23,7 @@ export class Order {
 
   @ApiProperty({
     type: String,
+    enum: Object.keys(OrderTypeEnum),
   })
   orderType: string;
 
@@ -32,7 +35,7 @@ export class Order {
   @ApiProperty({
     type: String,
   })
-  email: string;
+  email?: string;
 
   @ApiProperty({
     type: String,
@@ -40,7 +43,20 @@ export class Order {
   @Transform(({ value }) => {
     return !!value ? new Types.ObjectId(value) : value;
   })
-  userId?: string;
+  userId: string;
+
+  @ApiProperty({
+    type: Number,
+    enum: [1, 2, -1],
+  })
+  @IsOptional()
+  checkStatus?: number;
+  @ApiProperty({
+    type: Number,
+    enum: [1, 2, 3, -1],
+  })
+  @IsOptional()
+  fillStatus?: number;
 
   @ApiProperty()
   createdAt: Date;

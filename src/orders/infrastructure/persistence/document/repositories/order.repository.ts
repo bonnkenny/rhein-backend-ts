@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { NullableType } from '../../../../../utils/types/nullable.type';
+import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OrderSchemaClass } from '../entities/order.schema';
 import { OrderRepository } from '../../order.repository';
 import { Order } from '../../../../domain/order';
 import { OrderMapper } from '../mappers/order.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { IPaginationOptions } from '@src/utils/types/pagination-options';
 
 @Injectable()
 export class OrderDocumentRepository implements OrderRepository {
@@ -17,6 +17,9 @@ export class OrderDocumentRepository implements OrderRepository {
 
   async create(data: Order): Promise<Order> {
     const persistenceModel = OrderMapper.toPersistence(data);
+    persistenceModel.fillStatus = 1;
+    persistenceModel.checkStatus = 1;
+
     const createdEntity = new this.orderModel(persistenceModel);
     const entityObject = await createdEntity.save();
     return OrderMapper.toDomain(entityObject);

@@ -2,14 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsEnum,
+  IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
 } from 'class-validator';
 import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
-import { Transform } from 'class-transformer';
-import { Types } from 'mongoose';
 
 export class CreateOrderDto {
   // Don't forget to use the class-validator decorators in the DTO properties.
@@ -23,41 +22,57 @@ export class CreateOrderDto {
   @ApiProperty({
     type: String,
   })
-  @IsNotEmpty()
-  @IsString()
   @MaxLength(100, { message: 'Order name is too long' })
+  @IsString()
+  @IsNotEmpty()
   orderName: string;
 
   @ApiProperty({
     type: String,
+    enum: Object.keys(OrderTypeEnum),
+  })
+  @IsEnum(Object.keys(OrderTypeEnum), {
+    message:
+      'Invalid order type,order type must be one of the following values:' +
+      Object.keys(OrderTypeEnum).join(' '),
   })
   @IsNotEmpty()
-  @IsEnum(Object.keys(OrderTypeEnum))
   orderType: string;
 
   @ApiProperty({
     type: String,
   })
-  @IsOptional()
+  @IsMongoId()
   @IsString()
-  @Transform(({ value }) => {
-    return !!value ? new Types.ObjectId(value) : value;
-  })
+  @IsOptional()
+  // @Transform(({ value }) => {
+  //   return !!value ? new Types.ObjectId(value) : value;
+  // })
   parentId?: string;
 
   @ApiProperty({
     type: String,
   })
+  @IsOptional()
   @IsEmail()
-  email: string;
+  email?: string;
 
   @ApiProperty({
     type: String,
   })
-  @IsOptional()
+  @IsMongoId()
   @IsString()
-  @Transform(({ value }) => {
-    return !!value ? new Types.ObjectId(value) : value;
-  })
-  userId?: string;
+  @IsNotEmpty()
+  userId: string;
+
+  // @ApiProperty({
+  //   type: Number,
+  //   enum: [1, 2, -1],
+  // })
+  // checkStatus?: number;
+  // @ApiProperty({
+  //   type: Number,
+  //   enum: [1, 2, 3, -1],
+  // })
+  // fillStatus?: number;
 }
