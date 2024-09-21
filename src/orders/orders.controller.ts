@@ -50,8 +50,8 @@ export class OrdersController {
   async create(
     @Body() createOrderDto: CreateOrderDto,
   ): Promise<InfinityApiResponseDto<Order>> {
-    const order = await this.ordersService.create(createOrderDto);
-    console.log('order', order);
+    const order = await this.ordersService.createWithMaterial(createOrderDto);
+    // console.log('order', order);
     return infinityResponse(order);
   }
 

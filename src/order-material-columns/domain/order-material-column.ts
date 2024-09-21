@@ -21,8 +21,8 @@ export const defaultRulesTemplate: RuleType[] = [
 ];
 
 export const defaultLabelTemplate: LabelType = {
-  en: '',
-  ch: '',
+  en: 'field',
+  ch: '字段',
 };
 
 // 定义 LabelType 类型

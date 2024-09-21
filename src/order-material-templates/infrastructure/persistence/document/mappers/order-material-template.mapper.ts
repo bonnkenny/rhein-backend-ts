@@ -1,6 +1,5 @@
 import { OrderMaterialTemplate } from '@src/order-material-templates/domain/order-material-template';
 import { OrderMaterialTemplateSchemaClass } from '../entities/order-material-template.schema';
-import { findKey } from 'lodash';
 import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
 import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
 
@@ -10,8 +9,7 @@ export class OrderMaterialTemplateMapper {
   ): OrderMaterialTemplate {
     const domainEntity = new OrderMaterialTemplate();
     domainEntity.id = raw._id.toString();
-    domainEntity.orderType =
-      findKey(OrderTypeEnum, raw.orderType)?.toString() || '';
+    domainEntity.orderType = raw.orderType;
     domainEntity.label = {
       ch: raw.label?.ch ?? '',
       en: raw.label?.en ?? '',

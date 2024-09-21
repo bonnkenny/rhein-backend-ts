@@ -62,7 +62,7 @@ export class CreateOrderMaterialDto {
   @Validate(IsLabelType)
   @IsNotEmpty()
   @IsOptional()
-  description: LabelType;
+  description: LabelType | null;
 
   @ApiProperty({
     type: LabelTypeClass,

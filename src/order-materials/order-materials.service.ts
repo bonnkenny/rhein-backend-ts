@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateOrderMaterialDto } from './dto/create-order-material.dto';
 import { UpdateOrderMaterialDto } from './dto/update-order-material.dto';
 import { OrderMaterialRepository } from './infrastructure/persistence/order-material.repository';
@@ -12,6 +12,7 @@ import { errorBody } from '@src/utils/infinity-response';
 export class OrderMaterialsService {
   constructor(
     private readonly orderMaterialRepository: OrderMaterialRepository,
+    @Inject(forwardRef(() => OrdersService))
     private orderService: OrdersService,
   ) {}
 

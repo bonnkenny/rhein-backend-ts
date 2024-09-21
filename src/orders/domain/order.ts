@@ -4,6 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 // import { Types } from 'mongoose';
 import { IsOptional } from 'class-validator';
 import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
+import { OrderMaterial } from '@src/order-materials/domain/order-material';
 
 export class Order {
   @ApiProperty({
@@ -62,4 +63,8 @@ export class Order {
 
   @ApiProperty()
   updatedAt: Date;
+  @ApiProperty({
+    type: [OrderMaterial],
+  })
+  materialIds?: OrderMaterial[];
 }

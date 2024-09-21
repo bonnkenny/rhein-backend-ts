@@ -4,6 +4,7 @@ import { UpdateOrderMaterialTemplateDto } from './dto/update-order-material-temp
 import { OrderMaterialTemplateRepository } from './infrastructure/persistence/order-material-template.repository';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { OrderMaterialTemplate } from './domain/order-material-template';
+import { defaultQueryOptionsDto } from '@src/order-material-templates/dto/find-all-order-material-templates.dto';
 
 @Injectable()
 export class OrderMaterialTemplatesService {
@@ -29,6 +30,10 @@ export class OrderMaterialTemplatesService {
         limit: paginationOptions.limit,
       },
     });
+  }
+
+  findAll(filter: defaultQueryOptionsDto) {
+    return this.orderMaterialTemplateRepository.findAll(filter);
   }
 
   findOne(id: OrderMaterialTemplate['id']) {

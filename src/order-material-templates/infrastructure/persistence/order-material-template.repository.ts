@@ -3,6 +3,7 @@ import { NullableType } from '@src/utils/types/nullable.type';
 import { IPaginationOptions } from '@src/utils/types/pagination-options';
 import { OrderMaterialTemplate } from '../../domain/order-material-template';
 import { CreateOrderMaterialColumnDto } from '@src/order-material-columns/dto/create-order-material-column.dto';
+import { defaultQueryOptionsDto } from '@src/order-material-templates/dto/find-all-order-material-templates.dto';
 
 export abstract class OrderMaterialTemplateRepository {
   abstract create(
@@ -14,7 +15,9 @@ export abstract class OrderMaterialTemplateRepository {
   }: {
     paginationOptions: IPaginationOptions;
   }): Promise<[OrderMaterialTemplate[], number]>;
-
+  abstract findAll(
+    filter: defaultQueryOptionsDto,
+  ): Promise<OrderMaterialTemplate[]>;
   abstract findById(
     id: OrderMaterialTemplate['id'],
   ): Promise<NullableType<OrderMaterialTemplate>>;

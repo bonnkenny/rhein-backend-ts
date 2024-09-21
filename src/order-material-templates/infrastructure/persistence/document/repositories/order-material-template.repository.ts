@@ -102,4 +102,14 @@ export class OrderMaterialTemplateDocumentRepository
   formatColumns(columns: CreateOrderMaterialColumnDto[]): any[] {
     return columns;
   }
+
+  async findAll({
+    orderType,
+  }: {
+    orderType: OrderMaterialTemplate['orderType'];
+  }): Promise<OrderMaterialTemplate[]> {
+    const items = await this.orderMaterialTemplateModel.find({ orderType });
+
+    return items.map((item) => OrderMaterialTemplateMapper.toDomain(item));
+  }
 }
