@@ -2,6 +2,7 @@ import { IPaginationOptions } from './types/pagination-options';
 // import { InfinityPaginationResponseDto } from './dto/infinity-pagination-response.dto';
 import {
   InfinityApiResponseDto,
+  InfinityBaseResponseDto,
   InfinityPaginationResponseDto,
 } from './dto/infinity-base-response.dto';
 import { PaginationDataDto } from '@src/utils/dto/infinity-base-response.dto';
@@ -53,4 +54,11 @@ export const infinityResponse = <T>(
         success: success || true,
         message: message || 'Ok',
       };
+};
+
+export const errorBody = (message: string): InfinityBaseResponseDto => {
+  return {
+    success: false,
+    message: message,
+  };
 };

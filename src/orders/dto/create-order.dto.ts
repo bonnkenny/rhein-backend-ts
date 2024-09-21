@@ -62,7 +62,7 @@ export class CreateOrderDto {
   })
   @IsMongoId()
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'User id is required' })
   userId: string;
 
   // @ApiProperty({

@@ -3,6 +3,7 @@ import { now, HydratedDocument, Types } from 'mongoose';
 import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
 import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
+import { UserSchemaClass } from '@src/users/infrastructure/persistence/document/entities/user.schema';
 
 export type OrderSchemaDocument = HydratedDocument<OrderSchemaClass>;
 
@@ -35,7 +36,7 @@ export class OrderSchemaClass extends EntityDocumentHelper {
   email: string;
 
   @ApiProperty({ type: Types.ObjectId })
-  @Prop({ required: true })
+  @Prop({ required: true, type: Types.ObjectId, ref: UserSchemaClass.name })
   userId: Types.ObjectId;
 
   @ApiProperty()
@@ -70,3 +71,9 @@ OrderSchema.index({ orderNo: 1 });
 OrderSchema.index({ email: 1 });
 OrderSchema.index({ checkStatus: 1 });
 OrderSchema.index({ fillStatus: 1 });
+
+OrderSchema.virtual('user', {
+  ref: UserSchemaClass.name,
+  localField: 'userId',
+  foreignField: '_id',
+});

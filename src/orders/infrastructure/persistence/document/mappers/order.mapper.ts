@@ -18,11 +18,15 @@ export class OrderMapper {
         findKey(OrderTypeEnum, (v) => v === raw.orderType) || '';
     }
     domainEntity.email = raw.email;
-    domainEntity.userId = raw?.userId?.toString();
-    domainEntity.userId = raw?.userId?.toString();
+    domainEntity.userId = raw?.userId.toString();
+    domainEntity.parentId = null;
+    if (raw.parentId) {
+      domainEntity.parentId = raw?.parentId?.toString();
+    }
+
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
-
+    console.log('order domain', domainEntity);
     return domainEntity;
   }
 

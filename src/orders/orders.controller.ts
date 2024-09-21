@@ -22,10 +22,15 @@ import {
 import { Order } from './domain/order';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  InfinityApiResponse,
+  InfinityApiResponseDto,
   InfinityPaginationResponse,
   InfinityPaginationResponseDto,
 } from '../utils/dto/infinity-base-response.dto';
-import { infinityPagination } from '../utils/infinity-response';
+import {
+  infinityPagination,
+  infinityResponse,
+} from '../utils/infinity-response';
 import { FindAllOrdersDto } from './dto/find-all-orders.dto';
 
 @ApiTags('Orders')
@@ -40,10 +45,14 @@ export class OrdersController {
 
   @Post()
   @ApiCreatedResponse({
-    type: Order,
+    type: InfinityApiResponse(Order),
   })
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create(createOrderDto);
+  async create(
+    @Body() createOrderDto: CreateOrderDto,
+  ): Promise<InfinityApiResponseDto<Order>> {
+    const order = await this.ordersService.create(createOrderDto);
+    console.log('order', order);
+    return infinityResponse(order);
   }
 
   @Get()

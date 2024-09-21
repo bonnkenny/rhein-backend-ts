@@ -1,10 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderRepository } from './infrastructure/persistence/order.repository';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Order } from './domain/order';
 import { UsersService } from '../users/users.service';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+import { errorBody } from '@src/utils/infinity-response';
+import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
 
 @Injectable()
 export class OrdersService {
@@ -16,25 +19,19 @@ export class OrdersService {
   async create(createOrderDto: CreateOrderDto) {
     const { userId, parentId } = createOrderDto;
 
-    if (userId) {
-      const userCheck = await this.usersService.findByFilter({
-        id: userId,
-        baseRole: 'SUPPLIER',
-      });
-      if (!userCheck) {
-        throw new NotFoundException({
-          message: 'Assigning user not found',
-          success: false,
-        });
-      }
+    const userCheck = await this.usersService.findByFilter({
+      id: userId,
+      baseRole: BaseRoleEnum.SUPPLIER,
+    });
+    if (!userCheck) {
+      throw new BadRequestException(errorBody('Assigning user not found'));
     }
     if (parentId) {
       const parentCheck = this.orderRepository.findById(parentId);
       if (!parentCheck) {
-        throw new Error('Parent not fount!');
+        throw new BadRequestException(errorBody('Parent not fount!'));
       }
     }
-
     return this.orderRepository.create(createOrderDto);
   }
 
