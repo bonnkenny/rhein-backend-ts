@@ -43,6 +43,7 @@ import { UsersService } from './users.service';
 // import { RolesGuard } from '../roles/roles.guard';
 // import { infinityPagination } from '../utils/infinity-pagination';
 import {
+  errorBody,
   infinityPagination,
   infinityResponse,
 } from '../utils/infinity-response';
@@ -50,6 +51,8 @@ import {
 // import { BaseRoles } from '@src/utils/guards/base-roles.decorator';
 // import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { GroupTypesEnum } from '@src/utils/enums/groups.enum';
+import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 // import { OrderMapper } from '@src/orders/infrastructure/persistence/document/mappers/order.mapper';
 // import { UserMapper } from '@src/users/infrastructure/persistence/document/mappers/user.mapper';
 
@@ -121,6 +124,25 @@ export class UsersController {
   })
   findOne(@Param('id') id: User['id']): Promise<NullableType<User>> {
     return this.usersService.findById(id);
+  }
+
+  @Get('query/check-supplier')
+  @ApiOkResponse({
+    type: InfinityApiResponse(User),
+  })
+  async checkSupplier(@Query('email') email: string) {
+    console.log('email', email);
+
+    if (!email) {
+      throw new BadRequestException(errorBody('Email is required'));
+    }
+    const result = await this.usersService.findByEmail({
+      email: email,
+    });
+    if (!result || result.baseRole !== BaseRoleEnum.SUPPLIER) {
+      return infinityResponse({});
+    }
+    return infinityResponse(result);
   }
 
   @ApiOkResponse({

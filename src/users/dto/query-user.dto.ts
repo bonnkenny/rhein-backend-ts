@@ -6,6 +6,7 @@ import {
   InfinityFindAllDto,
   InfinitySortDto,
 } from '@src/utils/dto/infinity-query-all.dto';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 // import { RoleDto } from '@src/roles/dto/role.dto';
 
 export class FilterUserDto {
@@ -66,4 +67,14 @@ export class QueryUserDto extends InfinityFindAllDto {
   @ValidateNested({ each: true })
   @Type(() => SortUserDto)
   sort?: SortUserDto[] | null;
+}
+
+export class QueryDefaultDto {
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
+  email: string;
+
+  @ApiPropertyOptional({ type: String, enum: Object.keys(BaseRoleEnum) })
+  @IsOptional()
+  baseRole: string;
 }
