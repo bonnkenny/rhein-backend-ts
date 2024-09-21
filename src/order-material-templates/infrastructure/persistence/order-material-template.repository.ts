@@ -1,7 +1,8 @@
-import { DeepPartial } from '../../../utils/types/deep-partial.type';
-import { NullableType } from '../../../utils/types/nullable.type';
-import { IPaginationOptions } from '../../../utils/types/pagination-options';
+import { DeepPartial } from '@src/utils/types/deep-partial.type';
+import { NullableType } from '@src/utils/types/nullable.type';
+import { IPaginationOptions } from '@src/utils/types/pagination-options';
 import { OrderMaterialTemplate } from '../../domain/order-material-template';
+import { CreateOrderMaterialColumnDto } from '@src/order-material-columns/dto/create-order-material-column.dto';
 
 export abstract class OrderMaterialTemplateRepository {
   abstract create(
@@ -24,4 +25,6 @@ export abstract class OrderMaterialTemplateRepository {
   ): Promise<OrderMaterialTemplate | null>;
 
   abstract remove(id: OrderMaterialTemplate['id']): Promise<void>;
+
+  abstract formatColumns(columns: CreateOrderMaterialColumnDto[]): any[];
 }

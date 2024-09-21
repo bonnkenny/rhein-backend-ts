@@ -20,7 +20,6 @@ async function deepResolvePromises(input) {
       const resolvedValue = await deepResolvePromises(input[key]);
       resolvedObject[key] = resolvedValue;
     }
-
     return resolvedObject;
   }
 

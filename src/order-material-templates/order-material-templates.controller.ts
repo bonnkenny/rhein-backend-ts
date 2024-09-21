@@ -22,10 +22,14 @@ import {
 import { OrderMaterialTemplate } from './domain/order-material-template';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  InfinityApiResponseDto,
   InfinityPaginationResponse,
   InfinityPaginationResponseDto,
 } from '../utils/dto/infinity-base-response.dto';
-import { infinityPagination } from '../utils/infinity-response';
+import {
+  infinityPagination,
+  infinityResponse,
+} from '../utils/infinity-response';
 import { FindAllOrderMaterialTemplatesDto } from './dto/find-all-order-material-templates.dto';
 
 @ApiTags('Ordermaterialtemplates')
@@ -44,12 +48,16 @@ export class OrderMaterialTemplatesController {
   @ApiCreatedResponse({
     type: OrderMaterialTemplate,
   })
-  create(
+  async create(
     @Body() createOrderMaterialTemplateDto: CreateOrderMaterialTemplateDto,
-  ) {
-    return this.orderMaterialTemplatesService.create(
+  ): Promise<InfinityApiResponseDto<OrderMaterialTemplate>> {
+    const ret = await this.orderMaterialTemplatesService.create(
       createOrderMaterialTemplateDto,
     );
+    // console.log('before return >>', ret);
+    console.log('before return json >>', JSON.stringify(ret));
+    // return errorBody('aa');
+    return infinityResponse(ret);
   }
 
   @Get()

@@ -4,7 +4,10 @@ import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
 import { LabelType } from '@src/utils/types/order-types';
 import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
-import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
+import {
+  LabelTypeClass,
+  OrderMaterialColumn,
+} from '@src/order-material-columns/domain/order-material-column';
 import { FileSchemaClass } from '@src/files/infrastructure/persistence/document/entities/file.schema';
 
 export type OrderMaterialTemplateSchemaDocument =
@@ -18,32 +21,57 @@ export type OrderMaterialTemplateSchemaDocument =
   },
 })
 export class OrderMaterialTemplateSchemaClass extends EntityDocumentHelper {
-  @ApiProperty()
+  @ApiProperty({ type: String })
   @Prop({ required: true, enum: Object.values(OrderTypeEnum) })
-  orderType: number;
-  @ApiProperty({ type: Object })
+  orderType: string;
+
+  @ApiProperty({ type: LabelTypeClass })
   @Prop({ required: true, type: { en: String, ch: String } })
   label: LabelType;
 
   @ApiProperty()
-  @Prop()
-  description: string;
+  @Prop({ default: null, type: { en: String, ch: String } })
+  description: LabelType | null;
 
   @ApiProperty()
-  @Prop()
-  subDescription: string;
+  @Prop({ default: null, type: { en: String, ch: String } })
+  subDescription: LabelType | null;
 
   @ApiProperty()
   @Prop({ default: false, nullable: false })
   isRequired: boolean;
 
   @ApiProperty()
-  @Prop()
+  @Prop({
+    type: [
+      {
+        type: [
+          {
+            type: {
+              label: { en: String, ch: String },
+              prop: String,
+              rules: [
+                {
+                  rule: String,
+                  message: { en: String, ch: String },
+                  trigger: String,
+                },
+              ],
+              value: String,
+              valueType: String,
+            },
+          },
+        ],
+      },
+    ],
+  })
   columns: Array<Array<OrderMaterialColumn>>;
 
-  @Prop({ default: null, required: true })
-  filledAt: Date;
+  @ApiProperty()
+  @Prop({ default: null, type: Date })
+  filledAt: Date | null;
 
+  @ApiProperty()
   @Prop({
     type: [{ type: Types.ObjectId, ref: FileSchemaClass.name }],
     default: [],
