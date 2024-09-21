@@ -43,6 +43,7 @@ export class OrderMaterialsController {
     type: OrderMaterial,
   })
   create(@Body() createOrderMaterialDto: CreateOrderMaterialDto) {
+    console.log(createOrderMaterialDto);
     return this.orderMaterialsService.create(createOrderMaterialDto);
   }
 

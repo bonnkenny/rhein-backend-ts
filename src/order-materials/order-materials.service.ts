@@ -4,14 +4,24 @@ import { UpdateOrderMaterialDto } from './dto/update-order-material.dto';
 import { OrderMaterialRepository } from './infrastructure/persistence/order-material.repository';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { OrderMaterial } from './domain/order-material';
+import { OrdersService } from '@src/orders/orders.service';
+import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
+import { errorBody } from '@src/utils/infinity-response';
 
 @Injectable()
 export class OrderMaterialsService {
   constructor(
     private readonly orderMaterialRepository: OrderMaterialRepository,
+    private orderService: OrdersService,
   ) {}
 
-  create(createOrderMaterialDto: CreateOrderMaterialDto) {
+  async create(createOrderMaterialDto: CreateOrderMaterialDto) {
+    const { orderId } = createOrderMaterialDto;
+    console.log('orderId', orderId);
+    const order = await this.orderService.findOne(orderId);
+    if (!order) {
+      throw new BadRequestException(errorBody('Order not found'));
+    }
     return this.orderMaterialRepository.create(createOrderMaterialDto);
   }
 

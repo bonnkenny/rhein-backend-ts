@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { NullableType } from '../../../../../utils/types/nullable.type';
+import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OrderMaterialSchemaClass } from '../entities/order-material.schema';
 import { OrderMaterialRepository } from '../../order-material.repository';
 import { OrderMaterial } from '../../../../domain/order-material';
 import { OrderMaterialMapper } from '../mappers/order-material.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { IPaginationOptions } from '@src/utils/types/pagination-options';
 
 @Injectable()
 export class OrderMaterialDocumentRepository
@@ -19,8 +19,11 @@ export class OrderMaterialDocumentRepository
 
   async create(data: OrderMaterial): Promise<OrderMaterial> {
     const persistenceModel = OrderMaterialMapper.toPersistence(data);
+    persistenceModel.filledAt = null;
     const createdEntity = new this.orderMaterialModel(persistenceModel);
+
     const entityObject = await createdEntity.save();
+    // console.log('to domain >>', toDomain);
     return OrderMaterialMapper.toDomain(entityObject);
   }
 

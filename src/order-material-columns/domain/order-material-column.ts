@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { LabelType, RuleType } from '@src/utils/types/order-types';
-import { IsArray, IsNotEmpty, IsObject, Validate } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  Validate,
+} from 'class-validator';
 import {
   IsLabelType,
   IsRuleType,
@@ -60,7 +66,8 @@ export class OrderMaterialColumn {
   valueType: string;
 
   @ApiProperty({ type: [String, Boolean, Number], nullable: true })
-  value: any;
+  @IsOptional()
+  value: string | boolean | number | undefined;
 
   @ApiProperty({
     type: [RuleTypeClass],

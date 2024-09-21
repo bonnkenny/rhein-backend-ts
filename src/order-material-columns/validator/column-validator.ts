@@ -58,9 +58,9 @@ export class IsColumnsType implements ValidatorConstraintInterface {
         OrderMaterialColumn,
         column,
       );
-      console.log('valid', orderMaterialInstance);
+      // console.log('valid', orderMaterialInstance);
       const errors = validateSync(orderMaterialInstance);
-      console.log('validate errore', errors);
+      if (errors.length) console.log('validate errore', errors);
       if (errors.length) {
         throw new BadRequestException(
           'The columns field invalid,' + this.formatErrors(errors),

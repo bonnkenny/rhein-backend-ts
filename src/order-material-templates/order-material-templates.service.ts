@@ -12,12 +12,10 @@ export class OrderMaterialTemplatesService {
   ) {}
 
   create(createOrderMaterialTemplateDto: CreateOrderMaterialTemplateDto) {
-    console.log('a>>', 'aaaa');
-    const a = this.orderMaterialTemplateRepository.create(
+    // console.log('a>>', 'aaaa');
+    return this.orderMaterialTemplateRepository.create(
       createOrderMaterialTemplateDto,
     );
-    console.log('b>>', a);
-    return a;
   }
 
   findAllWithPagination({

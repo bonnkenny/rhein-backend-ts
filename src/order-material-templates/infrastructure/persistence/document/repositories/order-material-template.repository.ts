@@ -33,9 +33,8 @@ export class OrderMaterialTemplateDocumentRepository
     const createdEntity = new this.orderMaterialTemplateModel(persistenceModel);
 
     const entityObject = await createdEntity.save();
-    const toDomain = OrderMaterialTemplateMapper.toDomain(entityObject);
-    console.log('to domain >>', toDomain);
-    return toDomain;
+    // console.log('to domain >>', toDomain);
+    return OrderMaterialTemplateMapper.toDomain(entityObject);
   }
 
   async findAllWithPagination({

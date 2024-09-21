@@ -25,5 +25,6 @@ export class UpdateOrderMaterialColumnDto extends PartialType(
   @IsArray()
   @Validate(IsRuleType, { each: true })
   rules: RuleType[];
-  value?: any;
+  @ApiProperty({ type: [String, Boolean, Number], nullable: true })
+  value?: string | number | null | boolean;
 }
