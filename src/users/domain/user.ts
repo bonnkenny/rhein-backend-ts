@@ -72,9 +72,9 @@ export class User {
   @ApiProperty({
     type: Number,
     enum: Object.values(UserStatusEnum),
-    description: 'Means:Active or Inactive, Values:1 or -1',
+    description: 'Active or Inactive,upper cases',
   })
-  status?: number;
+  status?: string;
   @ApiProperty({ type: [String] })
   roleIds?: string[];
 

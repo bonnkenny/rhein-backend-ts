@@ -101,7 +101,7 @@ export class UserSchemaClass extends EntityDocumentHelper {
   avatar?: FileSchemaClass | null;
 
   @ApiProperty({
-    type: Number,
+    type: String,
     enum: Object.values(BaseRoleEnum),
   })
   @Prop({
@@ -109,15 +109,15 @@ export class UserSchemaClass extends EntityDocumentHelper {
     default: BaseRoleEnum.ADMIN,
     nullable: false,
   })
-  baseRole: number;
+  baseRole: string;
 
   @ApiProperty({ type: Number, enum: Object.values(UserStatusEnum) })
   @Prop({
-    type: Number,
+    type: String,
     default: UserStatusEnum.ACTIVE,
     nullable: false,
   })
-  status: number;
+  status: string;
 
   @ApiProperty()
   @Prop({

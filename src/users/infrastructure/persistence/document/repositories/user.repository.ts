@@ -142,4 +142,29 @@ export class UsersDocumentRepository implements UserRepository {
       _id: id.toString(),
     });
   }
+
+  async findByFilter(filter: FilterUserDto): Promise<NullableType<User>> {
+    const { id, status, baseRole, username, email } = filter || {};
+    const where: FilterQuery<UserSchemaClass> = {};
+    if (!!id) {
+      where['_id'] = id;
+    }
+    if (!!status) {
+      where['status'] = status;
+    }
+    if (!!baseRole) {
+      where['baseRole'] = baseRole;
+    }
+    if (!!email) {
+      where['email'] = new RegExp(email, 'i');
+    }
+    if (!!username) {
+      const regex = new RegExp(username, 'i'); // 不区分大小写的搜索
+      where['$or'] = [{ firstName: regex }, { lastName: regex }];
+    }
+    if (!Object.keys(where)) {
+      return null;
+    }
+    return this.usersModel.findOne(where) ?? null;
+  }
 }

@@ -118,7 +118,7 @@ export class AuthService {
     user.menus = Object.values(menus);
     const roleTitles: Record<number, string> = [];
     for (const role of roles) {
-      const roleType = _.findKey(BaseRoleEnum, (v) => v === Number(role.type));
+      const roleType = _.findKey(BaseRoleEnum, (v) => v === role.type);
       roleTitles[role.id] = roleType?.toLowerCase();
     }
     return {
@@ -211,7 +211,7 @@ export class AuthService {
   // }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
-    const user = await this.usersService.create({
+    const user = await this.usersService.register({
       ...dto,
       email: dto.email,
       // role: {

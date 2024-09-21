@@ -15,7 +15,7 @@ import { IPaginationOptions } from '../utils/types/pagination-options';
 import { DeepPartial } from '../utils/types/deep-partial.type';
 import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
-import _ from 'lodash';
+import { JwtPayloadType } from '@src/auth/strategies/types/jwt-payload.type';
 
 @Injectable()
 export class UsersService {
@@ -24,7 +24,7 @@ export class UsersService {
     private readonly filesService: FilesService,
   ) {}
 
-  async create(createProfileDto: CreateUserDto): Promise<User> {
+  async register(createProfileDto: CreateUserDto): Promise<User> {
     const clonedPayload = {
       provider: AuthProvidersEnum.email,
       ...createProfileDto,
@@ -64,40 +64,73 @@ export class UsersService {
       clonedPayload.photo = fileObject;
     }
 
-    if (!!clonedPayload.baseRole) {
-      const roleObject = Object.keys(BaseRoleEnum)
-        .map(String)
-        .includes(String(clonedPayload.baseRole));
-      if (!roleObject) {
-        throw new UnprocessableEntityException({
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            role: 'roleNotExists',
-          },
-        });
-      }
-    } else {
-      clonedPayload.baseRole = _.findKey(
-        BaseRoleEnum,
-        (v) => v === BaseRoleEnum.SUPPLIER,
-      );
+    clonedPayload.baseRole = BaseRoleEnum.SUPPLIER;
+
+    clonedPayload.status = UserStatusEnum.ACTIVE;
+
+    return this.usersRepository.create(clonedPayload);
+  }
+
+  async create(
+    userJWTPayload: JwtPayloadType,
+    createProfileDto: CreateUserDto,
+  ) {
+    const currentUser = await this.usersRepository.findById(userJWTPayload?.id);
+    if (!currentUser) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          user: 'Current user is invalidation',
+        },
+      });
+    }
+    const clonedPayload = {
+      provider: AuthProvidersEnum.email,
+      ...createProfileDto,
+    };
+
+    if (clonedPayload.password) {
+      const salt = await bcrypt.genSalt();
+      clonedPayload.password = await bcrypt.hash(clonedPayload.password, salt);
     }
 
-    if (!!clonedPayload.status) {
-      const statusObject = Object.values(UserStatusEnum)
-        .map(String)
-        .includes(String(clonedPayload.status));
-      if (!statusObject) {
+    if (clonedPayload.email) {
+      const userObject = await this.usersRepository.findByEmail({
+        email: clonedPayload.email ?? null,
+      });
+      if (userObject) {
         throw new UnprocessableEntityException({
           status: HttpStatus.UNPROCESSABLE_ENTITY,
           errors: {
-            status: 'statusNotExists',
+            email: 'emailAlreadyExists',
           },
         });
       }
-    } else {
-      clonedPayload.status = Number(UserStatusEnum.ACTIVE);
     }
+
+    if (clonedPayload.photo?.id) {
+      const fileObject = await this.filesService.findById(
+        clonedPayload.photo.id,
+      );
+      if (!fileObject) {
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            photo: 'imageNotExists',
+          },
+        });
+      }
+      clonedPayload.photo = fileObject;
+    }
+    if (currentUser.baseRole === BaseRoleEnum.SUPPLIER) {
+      clonedPayload.baseRole = BaseRoleEnum.SUPPLIER;
+    } else {
+      clonedPayload.baseRole = !clonedPayload.baseRole
+        ? clonedPayload.baseRole
+        : BaseRoleEnum.ADMIN;
+    }
+
+    clonedPayload.status = UserStatusEnum.ACTIVE;
 
     return this.usersRepository.create(clonedPayload);
   }
@@ -225,5 +258,9 @@ export class UsersService {
 
   async remove(id: User['id']): Promise<void> {
     await this.usersRepository.remove(id);
+  }
+
+  async findByFilter(filter: FilterUserDto) {
+    return this.usersRepository.findByFilter(filter);
   }
 }

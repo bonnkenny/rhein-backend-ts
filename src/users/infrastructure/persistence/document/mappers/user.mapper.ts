@@ -4,6 +4,8 @@ import { FileSchemaClass } from '@src/files/infrastructure/persistence/document/
 import { FileMapper } from '@src/files/infrastructure/persistence/document/mappers/file.mapper';
 import { Types } from 'mongoose';
 import { RoleMapper } from '@src/roles/infrastructure/persistence/document/mappers/role.mapper';
+// import { findKey } from 'lodash';
+// import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 
 export class UserMapper {
   static toDomain(raw: UserSchemaClass): User {
@@ -59,8 +61,9 @@ export class UserMapper {
     if (domainEntity.id && typeof domainEntity.id === 'string') {
       persistenceSchema._id = domainEntity.id;
     }
-    persistenceSchema.status = Number(domainEntity.status);
-    persistenceSchema.baseRole = Number(domainEntity.baseRole);
+    if (domainEntity.status) persistenceSchema.status = domainEntity.status;
+    if (domainEntity.baseRole)
+      persistenceSchema.baseRole = domainEntity.baseRole;
     persistenceSchema.email = domainEntity.email;
     persistenceSchema.password = domainEntity.password;
     persistenceSchema.previousPassword = domainEntity.previousPassword;

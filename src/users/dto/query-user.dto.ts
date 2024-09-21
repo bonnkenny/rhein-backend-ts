@@ -10,10 +10,38 @@ import {
 
 export class FilterUserDto {
   @ApiPropertyOptional({ type: String })
+  id?: string;
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
   // @ValidateNested({ each: true })
   // @Type(() => RoleDto)
   username?: string;
+
+  baseRole?: string;
+
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
+  email?: string;
+
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
+  firstName?: string;
+
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
+  lastName?: string;
+
+  // @ApiPropertyOptional({ type: String })
+  // @IsOptional()
+  // socialId?: string;
+  //
+  // @ApiPropertyOptional({ type: String })
+  // @IsOptional()
+  // provider?: string;
+
+  @ApiPropertyOptional({ type: Number })
+  @IsOptional()
+  status?: number;
 }
 
 export class SortUserDto extends InfinitySortDto<User> {}

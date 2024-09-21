@@ -1,5 +1,5 @@
 export enum BaseRoleEnum {
-  'SUPER' = 1,
-  'ADMIN' = 2,
-  'SUPPLIER' = 3,
+  'SUPER' = 'SUPER',
+  'ADMIN' = 'ADMIN',
+  'SUPPLIER' = 'SUPPLIER',
 }

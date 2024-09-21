@@ -2,7 +2,7 @@ import { PartialType, ApiPropertyOptional } from '@nestjs/swagger';
 import { CreateUserDto } from './create-user.dto';
 
 import { Transform } from 'class-transformer';
-import { IsEmail, IsOptional, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, MinLength } from 'class-validator';
 import { FileDto } from '@src/files/dto/file.dto';
 // import { RoleDto } from '../../roles/dto/role.dto';
 // import { StatusDto } from '@src/statuses/dto/status.dto';
@@ -39,13 +39,14 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   photo?: FileDto | null;
 
   @ApiPropertyOptional({ type: String, enum: Object.values(BaseRoleEnum) })
+  @IsEnum(Object.keys(BaseRoleEnum), { message: 'Invalid base role' })
   @IsOptional()
-  // @Type(() => RoleDto)
   baseRole?: string;
 
   @ApiPropertyOptional({ type: Number, enum: Object.values(UserStatusEnum) })
+  @IsEnum(Object.keys(UserStatusEnum), { message: 'Invalid status' })
   @IsOptional()
-  status?: number;
+  status?: string;
 
   hash?: string | null;
 }

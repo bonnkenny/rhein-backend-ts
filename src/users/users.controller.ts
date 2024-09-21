@@ -40,15 +40,16 @@ import { UsersService } from './users.service';
 // import { RolesGuard } from '../roles/roles.guard';
 // import { infinityPagination } from '../utils/infinity-pagination';
 import { infinityPagination } from '../utils/infinity-response';
-import { BaseRolesGuard } from '@src/utils/guards/base-roles.guard';
-import { BaseRoles } from '@src/utils/guards/base-roles.decorator';
-import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+// import { BaseRolesGuard } from '@src/utils/guards/base-roles.guard';
+// import { BaseRoles } from '@src/utils/guards/base-roles.decorator';
+// import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { GroupTypesEnum } from '@src/utils/enums/groups.enum';
 
 @ApiBearerAuth()
-@BaseRoles(BaseRoleEnum.ADMIN, BaseRoleEnum.SUPER)
+// @BaseRoles(BaseRoleEnum.ADMIN, BaseRoleEnum.SUPER)
 // @UseGuards(AuthGuard('jwt'), RolesGuard)
-@UseGuards(AuthGuard('jwt'), BaseRolesGuard)
+// @UseGuards(AuthGuard('jwt'), BaseRolesGuard)
+@UseGuards(AuthGuard('jwt'))
 @ApiTags('Users')
 @Controller({
   path: 'users',
@@ -66,7 +67,7 @@ export class UsersController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createProfileDto: CreateUserDto): Promise<User> {
-    return this.usersService.create(createProfileDto);
+    return this.usersService.register(createProfileDto);
   }
 
   @ApiOkResponse({

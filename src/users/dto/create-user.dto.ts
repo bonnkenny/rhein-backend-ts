@@ -4,6 +4,7 @@ import {
   IsArray,
   // decorators here
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -42,23 +43,14 @@ export class CreateUserDto {
   photo?: FileDto | null;
 
   @ApiPropertyOptional({ type: String, enum: Object.keys(BaseRoleEnum) })
+  @IsEnum(Object.keys(BaseRoleEnum), { message: 'Invalid base role' })
   @IsOptional()
-  @Transform((v) => {
-    return !!v?.value
-      ? BaseRoleEnum[v.value.toString().toUpperCase()]
-      : undefined;
-  })
   baseRole?: string;
 
-  @ApiPropertyOptional({ type: Number, enum: Object.values(UserStatusEnum) })
+  @ApiPropertyOptional({ type: String, enum: Object.values(UserStatusEnum) })
+  @IsEnum(Object.values(UserStatusEnum), { message: 'Invalid status' })
   @IsOptional()
-  @Transform((v) => {
-    return !!v?.value
-      ? UserStatusEnum[v.value.toString().toUpperCase()]
-      : undefined;
-  })
-  // @Type(() => StatusDto)
-  status?: number;
+  status?: string;
 
   @ApiPropertyOptional({ type: () => [String] })
   @IsArray()

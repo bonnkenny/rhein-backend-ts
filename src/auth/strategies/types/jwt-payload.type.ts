@@ -1,5 +1,5 @@
-import { Session } from '../../../session/domain/session';
-import { User } from '../../../users/domain/user';
+import { Session } from '@src/session/domain/session';
+import { User } from '@src/users/domain/user';
 
 export type JwtPayloadType = Pick<User, 'id' | 'baseRole'> & {
   sessionId: Session['id'];
