@@ -17,6 +17,8 @@ export class FilterUserDto {
   // @Type(() => RoleDto)
   username?: string;
 
+  @ApiPropertyOptional({ type: String })
+  @IsOptional()
   baseRole?: string;
 
   @ApiPropertyOptional({ type: String })
@@ -39,9 +41,9 @@ export class FilterUserDto {
   // @IsOptional()
   // provider?: string;
 
-  @ApiPropertyOptional({ type: Number })
+  @ApiPropertyOptional({ type: String })
   @IsOptional()
-  status?: number;
+  status?: string;
 }
 
 export class SortUserDto extends InfinitySortDto<User> {}

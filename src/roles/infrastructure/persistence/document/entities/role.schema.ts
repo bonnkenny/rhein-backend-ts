@@ -26,11 +26,11 @@ export class RoleSchemaClass extends EntityDocumentHelper {
   @ApiProperty()
   @Prop({
     required: true,
-    type: Number,
-    enum: Object.values(BaseRoleEnum).map(Number),
+    type: String,
+    enum: Object.values(BaseRoleEnum),
     default: BaseRoleEnum.ADMIN,
   })
-  type: number;
+  type: string;
 
   @ApiProperty()
   @Prop({ type: [{ type: Types.ObjectId, ref: MenuSchemaClass.name }] })

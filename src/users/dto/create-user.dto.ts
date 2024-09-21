@@ -5,6 +5,7 @@ import {
   // decorators here
   IsEmail,
   IsEnum,
+  IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -39,12 +40,16 @@ export class CreateUserDto {
   lastName: string | null;
 
   @ApiPropertyOptional({ type: () => FileDto })
+  @IsMongoId()
   @IsOptional()
-  photo?: FileDto | null;
+  avatar?: FileDto | null;
 
   @ApiPropertyOptional({ type: String, enum: Object.keys(BaseRoleEnum) })
   @IsEnum(Object.keys(BaseRoleEnum), { message: 'Invalid base role' })
   @IsOptional()
+  @Transform(({ value }) => {
+    return !value ? BaseRoleEnum.SUPPLIER : value;
+  })
   baseRole?: string;
 
   @ApiPropertyOptional({ type: String, enum: Object.values(UserStatusEnum) })
@@ -55,6 +60,7 @@ export class CreateUserDto {
   @ApiPropertyOptional({ type: () => [String] })
   @IsArray()
   @IsString({ each: true })
+  @IsOptional()
   roleIds?: string[];
 
   hash?: string | null;

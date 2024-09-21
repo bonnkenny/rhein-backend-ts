@@ -217,7 +217,7 @@ export class AuthService {
       // role: {
       //   id: RoleEnum.user,
       // },
-      baseRole: _.findKey(BaseRoleEnum, (v) => v === BaseRoleEnum.SUPPLIER),
+      baseRole: dto.baseRole,
       status: UserStatusEnum.ACTIVE,
     });
 

@@ -11,6 +11,7 @@ import {
   HttpStatus,
   HttpCode,
   SerializeOptions,
+  Request,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -30,6 +31,8 @@ import { AuthGuard } from '@nestjs/passport';
 //   InfinityPaginationResponseDto,
 // } from '../utils/dto/infinity-pagination-response.dto';
 import {
+  InfinityApiResponse,
+  InfinityApiResponseDto,
   InfinityPaginationResponse,
   InfinityPaginationResponseDto,
 } from '../utils/dto/infinity-base-response.dto';
@@ -39,11 +42,16 @@ import { User } from './domain/user';
 import { UsersService } from './users.service';
 // import { RolesGuard } from '../roles/roles.guard';
 // import { infinityPagination } from '../utils/infinity-pagination';
-import { infinityPagination } from '../utils/infinity-response';
+import {
+  infinityPagination,
+  infinityResponse,
+} from '../utils/infinity-response';
 // import { BaseRolesGuard } from '@src/utils/guards/base-roles.guard';
 // import { BaseRoles } from '@src/utils/guards/base-roles.decorator';
 // import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { GroupTypesEnum } from '@src/utils/enums/groups.enum';
+// import { OrderMapper } from '@src/orders/infrastructure/persistence/document/mappers/order.mapper';
+// import { UserMapper } from '@src/users/infrastructure/persistence/document/mappers/user.mapper';
 
 @ApiBearerAuth()
 // @BaseRoles(BaseRoleEnum.ADMIN, BaseRoleEnum.SUPER)
@@ -59,15 +67,19 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiCreatedResponse({
-    type: User,
+    type: InfinityApiResponse(User),
   })
   @SerializeOptions({
     groups: [GroupTypesEnum.ADMIN],
   })
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createProfileDto: CreateUserDto): Promise<User> {
-    return this.usersService.register(createProfileDto);
+  async create(
+    @Request() request,
+    @Body() createProfileDto: CreateUserDto,
+  ): Promise<InfinityApiResponseDto<User>> {
+    const user = await this.usersService.create(request.user, createProfileDto);
+    return infinityResponse(user);
   }
 
   @ApiOkResponse({

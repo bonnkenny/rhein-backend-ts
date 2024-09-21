@@ -16,6 +16,8 @@ import { DeepPartial } from '../utils/types/deep-partial.type';
 import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { JwtPayloadType } from '@src/auth/strategies/types/jwt-payload.type';
+import { errorBody } from '@src/utils/infinity-response';
+import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
 
 @Injectable()
 export class UsersService {
@@ -36,7 +38,8 @@ export class UsersService {
     }
 
     if (clonedPayload.email) {
-      const userObject = await this.usersRepository.findByEmail({
+      const userObject = await this.usersRepository.findByFilter({
+        baseRole: BaseRoleEnum.SUPPLIER,
         email: clonedPayload.email ?? null,
       });
       if (userObject) {
@@ -49,9 +52,9 @@ export class UsersService {
       }
     }
 
-    if (clonedPayload.photo?.id) {
+    if (clonedPayload.avatar?.id) {
       const fileObject = await this.filesService.findById(
-        clonedPayload.photo.id,
+        clonedPayload.avatar.id,
       );
       if (!fileObject) {
         throw new UnprocessableEntityException({
@@ -61,7 +64,7 @@ export class UsersService {
           },
         });
       }
-      clonedPayload.photo = fileObject;
+      clonedPayload.avatar = fileObject;
     }
 
     clonedPayload.baseRole = BaseRoleEnum.SUPPLIER;
@@ -74,16 +77,16 @@ export class UsersService {
   async create(
     userJWTPayload: JwtPayloadType,
     createProfileDto: CreateUserDto,
-  ) {
-    const currentUser = await this.usersRepository.findById(userJWTPayload?.id);
-    if (!currentUser) {
-      throw new UnprocessableEntityException({
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
-        errors: {
-          user: 'Current user is invalidation',
-        },
-      });
-    }
+  ): Promise<User> {
+    // const currentUser = await this.usersRepository.findById(userJWTPayload?.id);
+    // if (!currentUser) {
+    //   throw new UnprocessableEntityException({
+    //     status: HttpStatus.UNPROCESSABLE_ENTITY,
+    //     errors: {
+    //       user: 'Current user is invalidation',
+    //     },
+    //   });
+    // }
     const clonedPayload = {
       provider: AuthProvidersEnum.email,
       ...createProfileDto,
@@ -94,43 +97,34 @@ export class UsersService {
       clonedPayload.password = await bcrypt.hash(clonedPayload.password, salt);
     }
 
-    if (clonedPayload.email) {
-      const userObject = await this.usersRepository.findByEmail({
-        email: clonedPayload.email ?? null,
-      });
-      if (userObject) {
-        throw new UnprocessableEntityException({
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            email: 'emailAlreadyExists',
-          },
-        });
-      }
-    }
-
-    if (clonedPayload.photo?.id) {
+    if (clonedPayload.avatar?.id) {
       const fileObject = await this.filesService.findById(
-        clonedPayload.photo.id,
+        clonedPayload.avatar.id,
       );
       if (!fileObject) {
-        throw new UnprocessableEntityException({
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            photo: 'imageNotExists',
-          },
-        });
+        throw new UnprocessableEntityException(errorBody('File not found'));
       }
-      clonedPayload.photo = fileObject;
+      clonedPayload.avatar = fileObject;
     }
-    if (currentUser.baseRole === BaseRoleEnum.SUPPLIER) {
+    if (userJWTPayload.baseRole === BaseRoleEnum.SUPPLIER) {
       clonedPayload.baseRole = BaseRoleEnum.SUPPLIER;
     } else {
-      clonedPayload.baseRole = !clonedPayload.baseRole
+      clonedPayload.baseRole = !!clonedPayload.baseRole
         ? clonedPayload.baseRole
         : BaseRoleEnum.ADMIN;
     }
+    if (clonedPayload.email) {
+      const userObject = await this.usersRepository.findByFilter({
+        baseRole: clonedPayload.baseRole,
+        email: clonedPayload.email ?? null,
+      });
+      if (userObject) {
+        throw new BadRequestException(errorBody('Email has been registered!'));
+      }
+    }
 
     clonedPayload.status = UserStatusEnum.ACTIVE;
+    console.log('cloned payload', clonedPayload);
 
     return this.usersRepository.create(clonedPayload);
   }
