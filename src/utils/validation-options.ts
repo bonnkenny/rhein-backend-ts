@@ -21,11 +21,16 @@ function generateErrors(errors: ValidationError[]) {
 const validationOptions: ValidationPipeOptions = {
   transform: true,
   whitelist: true,
+  stopAtFirstError: true,
   errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
   exceptionFactory: (errors: ValidationError[]) => {
     return new UnprocessableEntityException({
-      status: HttpStatus.UNPROCESSABLE_ENTITY,
+      // status: HttpStatus.UNPROCESSABLE_ENTITY,
       errors: generateErrors(errors),
+      success: false,
+      message: generateErrors(errors)
+        ? Object.values(generateErrors(errors))[0]
+        : 'Validator error',
     });
   },
 };
