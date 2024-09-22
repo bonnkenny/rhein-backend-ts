@@ -23,7 +23,8 @@ export class OrderMapper {
     if (raw.parentId) {
       domainEntity.parentId = raw?.parentId?.toString();
     }
-
+    domainEntity.fillStatus = raw.fillStatus;
+    domainEntity.checkStatus = raw.checkStatus;
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
     // console.log('order domain', domainEntity);
@@ -40,6 +41,12 @@ export class OrderMapper {
     }
     if (domainEntity.userId) {
       persistenceSchema.userId = new Types.ObjectId(domainEntity.userId);
+    }
+    if (domainEntity.checkStatus) {
+      persistenceSchema.checkStatus = domainEntity.checkStatus;
+    }
+    if (domainEntity.fillStatus) {
+      persistenceSchema.fillStatus = domainEntity.fillStatus;
     }
     persistenceSchema.orderNo = domainEntity.orderNo;
     persistenceSchema.email = domainEntity?.email || '';

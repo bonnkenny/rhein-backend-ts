@@ -31,7 +31,8 @@ import {
   infinityPagination,
   infinityResponse,
 } from '../utils/infinity-response';
-import { FindAllOrdersDto } from './dto/find-all-orders.dto';
+import { FilterOrdersDto } from './dto/filter-orders.dto';
+import { NullableType } from '@src/utils/types/nullable.type';
 
 @ApiTags('Orders')
 @ApiBearerAuth()
@@ -60,19 +61,11 @@ export class OrdersController {
     type: InfinityPaginationResponse(Order),
   })
   async findAll(
-    @Query() query: FindAllOrdersDto,
+    @Query() query: FilterOrdersDto,
   ): Promise<InfinityPaginationResponseDto<Order>> {
-    const page = query?.page ?? 1;
-    let limit = query?.limit ?? 10;
-    if (limit > 50) {
-      limit = 50;
-    }
-    const [items, total] = await this.ordersService.findAllWithPagination({
-      paginationOptions: {
-        page,
-        limit,
-      },
-    });
+    const { page, limit } = query;
+    const [items, total] =
+      await this.ordersService.findAllWithPagination(query);
     return infinityPagination(items, total, { page, limit });
   }
 
@@ -83,10 +76,12 @@ export class OrdersController {
     required: true,
   })
   @ApiOkResponse({
-    type: Order,
+    type: InfinityApiResponse(Order),
   })
-  findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+  ): InfinityApiResponseDto<Promise<NullableType<Order>>> {
+    return infinityResponse(this.ordersService.findOne(id));
   }
 
   @Patch(':id')
@@ -96,10 +91,13 @@ export class OrdersController {
     required: true,
   })
   @ApiOkResponse({
-    type: Order,
+    type: InfinityApiResponse(Order),
   })
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(id, updateOrderDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateOrderDto: UpdateOrderDto,
+  ): InfinityApiResponseDto<Promise<Order | null>> {
+    return infinityResponse(this.ordersService.update(id, updateOrderDto));
   }
 
   @Delete(':id')

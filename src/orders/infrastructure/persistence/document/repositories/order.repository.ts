@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { OrderSchemaClass } from '../entities/order.schema';
 import { OrderRepository } from '../../order.repository';
 import { Order } from '../../../../domain/order';
 import { OrderMapper } from '../mappers/order.mapper';
-import { IPaginationOptions } from '@src/utils/types/pagination-options';
+import { FilterOrdersDto } from '@src/orders/dto/filter-orders.dto';
 
 @Injectable()
 export class OrderDocumentRepository implements OrderRepository {
@@ -17,24 +17,34 @@ export class OrderDocumentRepository implements OrderRepository {
 
   async create(data: Order): Promise<Order> {
     const persistenceModel = OrderMapper.toPersistence(data);
-    persistenceModel.fillStatus = 1;
-    persistenceModel.checkStatus = 1;
-
     const createdEntity = new this.orderModel(persistenceModel);
     const entityObject = await createdEntity.save();
     return OrderMapper.toDomain(entityObject);
   }
 
-  async findAllWithPagination({
-    paginationOptions,
-  }: {
-    paginationOptions: IPaginationOptions;
-  }): Promise<[Order[], number]> {
-    const total = await this.orderModel.countDocuments();
+  async findAllWithPagination(
+    filterOrderOptions: FilterOrdersDto,
+  ): Promise<[Order[], number]> {
+    const { page, limit } = filterOrderOptions;
+
+    const where: FilterQuery<OrderSchemaClass> = {};
+    if (filterOrderOptions.checkStatus) {
+      where.checkStatus = filterOrderOptions.checkStatus;
+    }
+    if (filterOrderOptions.fillStatus) {
+      where.fillStatus = filterOrderOptions.fillStatus;
+    }
+    if (filterOrderOptions.parentId) {
+      where.parentId = filterOrderOptions.parentId;
+    }
+    if (filterOrderOptions.userId) {
+      where.userId = filterOrderOptions.userId;
+    }
+    const total = await this.orderModel.find(where).countDocuments();
     const entityObjects = await this.orderModel
-      .find()
-      .skip((paginationOptions.page - 1) * paginationOptions.limit)
-      .limit(paginationOptions.limit);
+      .find(where)
+      .skip((page - 1) * limit)
+      .limit(limit);
 
     return [
       entityObjects.map((entityObject) => OrderMapper.toDomain(entityObject)),

@@ -12,7 +12,10 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
+import {
+  OrderFillStatusEnum,
+  OrderStatusEnum,
+} from '@src/utils/enums/order-type.enum';
 
 export class UpdateOrderDto extends PartialType(CreateOrderDto) {
   // Don't forget to use the class-validator decorators in the DTO properties.
@@ -33,18 +36,18 @@ export class UpdateOrderDto extends PartialType(CreateOrderDto) {
   @IsOptional()
   orderName?: string;
 
-  @ApiProperty({
-    type: String,
-    enum: Object.keys(OrderTypeEnum),
-  })
-  @IsEnum(Object.keys(OrderTypeEnum), {
-    message:
-      'Invalid order type,order type must be one of the following values:' +
-      Object.keys(OrderTypeEnum).join(' '),
-  })
-  @IsNotEmpty()
-  @IsOptional()
-  orderType?: string;
+  // @ApiProperty({
+  //   type: String,
+  //   enum: Object.keys(OrderTypeEnum),
+  // })
+  // @IsEnum(Object.keys(OrderTypeEnum), {
+  //   message:
+  //     'Invalid order type,order type must be one of the following values:' +
+  //     Object.keys(OrderTypeEnum).join(' '),
+  // })
+  // @IsNotEmpty()
+  // @IsOptional()
+  // orderType?: string;
 
   @ApiProperty({
     type: String,
@@ -65,13 +68,18 @@ export class UpdateOrderDto extends PartialType(CreateOrderDto) {
   email?: string;
 
   @ApiProperty({
-    type: Number,
-    enum: [1, 2, -1],
+    type: String,
+    enum: Object.keys(OrderStatusEnum),
   })
-  checkStatus?: number;
+  @IsEnum(Object.keys(OrderStatusEnum))
+  @IsOptional()
+  checkStatus?: string;
+
   @ApiProperty({
-    type: Number,
-    enum: [1, 2, 3, -1],
+    type: String,
+    enum: Object.keys(OrderFillStatusEnum),
   })
-  fillStatus?: number;
+  @IsEnum(Object.keys(OrderFillStatusEnum))
+  @IsOptional()
+  fillStatus?: string;
 }

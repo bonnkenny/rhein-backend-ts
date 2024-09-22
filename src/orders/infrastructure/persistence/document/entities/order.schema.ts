@@ -2,7 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { now, HydratedDocument, Types } from 'mongoose';
 import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
-import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
+import {
+  OrderFillStatusEnum,
+  OrderStatusEnum,
+  OrderTypeEnum,
+} from '@src/utils/enums/order-type.enum';
 import { UserSchemaClass } from '@src/users/infrastructure/persistence/document/entities/user.schema';
 
 export type OrderSchemaDocument = HydratedDocument<OrderSchemaClass>;
@@ -32,7 +36,7 @@ export class OrderSchemaClass extends EntityDocumentHelper {
   orderType: string;
 
   @ApiProperty({ type: String })
-  @Prop({ required: true, default: null })
+  @Prop({ default: null })
   email: string;
 
   @ApiProperty({ type: Types.ObjectId })
@@ -43,13 +47,27 @@ export class OrderSchemaClass extends EntityDocumentHelper {
   @Prop({ maxlength: 1000 })
   remark: string;
 
-  @ApiProperty({ type: Number })
-  @Prop({ default: 0, nullable: false })
-  fillStatus: number;
+  @ApiProperty({
+    type: String,
+    enum: Object.keys(OrderFillStatusEnum),
+  })
+  @Prop({
+    default: OrderFillStatusEnum.PENDING,
+    enum: Object.keys(OrderFillStatusEnum),
+    nullable: false,
+  })
+  fillStatus: string;
 
-  @ApiProperty({ type: Number })
-  @Prop({ default: 0, nullable: false })
-  checkStatus: number;
+  @ApiProperty({
+    type: String,
+    enum: Object.keys(OrderStatusEnum),
+  })
+  @Prop({
+    default: OrderStatusEnum.PENDING,
+    enum: Object.keys(OrderStatusEnum),
+    nullable: false,
+  })
+  checkStatus: string;
 
   @ApiProperty()
   @Prop()

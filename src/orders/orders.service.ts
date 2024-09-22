@@ -2,7 +2,6 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderRepository } from './infrastructure/persistence/order.repository';
-import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Order } from './domain/order';
 import { UsersService } from '../users/users.service';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
@@ -11,6 +10,7 @@ import { BadRequestException } from '@nestjs/common/exceptions/bad-request.excep
 import { OrderMaterialTemplatesService } from '@src/order-material-templates/order-material-templates.service';
 import { OrderMaterialsService } from '@src/order-materials/order-materials.service';
 import { OrderMaterial } from '@src/order-materials/domain/order-material';
+import { FilterOrdersDto } from '@src/orders/dto/filter-orders.dto';
 
 @Injectable()
 export class OrdersService {
@@ -67,17 +67,8 @@ export class OrdersService {
     };
   }
 
-  findAllWithPagination({
-    paginationOptions,
-  }: {
-    paginationOptions: IPaginationOptions;
-  }) {
-    return this.orderRepository.findAllWithPagination({
-      paginationOptions: {
-        page: paginationOptions.page,
-        limit: paginationOptions.limit,
-      },
-    });
+  findAllWithPagination(filterOrderOptions: FilterOrdersDto) {
+    return this.orderRepository.findAllWithPagination(filterOrderOptions);
   }
 
   findOne(id: Order['id']) {
