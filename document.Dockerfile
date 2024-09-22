@@ -1,6 +1,8 @@
 FROM node:20.17.0-alpine
 
 RUN apk add --no-cache bash
+RUN npm config set registry https://registry.npmmirror.com
+
 RUN npm i -g @nestjs/cli typescript ts-node
 
 COPY package*.json /tmp/app/
