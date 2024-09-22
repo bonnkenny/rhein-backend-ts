@@ -38,8 +38,8 @@ export class OrderMaterialSchemaClass extends EntityDocumentHelper {
   subDescription: LabelType | null;
 
   @ApiProperty()
-  @Prop({ default: false, nullable: false })
-  isRequired: boolean;
+  @Prop({ default: false, type: Boolean, nullable: false })
+  isOptional: boolean;
 
   @ApiProperty()
   @Prop({

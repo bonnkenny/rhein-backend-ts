@@ -57,6 +57,7 @@ export class OrdersService {
           description: template.description,
           columns: template.columns,
           filledAt: null,
+          isOptional: template.isOptional,
         });
         materials.push(material);
       }

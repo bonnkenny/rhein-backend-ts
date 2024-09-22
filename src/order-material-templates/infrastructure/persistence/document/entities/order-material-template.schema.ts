@@ -33,13 +33,21 @@ export class OrderMaterialTemplateSchemaClass extends EntityDocumentHelper {
   @Prop({ default: null, type: { en: String, ch: String } })
   description: LabelType | null;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: LabelTypeClass,
+    default: null,
+    nullable: true,
+  })
   @Prop({ default: null, type: { en: String, ch: String } })
   subDescription: LabelType | null;
 
-  @ApiProperty()
-  @Prop({ default: false, nullable: false })
-  isRequired: boolean;
+  @ApiProperty({
+    type: Boolean,
+    default: false,
+    nullable: false,
+  })
+  @Prop({ default: false, type: Boolean, nullable: false })
+  isOptional: boolean;
 
   @ApiProperty()
   @Prop({

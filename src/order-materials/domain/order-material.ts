@@ -38,6 +38,11 @@ export class OrderMaterial {
   subDescription?: LabelType | null;
 
   @ApiProperty({
+    type: Boolean,
+  })
+  isOptional?: boolean;
+
+  @ApiProperty({
     type: [[OrderMaterialColumn]],
   })
   columns: Array<Array<OrderMaterialColumn>>;

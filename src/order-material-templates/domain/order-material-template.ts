@@ -41,6 +41,11 @@ export class OrderMaterialTemplate {
   @ApiProperty()
   filledAt: Date | null;
 
+  @ApiProperty({
+    type: Boolean,
+  })
+  isOptional?: boolean;
+
   @ApiProperty()
   createdAt: Date;
   @ApiProperty()

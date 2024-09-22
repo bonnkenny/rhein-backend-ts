@@ -57,6 +57,7 @@ export class OrderMaterialTemplateMapper {
     domainEntity.filledAt = raw.filledAt ?? null;
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
+    domainEntity.isOptional = raw.isOptional;
 
     // console.log('domainEntity', domainEntity);
 
@@ -82,6 +83,7 @@ export class OrderMaterialTemplateMapper {
     persistenceSchema.subDescription = domainEntity.subDescription ?? null;
 
     persistenceSchema.filledAt = domainEntity.filledAt ?? null;
+    persistenceSchema.isOptional = domainEntity.isOptional ?? false;
     persistenceSchema.createdAt = domainEntity.createdAt;
     persistenceSchema.updatedAt = domainEntity.updatedAt;
 

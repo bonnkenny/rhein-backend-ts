@@ -55,7 +55,9 @@ export class OrderMaterialMapper {
         en: raw.subDescription?.en ?? '',
       };
     }
+
     domainEntity.filledAt = raw.filledAt ?? null;
+    domainEntity.isOptional = raw.isOptional;
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
 
@@ -82,7 +84,7 @@ export class OrderMaterialMapper {
     persistenceSchema.description = domainEntity.description;
 
     persistenceSchema.subDescription = domainEntity.subDescription ?? null;
-
+    persistenceSchema.isOptional = domainEntity.isOptional ?? false;
     persistenceSchema.filledAt = domainEntity.filledAt ?? null;
     persistenceSchema.createdAt = domainEntity.createdAt;
     persistenceSchema.updatedAt = domainEntity.updatedAt;
