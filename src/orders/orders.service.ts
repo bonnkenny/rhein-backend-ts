@@ -11,6 +11,9 @@ import { OrderMaterialTemplatesService } from '@src/order-material-templates/ord
 import { OrderMaterialsService } from '@src/order-materials/order-materials.service';
 import { OrderMaterial } from '@src/order-materials/domain/order-material';
 import { FilterOrdersDto } from '@src/orders/dto/filter-orders.dto';
+import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
+import { JwtPayloadType } from '@src/auth/strategies/types/jwt-payload.type';
+import { random } from 'lodash';
 
 @Injectable()
 export class OrdersService {
@@ -24,6 +27,9 @@ export class OrdersService {
 
   async create(createOrderDto: CreateOrderDto) {
     const { userId, parentId } = createOrderDto;
+    if (!userId) {
+      throw new BadRequestException(errorBody('UserId is required!'));
+    }
 
     const userCheck = await this.usersService.findByFilter({
       id: userId,
@@ -38,11 +44,45 @@ export class OrdersService {
         throw new BadRequestException(errorBody('Parent not fount!'));
       }
     }
-    return this.orderRepository.create(createOrderDto);
+    return this.orderRepository.create({
+      ...createOrderDto,
+      userId: userId.toString(),
+    });
   }
 
-  async createWithMaterial(createOrderDto: CreateOrderDto) {
-    const order = await this.create(createOrderDto);
+  async createWithMaterial(
+    user: JwtPayloadType,
+    createOrderDto: CreateOrderDto,
+  ) {
+    console.log('create order dto', createOrderDto);
+    const { email } = createOrderDto;
+    const orderUser = await this.usersService.findByFilter({
+      email,
+      baseRole: BaseRoleEnum.SUPPLIER,
+    });
+    let orderUserId: string;
+    if (!orderUser) {
+      const { password } = createOrderDto;
+      if (!password) {
+        throw new BadRequestException(errorBody('Password is required!'));
+      }
+      const createOrderUser = await this.usersService.create(user, {
+        email,
+        baseRole: BaseRoleEnum.SUPPLIER,
+        status: UserStatusEnum.ACTIVE,
+        password: password,
+        provider: 'email',
+        firstName: 'Supplier',
+        lastName: random(1000, 9999).toString(),
+      });
+      orderUserId = createOrderUser?.id.toString();
+    } else {
+      orderUserId = orderUser?.id.toString();
+    }
+    const order = await this.create({
+      ...createOrderDto,
+      userId: orderUserId,
+    });
     const orderType = order.orderType;
     const templates = await this.orderMaterialTemplateService.findAll({
       orderType,

@@ -15,8 +15,8 @@ export class CreateOrderDto {
   @ApiProperty({
     type: String,
   })
-  @IsNotEmpty()
   @MaxLength(100, { message: 'OrderNo is too long' })
+  @IsNotEmpty()
   orderNo: string;
 
   @ApiProperty({
@@ -53,9 +53,8 @@ export class CreateOrderDto {
   @ApiProperty({
     type: String,
   })
-  @IsOptional()
   @IsEmail()
-  email?: string;
+  email: string;
 
   @ApiProperty({
     type: String,
@@ -63,8 +62,15 @@ export class CreateOrderDto {
   @IsMongoId()
   @IsString()
   @IsNotEmpty({ message: 'User id is required' })
-  userId: string;
+  @IsOptional()
+  userId?: string;
 
+  @ApiProperty({
+    type: String,
+  })
+  @IsNotEmpty()
+  @IsOptional()
+  password: string;
   // @ApiProperty({
   //   type: Number,
   //   enum: [1, 2, -1],

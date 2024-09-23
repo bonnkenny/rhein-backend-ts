@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  Request,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -49,9 +50,14 @@ export class OrdersController {
     type: InfinityApiResponse(Order),
   })
   async create(
+    @Request() request,
     @Body() createOrderDto: CreateOrderDto,
   ): Promise<InfinityApiResponseDto<Order>> {
-    const order = await this.ordersService.createWithMaterial(createOrderDto);
+    console.log('createOrderDto', createOrderDto);
+    const order = await this.ordersService.createWithMaterial(
+      request.user,
+      createOrderDto,
+    );
     // console.log('order', order);
     return infinityResponse(order);
   }
