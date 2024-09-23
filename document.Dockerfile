@@ -19,6 +19,6 @@ RUN sed -i 's/\r//g' /opt/startup.document.dev.sh
 
 WORKDIR /usr/src/app
 RUN if [ ! -f .env ]; then cp env-example-document .env; fi
-RUN npm run build
+#RUN npm run build
 
 CMD ["/opt/startup.document.dev.sh"]
