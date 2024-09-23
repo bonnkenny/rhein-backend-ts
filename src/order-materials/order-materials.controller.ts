@@ -54,18 +54,9 @@ export class OrderMaterialsController {
   async findAll(
     @Query() query: FindAllOrderMaterialsDto,
   ): Promise<InfinityPaginationResponseDto<OrderMaterial>> {
-    const page = query?.page ?? 1;
-    let limit = query?.limit ?? 10;
-    if (limit > 50) {
-      limit = 50;
-    }
+    const { page, limit } = query;
     const [items, total] =
-      await this.orderMaterialsService.findAllWithPagination({
-        paginationOptions: {
-          page,
-          limit,
-        },
-      });
+      await this.orderMaterialsService.findAllWithPagination(query);
     return infinityPagination(items, total, { page, limit });
   }
 

@@ -89,6 +89,8 @@ export class OrderMaterialMapper {
     persistenceSchema.createdAt = domainEntity.createdAt;
     persistenceSchema.updatedAt = domainEntity.updatedAt;
 
+    console.log('order material persistenceSchema >>', persistenceSchema);
+
     return persistenceSchema;
   }
 }

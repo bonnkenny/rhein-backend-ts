@@ -2,11 +2,11 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateOrderMaterialDto } from './dto/create-order-material.dto';
 import { UpdateOrderMaterialDto } from './dto/update-order-material.dto';
 import { OrderMaterialRepository } from './infrastructure/persistence/order-material.repository';
-import { IPaginationOptions } from '../utils/types/pagination-options';
 import { OrderMaterial } from './domain/order-material';
 import { OrdersService } from '@src/orders/orders.service';
 import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
 import { errorBody } from '@src/utils/infinity-response';
+import { FindAllOrderMaterialsDto } from '@src/order-materials/dto/find-all-order-materials.dto';
 
 @Injectable()
 export class OrderMaterialsService {
@@ -26,17 +26,8 @@ export class OrderMaterialsService {
     return this.orderMaterialRepository.create(createOrderMaterialDto);
   }
 
-  findAllWithPagination({
-    paginationOptions,
-  }: {
-    paginationOptions: IPaginationOptions;
-  }) {
-    return this.orderMaterialRepository.findAllWithPagination({
-      paginationOptions: {
-        page: paginationOptions.page,
-        limit: paginationOptions.limit,
-      },
-    });
+  findAllWithPagination(filterOptions: FindAllOrderMaterialsDto) {
+    return this.orderMaterialRepository.findAllWithPagination(filterOptions);
   }
 
   findOne(id: OrderMaterial['id']) {
