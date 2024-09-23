@@ -42,6 +42,8 @@ services:
      - ${APP_PORT}:${APP_PORT}
    volumes:
      - .:/usr/src/app
+     - node_modules:/usr/src/app/node_modules
 
 volumes:
   boilerplate-mongo-db:
+  node_modules:
