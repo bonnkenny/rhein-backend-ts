@@ -19,6 +19,7 @@ export class OrderMapper {
     }
     domainEntity.email = raw.email;
     domainEntity.userId = raw?.userId.toString();
+    domainEntity.fromUserId = raw?.fromUserId.toString();
     domainEntity.parentId = null;
     if (raw.parentId) {
       domainEntity.parentId = raw?.parentId?.toString();
@@ -41,6 +42,11 @@ export class OrderMapper {
     }
     if (domainEntity.userId) {
       persistenceSchema.userId = new Types.ObjectId(domainEntity.userId);
+    }
+    if (domainEntity.fromUserId) {
+      persistenceSchema.fromUserId = new Types.ObjectId(
+        domainEntity.fromUserId,
+      );
     }
     if (domainEntity.checkStatus) {
       persistenceSchema.checkStatus = domainEntity.checkStatus;

@@ -51,6 +51,11 @@ export class Order {
 
   @ApiProperty({
     type: String,
+  })
+  fromUserId: string;
+
+  @ApiProperty({
+    type: String,
     enum: Object.keys(OrderStatusEnum),
   })
   @IsEnum(Object.keys(OrderStatusEnum))

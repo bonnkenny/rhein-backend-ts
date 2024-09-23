@@ -43,6 +43,10 @@ export class OrderSchemaClass extends EntityDocumentHelper {
   @Prop({ required: true, type: Types.ObjectId, ref: UserSchemaClass.name })
   userId: Types.ObjectId;
 
+  @ApiProperty({ type: Types.ObjectId })
+  @Prop({ required: true, type: Types.ObjectId, ref: UserSchemaClass.name })
+  fromUserId: Types.ObjectId;
+
   @ApiProperty()
   @Prop({ maxlength: 1000 })
   remark: string;

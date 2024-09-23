@@ -25,7 +25,7 @@ export class OrdersService {
     private orderMaterialService: OrderMaterialsService,
   ) {}
 
-  async create(createOrderDto: CreateOrderDto) {
+  async create(user: JwtPayloadType, createOrderDto: CreateOrderDto) {
     const { userId, parentId } = createOrderDto;
     if (!userId) {
       throw new BadRequestException(errorBody('UserId is required!'));
@@ -47,6 +47,7 @@ export class OrdersService {
     return this.orderRepository.create({
       ...createOrderDto,
       userId: userId.toString(),
+      fromUserId: user.id.toString(),
     });
   }
 
@@ -54,7 +55,7 @@ export class OrdersService {
     user: JwtPayloadType,
     createOrderDto: CreateOrderDto,
   ) {
-    console.log('create order dto', createOrderDto);
+    // console.log('create order dto', createOrderDto);
     const { email } = createOrderDto;
     const orderUser = await this.usersService.findByFilter({
       email,
@@ -77,7 +78,7 @@ export class OrdersService {
       });
       orderUserId = createOrderUser?.id.toString();
     }
-    const order = await this.create({
+    const order = await this.create(user, {
       ...createOrderDto,
       userId: orderUserId,
     });
@@ -89,7 +90,7 @@ export class OrdersService {
     if (templates.length) {
       for (const template of templates) {
         const material = await this.orderMaterialService.create({
-          orderId: order.id,
+          orderId: order.id.toString(),
           orderType: orderType,
           label: template.label,
           description: template.description,

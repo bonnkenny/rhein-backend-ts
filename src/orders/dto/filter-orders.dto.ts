@@ -25,6 +25,14 @@ export class FilterOrdersDto extends InfinityFindAllDto {
 
   @ApiProperty({
     type: String,
+    description: 'From user id',
+  })
+  @IsMongoId()
+  @IsOptional()
+  fromUserId?: string;
+
+  @ApiProperty({
+    type: String,
     enum: Object.keys(OrderStatusEnum),
   })
   @IsEnum(Object.keys(OrderStatusEnum))
