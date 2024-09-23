@@ -68,7 +68,8 @@ export class CreateOrderDto {
   @ApiProperty({
     type: String,
   })
-  @IsNotEmpty()
+  @MaxLength(18, { message: 'Password is too long' })
+  @IsString()
   @IsOptional()
   password: string;
   // @ApiProperty({

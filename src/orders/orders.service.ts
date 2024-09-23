@@ -60,7 +60,7 @@ export class OrdersService {
       email,
       baseRole: BaseRoleEnum.SUPPLIER,
     });
-    let orderUserId: string;
+    let orderUserId: string | null | undefined = orderUser?.id.toString();
     if (!orderUser) {
       const { password } = createOrderDto;
       if (!password) {
@@ -76,8 +76,6 @@ export class OrdersService {
         lastName: random(1000, 9999).toString(),
       });
       orderUserId = createOrderUser?.id.toString();
-    } else {
-      orderUserId = orderUser?.id.toString();
     }
     const order = await this.create({
       ...createOrderDto,
