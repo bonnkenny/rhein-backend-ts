@@ -19,7 +19,7 @@ export class OrderMapper {
     }
     domainEntity.email = raw.email;
     domainEntity.userId = raw?.userId.toString();
-    domainEntity.fromUserId = raw?.fromUserId.toString();
+    domainEntity.fromUserId = raw?.fromUserId?.toString() || null;
     domainEntity.parentId = null;
     if (raw.parentId) {
       domainEntity.parentId = raw?.parentId?.toString();
