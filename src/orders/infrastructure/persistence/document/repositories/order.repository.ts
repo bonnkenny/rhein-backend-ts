@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, Types } from 'mongoose';
 import { OrderSchemaClass } from '../entities/order.schema';
 import { OrderRepository } from '../../order.repository';
 import { Order } from '../../../../domain/order';
@@ -26,7 +26,6 @@ export class OrderDocumentRepository implements OrderRepository {
     filterOrderOptions: FilterOrdersDto,
   ): Promise<[Order[], number]> {
     const { page, limit } = filterOrderOptions;
-
     const where: FilterQuery<OrderSchemaClass> = {};
     if (filterOrderOptions.checkStatus) {
       where.checkStatus = filterOrderOptions.checkStatus;
@@ -35,10 +34,10 @@ export class OrderDocumentRepository implements OrderRepository {
       where.fillStatus = filterOrderOptions.fillStatus;
     }
     if (filterOrderOptions.parentId) {
-      where.parentId = filterOrderOptions.parentId;
+      where.parentId = new Types.ObjectId(filterOrderOptions.parentId);
     }
     if (filterOrderOptions.userId) {
-      where.userId = filterOrderOptions.userId;
+      where.userId = new Types.ObjectId(filterOrderOptions.userId);
     }
     const total = await this.orderModel.find(where).countDocuments();
     const entityObjects = await this.orderModel
