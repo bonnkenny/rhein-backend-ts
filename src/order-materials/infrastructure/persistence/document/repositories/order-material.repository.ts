@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, Types } from 'mongoose';
 import { OrderMaterialSchemaClass } from '../entities/order-material.schema';
 import { OrderMaterialRepository } from '../../order-material.repository';
 import { OrderMaterial } from '../../../../domain/order-material';
@@ -34,10 +34,10 @@ export class OrderMaterialDocumentRepository
     const where: FilterQuery<OrderMaterialSchemaClass> = {};
     if (filterOptions?.orderId) {
       console.log('filterOptions.orderId', filterOptions.orderId);
-      where.orderId = filterOptions.orderId;
+      where.orderId = new Types.ObjectId(filterOptions.orderId);
     }
     const entityObjects = await this.orderMaterialModel
-      .find()
+      .find(where)
       .skip((filterOptions.page - 1) * filterOptions.limit)
       .limit(filterOptions.limit);
 

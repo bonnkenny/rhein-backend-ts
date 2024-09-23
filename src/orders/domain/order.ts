@@ -52,7 +52,7 @@ export class Order {
   @ApiProperty({
     type: String,
   })
-  fromUserId: string;
+  fromUserId: string | null;
 
   @ApiProperty({
     type: String,

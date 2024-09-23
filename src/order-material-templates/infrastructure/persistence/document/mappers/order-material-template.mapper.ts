@@ -14,7 +14,7 @@ export class OrderMaterialTemplateMapper {
       ch: raw.label?.ch ?? '',
       en: raw.label?.en ?? '',
     };
-    console.log('raw columns >>>>> ', raw.columns);
+    // console.log('raw columns >>>>> ', raw.columns);
     const domainColumns: Array<Array<OrderMaterialColumn>> = [];
     if (raw?.columns.length) {
       for (const column of raw.columns) {
@@ -41,7 +41,7 @@ export class OrderMaterialTemplateMapper {
         domainColumns.push(columnArray);
       }
     }
-    console.log('domainColumns', domainColumns);
+    // console.log('domainColumns', domainColumns);
     domainEntity.columns = domainColumns;
     domainEntity.description = {
       ch: raw.description?.ch ?? '',
