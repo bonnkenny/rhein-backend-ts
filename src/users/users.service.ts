@@ -5,13 +5,12 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { NullableType } from '../utils/types/nullable.type';
-import { FilterUserDto, SortUserDto } from './dto/query-user.dto';
+import { FilterUserDto } from './dto/query-user.dto';
 import { UserRepository } from './infrastructure/persistence/user.repository';
 import { User } from './domain/user';
 import bcrypt from 'bcryptjs';
 import { AuthProvidersEnum } from '../auth/auth-providers.enum';
 import { FilesService } from '../files/files.service';
-import { IPaginationOptions } from '../utils/types/pagination-options';
 import { DeepPartial } from '../utils/types/deep-partial.type';
 import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
@@ -129,20 +128,10 @@ export class UsersService {
     return this.usersRepository.create(clonedPayload);
   }
 
-  findManyWithPagination({
-    filterOptions,
-    sortOptions,
-    paginationOptions,
-  }: {
-    filterOptions?: FilterUserDto | null;
-    sortOptions?: SortUserDto[] | null;
-    paginationOptions: IPaginationOptions;
-  }): Promise<[User[], number]> {
-    return this.usersRepository.findManyWithPagination({
-      filterOptions,
-      sortOptions,
-      paginationOptions,
-    });
+  findManyWithPagination(
+    filterOptions: FilterUserDto,
+  ): Promise<[User[], number]> {
+    return this.usersRepository.findManyWithPagination(filterOptions);
   }
 
   findById(id: User['id']): Promise<NullableType<User>> {
@@ -254,7 +243,7 @@ export class UsersService {
     await this.usersRepository.remove(id);
   }
 
-  async findByFilter(filter: FilterUserDto) {
+  async findByFilter(filter: Omit<FilterUserDto, 'page' | 'limit'>) {
     return this.usersRepository.findByFilter(filter);
   }
 }

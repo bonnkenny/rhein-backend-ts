@@ -37,7 +37,7 @@ import {
   InfinityPaginationResponseDto,
 } from '../utils/dto/infinity-base-response.dto';
 import { NullableType } from '../utils/types/nullable.type';
-import { QueryUserDto } from './dto/query-user.dto';
+import { FilterUserDto } from './dto/query-user.dto';
 import { User } from './domain/user';
 import { UsersService } from './users.service';
 // import { RolesGuard } from '../roles/roles.guard';
@@ -94,18 +94,10 @@ export class UsersController {
   @Get()
   @HttpCode(HttpStatus.OK)
   async findAll(
-    @Query() query: QueryUserDto,
+    @Query() query: FilterUserDto,
   ): Promise<InfinityPaginationResponseDto<User>> {
-    const page = query?.page ?? 1;
-    const limit = query?.limit ?? 10;
-    const [items, total] = await this.usersService.findManyWithPagination({
-      filterOptions: query?.filters,
-      sortOptions: query?.sort,
-      paginationOptions: {
-        page,
-        limit,
-      },
-    });
+    const [items, total] =
+      await this.usersService.findManyWithPagination(query);
     return infinityPagination(items, total, query);
   }
 

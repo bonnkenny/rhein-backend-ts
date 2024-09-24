@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
 import { NullableType } from '@src/utils/types/nullable.type';
-import { FilterUserDto, SortUserDto } from '@src/users/dto/query-user.dto';
+import { FilterUserDto } from '@src/users/dto/query-user.dto';
 import { User } from '@src/users/domain/user';
 import { UserRepository } from '../../user.repository';
 import { UserSchemaClass } from '../entities/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { UserMapper } from '../mappers/user.mapper';
-import { IPaginationOptions } from '@src/utils/types/pagination-options';
 
 @Injectable()
 export class UsersDocumentRepository implements UserRepository {
@@ -25,15 +24,10 @@ export class UsersDocumentRepository implements UserRepository {
     return UserMapper.toDomain(userObject);
   }
 
-  async findManyWithPagination({
-    filterOptions,
-    sortOptions,
-    paginationOptions,
-  }: {
-    filterOptions?: FilterUserDto | null;
-    sortOptions?: SortUserDto[] | null;
-    paginationOptions: IPaginationOptions;
-  }): Promise<[User[], number]> {
+  async findManyWithPagination(
+    filterOptions: FilterUserDto,
+  ): Promise<[User[], number]> {
+    const { page, limit } = filterOptions;
     const where: FilterQuery<UserSchemaClass> = {};
     if (!!filterOptions?.username) {
       const regex = new RegExp(filterOptions?.username, 'i'); // 不区分大小写的搜索
@@ -42,18 +36,18 @@ export class UsersDocumentRepository implements UserRepository {
     const count = await this.usersModel.countDocuments(where);
     const userObjects = await this.usersModel
       .find(where)
-      .sort(
-        sortOptions?.reduce(
-          (accumulator, sort) => ({
-            ...accumulator,
-            [sort.orderBy === 'id' ? '_id' : sort.orderBy]:
-              sort.order.toUpperCase() === 'ASC' ? 1 : -1,
-          }),
-          {},
-        ),
-      )
-      .skip((paginationOptions.page - 1) * paginationOptions.limit)
-      .limit(paginationOptions.limit)
+      // .sort(
+      //   sortOptions?.reduce(
+      //     (accumulator, sort) => ({
+      //       ...accumulator,
+      //       [sort.orderBy === 'id' ? '_id' : sort.orderBy]:
+      //         sort.order.toUpperCase() === 'ASC' ? 1 : -1,
+      //     }),
+      //     {},
+      //   ),
+      // )
+      .skip((page - 1) * limit)
+      .limit(limit)
       .populate({
         path: 'roles',
         populate: {
@@ -143,7 +137,9 @@ export class UsersDocumentRepository implements UserRepository {
     });
   }
 
-  async findByFilter(filter: FilterUserDto): Promise<NullableType<User>> {
+  async findByFilter(
+    filter: Omit<FilterUserDto, 'page' | 'limit'>,
+  ): Promise<NullableType<User>> {
     const { id, status, baseRole, username, email } = filter || {};
     const where: FilterQuery<UserSchemaClass> = {};
     if (!!id) {

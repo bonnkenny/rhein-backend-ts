@@ -6,16 +6,15 @@ import {
   InfinityFindAllDto,
   InfinitySortDto,
 } from '@src/utils/dto/infinity-query-all.dto';
-import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+// import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 // import { RoleDto } from '@src/roles/dto/role.dto';
 
-export class FilterUserDto {
+export class FilterUserDto extends InfinityFindAllDto {
   @ApiPropertyOptional({ type: String })
+  @IsOptional()
   id?: string;
   @ApiPropertyOptional({ type: String })
   @IsOptional()
-  // @ValidateNested({ each: true })
-  // @Type(() => RoleDto)
   username?: string;
 
   @ApiPropertyOptional({ type: String })
@@ -33,15 +32,6 @@ export class FilterUserDto {
   @ApiPropertyOptional({ type: String })
   @IsOptional()
   lastName?: string;
-
-  // @ApiPropertyOptional({ type: String })
-  // @IsOptional()
-  // socialId?: string;
-  //
-  // @ApiPropertyOptional({ type: String })
-  // @IsOptional()
-  // provider?: string;
-
   @ApiPropertyOptional({ type: String })
   @IsOptional()
   status?: string;
@@ -67,14 +57,4 @@ export class QueryUserDto extends InfinityFindAllDto {
   @ValidateNested({ each: true })
   @Type(() => SortUserDto)
   sort?: SortUserDto[] | null;
-}
-
-export class QueryDefaultDto {
-  @ApiPropertyOptional({ type: String })
-  @IsOptional()
-  email: string;
-
-  @ApiPropertyOptional({ type: String, enum: Object.keys(BaseRoleEnum) })
-  @IsOptional()
-  baseRole: string;
 }
