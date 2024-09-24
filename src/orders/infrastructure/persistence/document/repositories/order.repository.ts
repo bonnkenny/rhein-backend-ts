@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, Types } from 'mongoose';
@@ -7,6 +7,7 @@ import { OrderRepository } from '../../order.repository';
 import { Order } from '../../../../domain/order';
 import { OrderMapper } from '../mappers/order.mapper';
 import { FilterOrdersDto } from '@src/orders/dto/filter-orders.dto';
+import { errorBody } from '@src/utils/infinity-response';
 
 @Injectable()
 export class OrderDocumentRepository implements OrderRepository {
@@ -76,7 +77,7 @@ export class OrderDocumentRepository implements OrderRepository {
     const entity = await this.orderModel.findOne(filter);
 
     if (!entity) {
-      throw new Error('Record not found');
+      throw new NotFoundException(errorBody('Order not found'));
     }
 
     const entityObject = await this.orderModel.findOneAndUpdate(
