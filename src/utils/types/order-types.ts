@@ -6,5 +6,5 @@ export type LabelType = {
 export type RuleType = {
   trigger?: string;
   message?: LabelType;
-  rule: string;
+  required: boolean;
 };

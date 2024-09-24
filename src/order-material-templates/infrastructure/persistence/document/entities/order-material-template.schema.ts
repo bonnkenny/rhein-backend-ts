@@ -68,7 +68,7 @@ export class OrderMaterialTemplateSchemaClass extends EntityDocumentHelper {
               prop: String,
               rules: [
                 {
-                  rule: String,
+                  required: Boolean,
                   message: { en: String, ch: String },
                   trigger: String,
                 },

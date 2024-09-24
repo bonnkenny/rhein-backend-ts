@@ -29,7 +29,7 @@ export class OrderMaterialMapper {
           rowI.prop = row.prop;
           rowI.rules = row.rules?.map((v) => {
             return {
-              rule: v.rule,
+              required: v.required,
               message: v.message,
               trigger: v.trigger,
             };

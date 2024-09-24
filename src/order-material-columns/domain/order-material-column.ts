@@ -14,7 +14,7 @@ import {
 
 export const defaultRulesTemplate: RuleType[] = [
   {
-    rule: 'required',
+    required: true,
     message: { en: 'This field is required', ch: '该字段必填' },
     trigger: 'blur',
   },
