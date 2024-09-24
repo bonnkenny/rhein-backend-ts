@@ -33,12 +33,16 @@ import {
   infinityResponse,
   // infinityResponse,
 } from '../utils/infinity-response';
-import { FindAllRolesDto } from './dto/find-all-roles.dto';
+import { FilterRolesOptionDto } from './dto/filter-roles-option.dto';
 import { NullableType } from '@src/utils/types/nullable.type';
+import { BaseRoles } from '@src/utils/guards/base-roles.decorator';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+import { BaseRolesGuard } from '@src/utils/guards/base-roles.guard';
 
 @ApiTags('Roles')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@BaseRoles(BaseRoleEnum.SUPER.toString())
+@UseGuards(AuthGuard('jwt'), BaseRolesGuard)
 @Controller({
   path: 'roles',
   version: '1',
@@ -63,15 +67,9 @@ export class RolesController {
     type: InfinityPaginationResponse(Role),
   })
   async findAll(
-    @Query() query: FindAllRolesDto,
+    @Query() query: FilterRolesOptionDto,
   ): Promise<InfinityPaginationResponseDto<Role>> {
-    const { page, limit } = query || {};
-    const [items, total] = await this.rolesService.findAllWithPagination({
-      paginationOptions: {
-        page,
-        limit,
-      },
-    });
+    const [items, total] = await this.rolesService.findAllWithPagination(query);
     return infinityPagination(items, total, query);
   }
 
