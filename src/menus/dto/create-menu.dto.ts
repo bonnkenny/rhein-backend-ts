@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { Types } from 'mongoose';
 
@@ -21,5 +21,6 @@ export class CreateMenuDto {
   @ApiProperty({ type: Types.ObjectId })
   @IsNotEmpty()
   @IsMongoId({ message: 'parentId must be a valid ObjectId' })
+  @IsOptional()
   parentId: string;
 }

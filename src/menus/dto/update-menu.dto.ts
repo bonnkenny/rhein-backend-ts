@@ -7,13 +7,13 @@ import { IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
 
 export class UpdateMenuDto extends PartialType(CreateMenuDto) {
   @ApiProperty({ type: String })
-  @IsOptional()
-  @IsNotEmpty()
   @MaxLength(20)
+  @IsNotEmpty()
+  @IsOptional()
   name: string;
 
   @ApiProperty({ type: String })
-  @IsOptional()
   @IsNotEmpty()
+  @IsOptional()
   path: string;
 }

@@ -6,7 +6,9 @@ import { MenuSchemaClass } from '../entities/menu.schema';
 import { MenuRepository } from '../../menu.repository';
 import { Menu } from '@src/menus/domain/menu';
 import { MenuMapper } from '../mappers/menu.mapper';
-import { IPaginationOptions } from '@src/utils/types/pagination-options';
+import { FilterMenuOptionsDto } from '@src/menus/dto/filter-menu-options.dto';
+import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
+import { errorBody } from '@src/utils/infinity-response';
 
 @Injectable()
 export class MenuDocumentRepository implements MenuRepository {
@@ -21,7 +23,7 @@ export class MenuDocumentRepository implements MenuRepository {
     if (!!parentId) {
       const parent = await this.menuModel.findById(parentId);
       if (!parent) {
-        throw new Error('Parent menu not found');
+        throw new BadRequestException(errorBody('Parent menu not found'));
       }
     }
     const createdEntity = new this.menuModel(persistenceModel);
@@ -29,15 +31,14 @@ export class MenuDocumentRepository implements MenuRepository {
     return MenuMapper.toDomain(entityObject);
   }
 
-  async findAllWithPagination({
-    paginationOptions,
-  }: {
-    paginationOptions: IPaginationOptions;
-  }): Promise<[Menu[], number]> {
+  async findAllWithPagination(
+    filterOptions: FilterMenuOptionsDto,
+  ): Promise<[Menu[], number]> {
+    const { page, limit } = filterOptions;
     const entityObjects = await this.menuModel
       .find()
-      .skip((paginationOptions.page - 1) * paginationOptions.limit)
-      .limit(paginationOptions.limit);
+      .skip((page - 1) * limit)
+      .limit(limit);
     const total = await this.menuModel.countDocuments();
     return [
       entityObjects.map((entityObject) => MenuMapper.toDomain(entityObject)),
@@ -61,14 +62,14 @@ export class MenuDocumentRepository implements MenuRepository {
     const entity = await this.menuModel.findOne(filter);
 
     if (!entity) {
-      throw new Error('Record not found');
+      throw new BadRequestException(errorBody('Record not found'));
     }
 
     const { parentId } = payload || {};
     if (!!parentId && parentId != entity.parentId.toString()) {
       const parent = await this.menuModel.findById(parentId);
       if (!parent) {
-        throw new Error('Parent menu not found');
+        throw new BadRequestException(errorBody('Parent menu not found'));
       }
     }
 

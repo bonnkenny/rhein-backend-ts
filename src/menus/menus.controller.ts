@@ -31,7 +31,7 @@ import {
   infinityPagination,
   infinityResponse,
 } from '../utils/infinity-response';
-import { FindAllMenusDto } from './dto/find-all-menus.dto';
+import { FilterMenuOptionsDto } from './dto/filter-menu-options.dto';
 
 @ApiTags('Menus')
 @ApiBearerAuth()
@@ -56,18 +56,10 @@ export class MenusController {
     type: InfinityPaginationResponse(Menu),
   })
   async findAll(
-    @Query() query: FindAllMenusDto,
+    @Query() query: FilterMenuOptionsDto,
   ): Promise<InfinityPaginationResponseDto<Menu>> {
-    const { page, limit } = query || {};
-    console.log('page', page);
-    console.log('limit', limit);
-    const [items, total] = await this.menusService.findAllWithPagination({
-      paginationOptions: {
-        page,
-        limit,
-      },
-    });
-    return infinityPagination(items, total, { page, limit });
+    const [items, total] = await this.menusService.findAllWithPagination(query);
+    return infinityPagination(items, total, query);
   }
 
   @Get(':id')
