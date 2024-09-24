@@ -71,14 +71,21 @@ export class CreateOrderMaterialDto {
   @Validate(IsLabelType)
   @IsNotEmpty()
   @IsOptional()
-  subDescription?: LabelType;
+  subDescription: LabelType | null;
 
   @ApiProperty({
     type: Boolean,
     default: false,
   })
   @IsOptional()
-  isOptional?: boolean;
+  isOptional: boolean;
+
+  @ApiProperty({
+    type: Boolean,
+    default: false,
+  })
+  @IsOptional()
+  isMultiple: boolean;
 
   @Transform(() => {
     return null;

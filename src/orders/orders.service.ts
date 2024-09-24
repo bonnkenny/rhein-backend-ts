@@ -94,9 +94,11 @@ export class OrdersService {
           orderType: orderType,
           label: template.label,
           description: template.description,
+          subDescription: template?.subDescription ?? null,
           columns: template.columns,
           filledAt: null,
           isOptional: template.isOptional,
+          isMultiple: template.isMultiple,
         });
         materials.push(material);
       }

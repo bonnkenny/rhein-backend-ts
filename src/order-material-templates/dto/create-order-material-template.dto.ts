@@ -68,4 +68,16 @@ export class CreateOrderMaterialTemplateDto {
     return null;
   })
   filledAt: Date | null;
+
+  @ApiProperty({
+    type: Boolean,
+  })
+  @IsOptional()
+  isOptional: boolean;
+
+  @ApiProperty({
+    type: Boolean,
+  })
+  @IsOptional()
+  isMultiple: boolean;
 }

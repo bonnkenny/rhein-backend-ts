@@ -40,7 +40,13 @@ export class OrderMaterial {
   @ApiProperty({
     type: Boolean,
   })
-  isOptional?: boolean;
+  isOptional: boolean;
+
+  @ApiProperty({
+    type: Boolean,
+    default: '是否为多行',
+  })
+  isMultiple: boolean;
 
   @ApiProperty({
     type: [[OrderMaterialColumn]],

@@ -44,7 +44,13 @@ export class OrderMaterialTemplate {
   @ApiProperty({
     type: Boolean,
   })
-  isOptional?: boolean;
+  isOptional: boolean;
+
+  @ApiProperty({
+    type: Boolean,
+    description: '是否为多行，默认为false',
+  })
+  isMultiple: boolean;
 
   @ApiProperty()
   createdAt: Date;

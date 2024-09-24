@@ -75,10 +75,10 @@ export class OrderMaterialDocumentRepository
       OrderMaterialMapper.toPersistence({
         ...OrderMaterialMapper.toDomain(entity),
         ...clonedPayload,
+        filledAt: new Date(),
       }),
       { new: true },
     );
-
     return entityObject ? OrderMaterialMapper.toDomain(entityObject) : null;
   }
 
