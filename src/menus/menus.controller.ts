@@ -32,10 +32,14 @@ import {
   infinityResponse,
 } from '../utils/infinity-response';
 import { FilterMenuOptionsDto } from './dto/filter-menu-options.dto';
+import { BaseRoles } from '@src/utils/guards/base-roles.decorator';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+import { BaseRolesGuard } from '@src/utils/guards/base-roles.guard';
 
 @ApiTags('Menus')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@BaseRoles(BaseRoleEnum.SUPER)
+@UseGuards(AuthGuard('jwt'), BaseRolesGuard)
 @Controller({
   path: 'menus',
   version: '1',

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model, Types } from 'mongoose';
 import { MenuSchemaClass } from '../entities/menu.schema';
 import { MenuRepository } from '../../menu.repository';
 import { Menu } from '@src/menus/domain/menu';
@@ -25,6 +25,12 @@ export class MenuDocumentRepository implements MenuRepository {
       if (!parent) {
         throw new BadRequestException(errorBody('Parent menu not found'));
       }
+    }
+    const checkPath = await this.menuModel.findOne({
+      path: persistenceModel.path,
+    });
+    if (checkPath) {
+      throw new BadRequestException(errorBody('Menu Path already exists'));
     }
     const createdEntity = new this.menuModel(persistenceModel);
     const entityObject = await createdEntity.save();
@@ -51,6 +57,24 @@ export class MenuDocumentRepository implements MenuRepository {
     return entityObject ? MenuMapper.toDomain(entityObject) : null;
   }
 
+  async findOne(filterOptions: FilterMenuOptionsDto) {
+    const where: FilterQuery<MenuSchemaClass> = {};
+    Object.keys(filterOptions).forEach((key) => {
+      switch (true) {
+        case key === 'id' && !!filterOptions[key]:
+          where['_id'] = new Types.ObjectId(filterOptions[key]);
+          break;
+        case key === 'parentId' && !!filterOptions[key]:
+          where['parentId'] = new Types.ObjectId(filterOptions[key]);
+          break;
+        default:
+          where[key] = filterOptions[key];
+      }
+    });
+    const entityObject = await this.menuModel.findOne(where);
+    return entityObject ? MenuMapper.toDomain(entityObject) : null;
+  }
+
   async update(
     id: Menu['id'],
     payload: Partial<Menu>,
@@ -66,11 +90,23 @@ export class MenuDocumentRepository implements MenuRepository {
     }
 
     const { parentId } = payload || {};
-    if (!!parentId && parentId != entity.parentId.toString()) {
+
+    if (!!parentId) {
+      if (parentId === entity.parentId.toString()) {
+        throw new BadRequestException(errorBody('Cannot set parent to itself'));
+      }
       const parent = await this.menuModel.findById(parentId);
       if (!parent) {
         throw new BadRequestException(errorBody('Parent menu not found'));
       }
+    }
+
+    const checkPath = await this.menuModel.findOne({
+      path: clonedPayload.path,
+      _id: { $ne: id },
+    });
+    if (checkPath) {
+      throw new BadRequestException(errorBody('Menu Path already exists'));
     }
 
     const entityObject = await this.menuModel.findOneAndUpdate(
