@@ -39,6 +39,15 @@ export class OrderDocumentRepository implements OrderRepository {
     if (filterOrderOptions.userId) {
       where.userId = new Types.ObjectId(filterOrderOptions.userId);
     }
+    if (filterOrderOptions.fromUserId) {
+      where.fromUserId = new Types.ObjectId(filterOrderOptions.fromUserId);
+    }
+    if (filterOrderOptions.orderNo) {
+      where.orderNo = new RegExp(filterOrderOptions.orderNo, 'i');
+    }
+    if (filterOrderOptions.orderName) {
+      where.orderName = new RegExp(filterOrderOptions.orderName, 'i');
+    }
     const total = await this.orderModel.find(where).countDocuments();
     const entityObjects = await this.orderModel
       .find(where)

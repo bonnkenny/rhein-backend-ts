@@ -33,7 +33,20 @@ export class FilterOrdersDto extends InfinityFindAllDto {
 
   @ApiProperty({
     type: String,
+    description: '订单名称',
+  })
+  orderName?: string;
+
+  @ApiProperty({
+    type: String,
+    description: '订单编号',
+  })
+  orderNo?: string;
+
+  @ApiProperty({
+    type: String,
     enum: Object.keys(OrderStatusEnum),
+    description: '审核状态',
   })
   @IsEnum(Object.keys(OrderStatusEnum))
   @IsOptional()
@@ -42,6 +55,7 @@ export class FilterOrdersDto extends InfinityFindAllDto {
   @ApiProperty({
     type: String,
     enum: Object.keys(OrderFillStatusEnum),
+    description: '填写状态',
   })
   @IsEnum(Object.keys(OrderFillStatusEnum))
   @IsOptional()
