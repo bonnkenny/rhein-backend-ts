@@ -1,19 +1,16 @@
 import { DeepPartial } from '@src/utils/types/deep-partial.type';
 import { NullableType } from '@src/utils/types/nullable.type';
-import { IPaginationOptions } from '@src/utils/types/pagination-options';
 import { Role } from '../../domain/role';
-import { FindAllRolesDto } from '@src/roles/dto/find-all-roles.dto';
+import { FilterRolesOptionDto } from '@src/roles/dto/filter-roles-option.dto';
 
 export abstract class RoleRepository {
   abstract create(
     data: Omit<Role, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<Role>;
 
-  abstract findAllWithPagination({
-    paginationOptions,
-  }: {
-    paginationOptions: IPaginationOptions;
-  }): Promise<[Role[], number]>;
+  abstract findAllWithPagination(
+    filterOptions: FilterRolesOptionDto,
+  ): Promise<[Role[], number]>;
 
   abstract findById(id: Role['id']): Promise<NullableType<Role>>;
 
@@ -27,6 +24,6 @@ export abstract class RoleRepository {
   abstract findAll({
     filterOptions,
   }: {
-    filterOptions: FindAllRolesDto | null | undefined;
+    filterOptions: FilterRolesOptionDto | null | undefined;
   }): Promise<Role[]>;
 }

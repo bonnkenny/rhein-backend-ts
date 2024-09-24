@@ -1,13 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, Types } from 'mongoose';
 import { RoleSchemaClass } from '../entities/role.schema';
 import { RoleRepository } from '../../role.repository';
 import { Role } from '@src/roles/domain/role';
 import { RoleMapper } from '../mappers/role.mapper';
-import { IPaginationOptions } from '@src/utils/types/pagination-options';
-import { FindAllRolesDto } from '@src/roles/dto/find-all-roles.dto';
+import { FilterRolesOptionDto } from '@src/roles/dto/filter-roles-option.dto';
 
 @Injectable()
 export class RoleDocumentRepository implements RoleRepository {
@@ -25,15 +24,25 @@ export class RoleDocumentRepository implements RoleRepository {
     return RoleMapper.toDomain(entityObject);
   }
 
-  async findAllWithPagination({
-    paginationOptions,
-  }: {
-    paginationOptions: IPaginationOptions;
-  }): Promise<[Role[], number]> {
+  async findAllWithPagination(
+    filterOptions: FilterRolesOptionDto,
+  ): Promise<[Role[], number]> {
+    const { page, limit } = filterOptions;
+    const where: FilterQuery<Role> = {};
+    if (!!filterOptions?.type) {
+      where.type = filterOptions.type;
+    }
+    if (!!filterOptions?.ids) {
+      where.id = { $in: filterOptions.ids.map((v) => new Types.ObjectId(v)) };
+    }
+    if (!!filterOptions?.name) {
+      where.name = { $regex: filterOptions.name, $options: 'i' };
+    }
+
     const entityObjects = await this.roleModel
       .find()
-      .skip((paginationOptions.page - 1) * paginationOptions.limit)
-      .limit(paginationOptions.limit)
+      .skip((page - 1) * limit)
+      .limit(limit)
       .populate('menus')
       .exec();
     const total = await this.roleModel.countDocuments();
@@ -81,7 +90,7 @@ export class RoleDocumentRepository implements RoleRepository {
   async findAll({
     filterOptions,
   }: {
-    filterOptions: FindAllRolesDto | null | undefined;
+    filterOptions: FilterRolesOptionDto | null | undefined;
   }): Promise<Role[]> {
     const where: FilterQuery<Role> = {};
     if (filterOptions?.ids) {

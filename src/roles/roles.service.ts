@@ -2,10 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { RoleRepository } from './infrastructure/persistence/role.repository';
-import { IPaginationOptions } from '../utils/types/pagination-options';
 import { Role } from './domain/role';
 import { NullableType } from '@src/utils/types/nullable.type';
-import { FindAllRolesDto } from '@src/roles/dto/find-all-roles.dto';
+import { FilterRolesOptionDto } from '@src/roles/dto/filter-roles-option.dto';
 import { Menu, MenuTree } from '@src/menus/domain/menu';
 
 @Injectable()
@@ -17,17 +16,8 @@ export class RolesService {
     return this.roleRepository.create(createRoleDto);
   }
 
-  findAllWithPagination({
-    paginationOptions,
-  }: {
-    paginationOptions: IPaginationOptions;
-  }) {
-    return this.roleRepository.findAllWithPagination({
-      paginationOptions: {
-        page: paginationOptions.page,
-        limit: paginationOptions.limit,
-      },
-    });
+  findAllWithPagination(filterOptions: FilterRolesOptionDto) {
+    return this.roleRepository.findAllWithPagination(filterOptions);
   }
 
   findOne(id: Role['id']): Promise<NullableType<Role>> {
@@ -43,7 +33,7 @@ export class RolesService {
   }
 
   async getMenuTree(
-    filterOptions: FindAllRolesDto | null | undefined,
+    filterOptions: FilterRolesOptionDto | null | undefined,
   ): Promise<MenuTree[]> {
     const roles = await this.roleRepository.findAll({
       filterOptions: filterOptions ?? null,
