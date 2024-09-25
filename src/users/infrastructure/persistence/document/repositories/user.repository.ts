@@ -8,6 +8,7 @@ import { UserSchemaClass } from '../entities/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { UserMapper } from '../mappers/user.mapper';
+import { isValidMongoId, toMongoId } from '@src/utils/functions';
 
 @Injectable()
 export class UsersDocumentRepository implements UserRepository {
@@ -28,11 +29,36 @@ export class UsersDocumentRepository implements UserRepository {
     filterOptions: FilterUserDto,
   ): Promise<[User[], number]> {
     const { page, limit } = filterOptions;
+    console.log('filterOptions', filterOptions);
     const where: FilterQuery<UserSchemaClass> = {};
-    if (!!filterOptions?.username) {
-      const regex = new RegExp(filterOptions?.username, 'i'); // 不区分大小写的搜索
-      where['$or'] = [{ firstName: regex }, { lastName: regex }];
-    }
+    Object.keys(filterOptions)
+      .filter((v) => v !== 'page' && v !== 'limit')
+      .forEach((key) => {
+        if (!!filterOptions[key]) {
+          switch (key) {
+            case 'id':
+              if (isValidMongoId(filterOptions[key])) {
+                where['_id'] = toMongoId(filterOptions[key]);
+              }
+              break;
+            case 'email':
+              where['email'] = new RegExp(filterOptions[key], 'i');
+              break;
+            case 'username':
+              const userNameRegex = new RegExp(filterOptions[key], 'i'); // 不区分大小写的搜索
+              where['$or'] = [
+                { firstName: userNameRegex },
+                { lastName: userNameRegex },
+              ];
+              break;
+            default:
+              where[key] = filterOptions[key];
+          }
+        }
+      });
+
+    console.log('where', where);
+
     const count = await this.usersModel.countDocuments(where);
     const userObjects = await this.usersModel
       .find(where)
@@ -55,7 +81,7 @@ export class UsersDocumentRepository implements UserRepository {
         },
       })
       .exec();
-    console.log('user entities', userObjects);
+    // console.log('user entities', userObjects);
     return [
       userObjects.map((userObject) => UserMapper.toDomain(userObject)),
       count,

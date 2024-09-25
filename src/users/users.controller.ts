@@ -96,6 +96,7 @@ export class UsersController {
   async findAll(
     @Query() query: FilterUserDto,
   ): Promise<InfinityPaginationResponseDto<User>> {
+    console.log('query', query);
     const [items, total] =
       await this.usersService.findManyWithPagination(query);
     return infinityPagination(items, total, query);

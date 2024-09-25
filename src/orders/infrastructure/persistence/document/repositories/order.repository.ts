@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, Types } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { OrderSchemaClass } from '../entities/order.schema';
 import { OrderRepository } from '../../order.repository';
 import { Order } from '../../../../domain/order';
 import { OrderMapper } from '../mappers/order.mapper';
 import { FilterOrdersDto } from '@src/orders/dto/filter-orders.dto';
 import { errorBody } from '@src/utils/infinity-response';
+import { isValidMongoId, toMongoId } from '@src/utils/functions';
 
 @Injectable()
 export class OrderDocumentRepository implements OrderRepository {
@@ -34,14 +35,14 @@ export class OrderDocumentRepository implements OrderRepository {
     if (filterOrderOptions.fillStatus) {
       where.fillStatus = filterOrderOptions.fillStatus;
     }
-    if (filterOrderOptions.parentId) {
-      where.parentId = new Types.ObjectId(filterOrderOptions.parentId);
+    if (isValidMongoId(filterOrderOptions.parentId)) {
+      where.parentId = toMongoId(filterOrderOptions.parentId);
     }
-    if (filterOrderOptions.userId) {
-      where.userId = new Types.ObjectId(filterOrderOptions.userId);
+    if (isValidMongoId(filterOrderOptions.userId)) {
+      where.userId = toMongoId(filterOrderOptions.userId);
     }
-    if (filterOrderOptions.fromUserId) {
-      where.fromUserId = new Types.ObjectId(filterOrderOptions.fromUserId);
+    if (isValidMongoId(filterOrderOptions.fromUserId)) {
+      where.fromUserId = toMongoId(filterOrderOptions.fromUserId);
     }
     if (filterOrderOptions.orderNo) {
       where.orderNo = new RegExp(filterOrderOptions.orderNo, 'i');
