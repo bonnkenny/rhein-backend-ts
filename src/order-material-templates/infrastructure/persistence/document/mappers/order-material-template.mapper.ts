@@ -16,7 +16,7 @@ export class OrderMaterialTemplateMapper {
       en: raw.label?.en ?? '',
     };
     // console.log('raw columns >>>>> ', raw.columns);
-    console.log('raw columns', raw.columns);
+    // console.log('raw columns', raw.columns);
     const domainColumns: Array<Array<OrderMaterialColumn>> = [];
     if (raw?.columns.length) {
       for (const column of raw.columns) {
@@ -45,6 +45,7 @@ export class OrderMaterialTemplateMapper {
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
     domainEntity.isOptional = raw.isOptional;
+    domainEntity.isMultiple = raw.isMultiple;
 
     // console.log('domainEntity', domainEntity);
 
@@ -71,6 +72,7 @@ export class OrderMaterialTemplateMapper {
 
     persistenceSchema.filledAt = domainEntity.filledAt ?? null;
     persistenceSchema.isOptional = domainEntity.isOptional ?? false;
+    persistenceSchema.isMultiple = domainEntity.isMultiple ?? false;
     persistenceSchema.createdAt = domainEntity.createdAt;
     persistenceSchema.updatedAt = domainEntity.updatedAt;
 

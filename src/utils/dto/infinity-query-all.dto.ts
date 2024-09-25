@@ -5,7 +5,7 @@ import { Transform, Type } from 'class-transformer';
 const defaultSize: number = 10;
 const sizeSets = [defaultSize, 20, 50, 100];
 const sizeChecker = ({ value }) => {
-  return sizeSets.includes(Number(value)) ? Number(value) : 10;
+  return sizeSets.includes(Number(value)) ? Number(value) : defaultSize;
 };
 
 export class InfinityFindAllDto {
