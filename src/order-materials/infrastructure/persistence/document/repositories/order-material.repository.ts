@@ -30,12 +30,12 @@ export class OrderMaterialDocumentRepository
   async findAllWithPagination(
     filterOptions: FindAllOrderMaterialsDto,
   ): Promise<[OrderMaterial[], number]> {
-    const total = await this.orderMaterialModel.countDocuments();
     const where: FilterQuery<OrderMaterialSchemaClass> = {};
     if (filterOptions?.orderId) {
       console.log('filterOptions.orderId', filterOptions.orderId);
       where.orderId = new Types.ObjectId(filterOptions.orderId);
     }
+    const total = await this.orderMaterialModel.find(where).countDocuments();
     const entityObjects = await this.orderMaterialModel
       .find(where)
       .skip((filterOptions.page - 1) * filterOptions.limit)
