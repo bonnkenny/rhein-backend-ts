@@ -71,7 +71,15 @@ export class OrderMaterialColumn {
   @IsNotEmpty()
   valueType: string;
 
-  @ApiProperty({ type: [String, Number, Boolean], nullable: true })
+  @ApiProperty({
+    oneOf: [
+      { type: 'string' },
+      { type: 'number' },
+      { type: 'boolean' },
+      { type: 'null' },
+    ],
+    nullable: true,
+  })
   @Validate(IsValueType)
   @IsOptional()
   value?: string | number | boolean | null;
