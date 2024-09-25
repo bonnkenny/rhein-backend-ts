@@ -1,5 +1,5 @@
 import { InfinityFindAllDto } from '@src/utils/dto/infinity-query-all.dto';
-import { IsEnum, IsMongoId, IsOptional } from 'class-validator';
+import { IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   OrderFillStatusEnum,
@@ -11,7 +11,7 @@ export class FilterOrdersDto extends InfinityFindAllDto {
     type: String,
     description: 'Parent order id',
   })
-  @IsMongoId()
+  // @IsMongoId()
   @IsOptional()
   parentId?: string;
 
@@ -19,7 +19,7 @@ export class FilterOrdersDto extends InfinityFindAllDto {
     type: String,
     description: 'User id',
   })
-  @IsMongoId()
+  // @IsMongoId()
   @IsOptional()
   userId?: string;
 
@@ -27,7 +27,7 @@ export class FilterOrdersDto extends InfinityFindAllDto {
     type: String,
     description: 'From user id',
   })
-  @IsMongoId()
+  // @IsMongoId()
   @IsOptional()
   fromUserId?: string;
 
@@ -48,7 +48,7 @@ export class FilterOrdersDto extends InfinityFindAllDto {
     enum: Object.keys(OrderStatusEnum),
     description: '审核状态',
   })
-  @IsEnum(Object.keys(OrderStatusEnum))
+  // @IsEnum(Object.keys(OrderStatusEnum))
   @IsOptional()
   checkStatus?: string;
 
@@ -57,7 +57,7 @@ export class FilterOrdersDto extends InfinityFindAllDto {
     enum: Object.keys(OrderFillStatusEnum),
     description: '填写状态',
   })
-  @IsEnum(Object.keys(OrderFillStatusEnum))
+  // @IsEnum(Object.keys(OrderFillStatusEnum))
   @IsOptional()
   fillStatus?: string;
 }

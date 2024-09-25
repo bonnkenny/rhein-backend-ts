@@ -35,6 +35,9 @@ export class OrderMaterialDocumentRepository
       console.log('filterOptions.orderId', filterOptions.orderId);
       where.orderId = new Types.ObjectId(filterOptions.orderId);
     }
+    if (!!filterOptions?.orderType) {
+      where.orderType = filterOptions.orderType;
+    }
     const total = await this.orderMaterialModel.find(where).countDocuments();
     const entityObjects = await this.orderMaterialModel
       .find(where)

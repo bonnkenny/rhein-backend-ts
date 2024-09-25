@@ -1,6 +1,5 @@
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import { IsMongoId, IsOptional } from 'class-validator';
-import { CreateOrderMaterialTemplateDto } from '@src/order-material-templates/dto/create-order-material-template.dto';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
 import { InfinityFindAllDto } from '@src/utils/dto/infinity-query-all.dto';
 
@@ -9,24 +8,13 @@ export class FindAllOrderMaterialsDto extends InfinityFindAllDto {
     type: String,
     description: '订单ID',
   })
-  @IsMongoId()
+  // @IsMongoId()
   @IsOptional()
   orderId: string;
-}
-
-export class defaultQueryOptionsDto extends PartialType(
-  CreateOrderMaterialTemplateDto,
-) {
   @ApiProperty({
     type: String,
     enum: Object.keys(OrderTypeEnum),
   })
   @IsOptional()
   orderType: string;
-
-  @ApiProperty({
-    type: String,
-  })
-  @IsOptional()
-  OrderId: string;
 }
