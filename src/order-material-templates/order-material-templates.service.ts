@@ -2,9 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateOrderMaterialTemplateDto } from './dto/create-order-material-template.dto';
 import { UpdateOrderMaterialTemplateDto } from './dto/update-order-material-template.dto';
 import { OrderMaterialTemplateRepository } from './infrastructure/persistence/order-material-template.repository';
-import { IPaginationOptions } from '../utils/types/pagination-options';
 import { OrderMaterialTemplate } from './domain/order-material-template';
-import { defaultQueryOptionsDto } from '@src/order-material-templates/dto/find-all-order-material-templates.dto';
+import { FilterOrderMaterialTemplatesDto } from '@src/order-material-templates/dto/find-all-order-material-templates.dto';
 
 @Injectable()
 export class OrderMaterialTemplatesService {
@@ -19,20 +18,13 @@ export class OrderMaterialTemplatesService {
     );
   }
 
-  findAllWithPagination({
-    paginationOptions,
-  }: {
-    paginationOptions: IPaginationOptions;
-  }) {
-    return this.orderMaterialTemplateRepository.findAllWithPagination({
-      paginationOptions: {
-        page: paginationOptions.page,
-        limit: paginationOptions.limit,
-      },
-    });
+  findAllWithPagination(filterOptions: FilterOrderMaterialTemplatesDto) {
+    return this.orderMaterialTemplateRepository.findAllWithPagination(
+      filterOptions,
+    );
   }
 
-  findAll(filter: defaultQueryOptionsDto) {
+  findAll(filter: Omit<FilterOrderMaterialTemplatesDto, 'page' | 'limit'>) {
     return this.orderMaterialTemplateRepository.findAll(filter);
   }
 

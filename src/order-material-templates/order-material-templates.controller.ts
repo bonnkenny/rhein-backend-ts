@@ -30,7 +30,7 @@ import {
   infinityPagination,
   infinityResponse,
 } from '../utils/infinity-response';
-import { FindAllOrderMaterialTemplatesDto } from './dto/find-all-order-material-templates.dto';
+import { FilterOrderMaterialTemplatesDto } from './dto/find-all-order-material-templates.dto';
 
 @ApiTags('Ordermaterialtemplates')
 @ApiBearerAuth()
@@ -65,26 +65,12 @@ export class OrderMaterialTemplatesController {
     type: InfinityPaginationResponse(OrderMaterialTemplate),
   })
   async findAll(
-    @Query() query: FindAllOrderMaterialTemplatesDto,
+    @Query() query: FilterOrderMaterialTemplatesDto,
   ): Promise<InfinityPaginationResponseDto<OrderMaterialTemplate>> {
-    const page = query?.page ?? 1;
-    let limit = query?.limit ?? 10;
-    if (limit > 50) {
-      limit = 50;
-    }
-
     const [items, total] =
-      await this.orderMaterialTemplatesService.findAllWithPagination({
-        paginationOptions: {
-          page,
-          limit,
-        },
-      });
+      await this.orderMaterialTemplatesService.findAllWithPagination(query);
 
-    return infinityPagination(items, total, {
-      page,
-      limit,
-    });
+    return infinityPagination(items, total, query);
   }
 
   @Get(':id')

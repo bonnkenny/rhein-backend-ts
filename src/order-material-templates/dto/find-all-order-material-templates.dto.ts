@@ -1,8 +1,8 @@
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNumber, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { CreateOrderMaterialTemplateDto } from '@src/order-material-templates/dto/create-order-material-template.dto';
 import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
+import { InfinityFindAllDto } from '@src/utils/dto/infinity-query-all.dto';
 
 export class FindAllOrderMaterialTemplatesDto {
   @ApiPropertyOptional()
@@ -18,9 +18,7 @@ export class FindAllOrderMaterialTemplatesDto {
   limit?: number;
 }
 
-export class defaultQueryOptionsDto extends PartialType(
-  CreateOrderMaterialTemplateDto,
-) {
+export class FilterOrderMaterialTemplatesDto extends InfinityFindAllDto {
   @ApiProperty({
     type: String,
     enum: Object.keys(OrderTypeEnum),

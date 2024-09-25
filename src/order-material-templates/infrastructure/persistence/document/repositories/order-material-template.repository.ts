@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { OrderMaterialTemplateSchemaClass } from '../entities/order-material-template.schema';
 import { OrderMaterialTemplateRepository } from '../../order-material-template.repository';
 import { OrderMaterialTemplate } from '../../../../domain/order-material-template';
 import { OrderMaterialTemplateMapper } from '../mappers/order-material-template.mapper';
-import { IPaginationOptions } from '@src/utils/types/pagination-options';
 import { CreateOrderMaterialColumnDto } from '@src/order-material-columns/dto/create-order-material-column.dto';
 import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
 import { errorBody } from '@src/utils/infinity-response';
+import { FilterOrderMaterialTemplatesDto } from '@src/order-material-templates/dto/find-all-order-material-templates.dto';
 
 @Injectable()
 export class OrderMaterialTemplateDocumentRepository
@@ -37,16 +37,21 @@ export class OrderMaterialTemplateDocumentRepository
     return OrderMaterialTemplateMapper.toDomain(entityObject);
   }
 
-  async findAllWithPagination({
-    paginationOptions,
-  }: {
-    paginationOptions: IPaginationOptions;
-  }): Promise<[OrderMaterialTemplate[], number]> {
-    const total = await this.orderMaterialTemplateModel.countDocuments();
+  async findAllWithPagination(
+    filterOptions: FilterOrderMaterialTemplatesDto,
+  ): Promise<[OrderMaterialTemplate[], number]> {
+    const { page, limit } = filterOptions;
+
+    const where: FilterQuery<OrderMaterialTemplateSchemaClass> = {};
+    if (!!filterOptions.orderType) where.orderType = filterOptions.orderType;
+
+    const total = await this.orderMaterialTemplateModel
+      .find(where)
+      .countDocuments();
     const entityObjects = await this.orderMaterialTemplateModel
-      .find()
-      .skip((paginationOptions.page - 1) * paginationOptions.limit)
-      .limit(paginationOptions.limit);
+      .find(where)
+      .skip((page - 1) * limit)
+      .limit(limit);
 
     return [
       entityObjects.map((entityObject) =>
