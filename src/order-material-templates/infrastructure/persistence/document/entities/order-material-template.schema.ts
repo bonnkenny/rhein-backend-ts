@@ -58,29 +58,18 @@ export class OrderMaterialTemplateSchemaClass extends EntityDocumentHelper {
   isMultiple: boolean;
 
   @ApiProperty()
-  @Prop({
-    type: [
-      {
-        type: [
-          {
-            type: {
-              label: { en: String, ch: String },
-              prop: String,
-              rules: [
-                {
-                  required: Boolean,
-                  message: { en: String, ch: String },
-                  trigger: String,
-                },
-              ],
-              value: String,
-              valueType: String,
-            },
-          },
-        ],
-      },
-    ],
-  })
+  // @Prop({
+  //   type: [
+  //     {
+  //       type: [
+  //         {
+  //           type: OrderMaterialColumn,
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // })
+  @Prop({ type: [[{ type: OrderMaterialColumn }]] })
   columns: Array<Array<OrderMaterialColumn>>;
 
   @ApiProperty()

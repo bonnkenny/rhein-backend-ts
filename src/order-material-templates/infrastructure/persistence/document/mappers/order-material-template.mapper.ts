@@ -2,6 +2,7 @@ import { OrderMaterialTemplate } from '@src/order-material-templates/domain/orde
 import { OrderMaterialTemplateSchemaClass } from '../entities/order-material-template.schema';
 import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
 import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
+import { OrderMaterialColumnsMapper } from '@src/order-material-columns/infrastructure/persistence/document/mappers/order-material-columns.mapper';
 
 export class OrderMaterialTemplateMapper {
   public static toDomain(
@@ -15,27 +16,13 @@ export class OrderMaterialTemplateMapper {
       en: raw.label?.en ?? '',
     };
     // console.log('raw columns >>>>> ', raw.columns);
+    console.log('raw columns', raw.columns);
     const domainColumns: Array<Array<OrderMaterialColumn>> = [];
     if (raw?.columns.length) {
       for (const column of raw.columns) {
         const columnArray: OrderMaterialColumn[] = [];
         for (const row of column) {
-          const rowI = new OrderMaterialColumn();
-          rowI.label = {
-            ch: row?.label?.ch ?? '',
-            en: row?.label?.en ?? '',
-          };
-          rowI.prop = row.prop;
-          rowI.rules = row.rules?.map((v) => {
-            return {
-              required: v.required,
-              message: v.message,
-              trigger: v.trigger,
-            };
-          });
-          rowI.value = undefined;
-          rowI.valueType = row.valueType;
-          // console.log('rowI', rowI);
+          const rowI = OrderMaterialColumnsMapper.toDomain(row);
           columnArray.push(rowI);
         }
         domainColumns.push(columnArray);

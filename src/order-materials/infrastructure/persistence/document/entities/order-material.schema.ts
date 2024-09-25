@@ -56,13 +56,14 @@ export class OrderMaterialSchemaClass extends EntityDocumentHelper {
               prop: String,
               rules: [
                 {
-                  rule: String,
+                  required: Boolean,
                   message: { en: String, ch: String },
                   trigger: String,
                 },
               ],
               value: String,
               valueType: String,
+              tooltip: { en: String, ch: String },
             },
           },
         ],

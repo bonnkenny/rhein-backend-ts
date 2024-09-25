@@ -1,10 +1,12 @@
 import { LabelType, RuleType } from '@src/utils/types/order-types';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsString, Validate } from 'class-validator';
+import { IsArray, IsOptional, IsString, Validate } from 'class-validator';
 import {
   IsLabelType,
   IsRuleType,
+  IsValueType,
 } from '@src/order-material-columns/validator/column-validator';
+import { LabelTypeClass } from '@src/order-material-columns/domain/order-material-column';
 
 export class CreateOrderMaterialColumnDto {
   // Don't forget to use the class-validator decorators in the DTO properties.
@@ -20,6 +22,13 @@ export class CreateOrderMaterialColumnDto {
   @IsArray()
   @Validate(IsRuleType, { each: true })
   rules: RuleType[];
-  @ApiProperty({ type: [String, Boolean, Number], nullable: true })
-  value?: string | number | null | boolean;
+  @ApiProperty({ type: [String, Number, Boolean], nullable: true })
+  @Validate(IsValueType)
+  @IsOptional()
+  value?: string | number | boolean | null;
+
+  @ApiProperty({ type: LabelTypeClass })
+  @Validate(IsLabelType)
+  @IsOptional()
+  tooltip?: LabelType;
 }

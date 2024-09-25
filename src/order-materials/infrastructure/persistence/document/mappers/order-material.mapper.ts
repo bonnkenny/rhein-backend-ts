@@ -3,6 +3,7 @@ import { OrderMaterialSchemaClass } from '../entities/order-material.schema';
 import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
 import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
 import { Types } from 'mongoose';
+import { OrderMaterialColumnsMapper } from '@src/order-material-columns/infrastructure/persistence/document/mappers/order-material-columns.mapper';
 
 export class OrderMaterialMapper {
   public static toDomain(raw: OrderMaterialSchemaClass): OrderMaterial {
@@ -21,22 +22,7 @@ export class OrderMaterialMapper {
       for (const column of raw.columns) {
         const columnArray: OrderMaterialColumn[] = [];
         for (const row of column) {
-          const rowI = new OrderMaterialColumn();
-          rowI.label = {
-            ch: row?.label?.ch ?? '',
-            en: row?.label?.en ?? '',
-          };
-          rowI.prop = row.prop;
-          rowI.rules = row.rules?.map((v) => {
-            return {
-              required: v.required,
-              message: v.message,
-              trigger: v.trigger,
-            };
-          });
-          rowI.value = row.value ?? undefined;
-          rowI.valueType = row.valueType;
-          // console.log('rowI', rowI);
+          const rowI = OrderMaterialColumnsMapper.toDomain(row);
           columnArray.push(rowI);
         }
         domainColumns.push(columnArray);

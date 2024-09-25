@@ -77,5 +77,5 @@ export class Order {
   @ApiProperty({
     type: [OrderMaterial],
   })
-  materialIds?: OrderMaterial[];
+  materials?: OrderMaterial[];
 }

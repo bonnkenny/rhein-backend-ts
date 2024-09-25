@@ -3,12 +3,14 @@
 
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateOrderMaterialColumnDto } from './create-order-material-column.dto';
-import { IsArray, IsString, Validate } from 'class-validator';
+import { IsArray, IsOptional, IsString, Validate } from 'class-validator';
 import {
   IsLabelType,
   IsRuleType,
+  IsValueType,
 } from '@src/order-material-columns/validator/column-validator';
 import { LabelType, RuleType } from '@src/utils/types/order-types';
+import { LabelTypeClass } from '@src/order-material-columns/domain/order-material-column';
 
 export class UpdateOrderMaterialColumnDto extends PartialType(
   CreateOrderMaterialColumnDto,
@@ -25,6 +27,12 @@ export class UpdateOrderMaterialColumnDto extends PartialType(
   @IsArray()
   @Validate(IsRuleType, { each: true })
   rules: RuleType[];
-  @ApiProperty({ type: [String, Boolean, Number], nullable: true })
-  value?: string | number | null | boolean;
+  @ApiProperty({ type: String, nullable: true })
+  @Validate(IsValueType)
+  @IsOptional()
+  value?: string | null;
+  @ApiProperty({ type: LabelTypeClass })
+  @Validate(IsLabelType)
+  @IsOptional()
+  tooltip?: LabelType;
 }

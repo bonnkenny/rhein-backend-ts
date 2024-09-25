@@ -80,3 +80,27 @@ export class IsColumnsType implements ValidatorConstraintInterface {
       .join('; ');
   }
 }
+
+@ValidatorConstraint({ async: false })
+export class IsValueType implements ValidatorConstraintInterface {
+  validate(value: any): boolean {
+    if (Array.isArray(value)) {
+      return false;
+    }
+    //判断value是否为 String or Boolean or Number
+    return (
+      typeof value === 'string' ||
+      typeof value === 'boolean' ||
+      typeof value === 'number'
+    );
+  }
+
+  defaultMessage(): string {
+    return 'The value must be type of String or Boolean or Number.';
+  }
+  private formatErrors(errors: any[]): string {
+    return errors
+      .map((err) => Object.values(err.constraints).join(', '))
+      .join('; ');
+  }
+}

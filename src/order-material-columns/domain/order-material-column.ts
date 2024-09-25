@@ -10,6 +10,7 @@ import {
 import {
   IsLabelType,
   IsRuleType,
+  IsValueType,
 } from '@src/order-material-columns/validator/column-validator';
 
 export const defaultRulesTemplate: RuleType[] = [
@@ -23,6 +24,11 @@ export const defaultRulesTemplate: RuleType[] = [
 export const defaultLabelTemplate: LabelType = {
   en: 'field',
   ch: '字段',
+};
+
+export const defaultTooltipTemplate: LabelType = {
+  en: '',
+  ch: '',
 };
 
 // 定义 LabelType 类型
@@ -65,9 +71,10 @@ export class OrderMaterialColumn {
   @IsNotEmpty()
   valueType: string;
 
-  @ApiProperty({ type: [String, Boolean, Number], nullable: true })
+  @ApiProperty({ type: [String, Number, Boolean], nullable: true })
+  @Validate(IsValueType)
   @IsOptional()
-  value: string | boolean | number | undefined;
+  value?: string | number | boolean | null;
 
   @ApiProperty({
     type: [RuleTypeClass],
@@ -78,4 +85,9 @@ export class OrderMaterialColumn {
   @IsNotEmpty()
   @IsArray()
   rules: Array<RuleType>;
+
+  @ApiProperty({ type: LabelTypeClass })
+  @IsNotEmpty()
+  @IsOptional()
+  tooltip?: LabelType;
 }

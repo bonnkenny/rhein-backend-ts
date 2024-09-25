@@ -54,7 +54,7 @@ export class OrdersService {
   async createWithMaterial(
     user: JwtPayloadType,
     createOrderDto: CreateOrderDto,
-  ) {
+  ): Promise<Order & { materials: OrderMaterial[] }> {
     // console.log('create order dto', createOrderDto);
     const { email } = createOrderDto;
     const orderUser = await this.usersService.findByFilter({
