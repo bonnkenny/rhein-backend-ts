@@ -79,6 +79,7 @@ export class OrderMaterialColumn {
       { type: 'null' },
     ],
     nullable: true,
+    required: false,
   })
   @Validate(IsValueType)
   @IsOptional()
@@ -94,7 +95,10 @@ export class OrderMaterialColumn {
   @IsArray()
   rules: Array<RuleType>;
 
-  @ApiProperty({ type: LabelTypeClass })
+  @ApiProperty({
+    type: LabelTypeClass,
+    required: false,
+  })
   @IsNotEmpty()
   @IsOptional()
   tooltip?: LabelType;

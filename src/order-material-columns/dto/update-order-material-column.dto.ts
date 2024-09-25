@@ -34,12 +34,13 @@ export class UpdateOrderMaterialColumnDto extends PartialType(
       { type: 'boolean' },
       { type: 'null' },
     ],
+    required: false,
     nullable: true,
   })
   @Validate(IsValueType)
   @IsOptional()
   value?: string | number | null | boolean;
-  @ApiProperty({ type: LabelTypeClass })
+  @ApiProperty({ type: LabelTypeClass, required: false })
   @Validate(IsLabelType)
   @IsOptional()
   tooltip?: LabelType;

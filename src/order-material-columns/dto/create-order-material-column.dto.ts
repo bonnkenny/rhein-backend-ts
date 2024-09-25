@@ -29,13 +29,17 @@ export class CreateOrderMaterialColumnDto {
       { type: 'boolean' },
       { type: 'null' },
     ],
+    required: false,
     nullable: true,
   })
   @Validate(IsValueType)
   @IsOptional()
   value?: string | number | boolean | null;
 
-  @ApiProperty({ type: LabelTypeClass })
+  @ApiProperty({
+    type: LabelTypeClass,
+    required: false,
+  })
   @Validate(IsLabelType)
   @IsOptional()
   tooltip?: LabelType;
