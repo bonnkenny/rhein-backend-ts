@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { now, HydratedDocument, Types } from 'mongoose';
+import { now, HydratedDocument, Types, Query } from 'mongoose';
 
 // We use class-transformer in schema and domain entity.
 // We duplicate these rules because you can choose not to use adapters
@@ -90,6 +90,13 @@ export class UserSchemaClass extends EntityDocumentHelper {
   lastName: string | null;
 
   @ApiProperty({
+    type: String,
+    example: 'John Doe',
+  })
+  @Prop({ type: String, maxlength: 50 })
+  username: string;
+
+  @ApiProperty({
     type: () => FileSchemaClass,
   })
   @Prop({
@@ -138,11 +145,14 @@ export class UserSchemaClass extends EntityDocumentHelper {
   @ApiProperty()
   @Prop()
   deletedAt: Date;
-
-  username?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserSchemaClass);
+
+// soft delete
+UserSchema.pre<Query<UserSchemaClass, Document>>(/^find/, function () {
+  this.where({ deletedAt: null }); // 自动过滤已删除文档
+});
 
 UserSchema.index({ baseRole: 1 });
 UserSchema.index({ email: 1, deletedAt: 1, baseRole: 1 }, { unique: true });
@@ -150,9 +160,9 @@ UserSchema.index({ email: 1, deletedAt: 1, baseRole: 1 }, { unique: true });
 UserSchema.virtual('previousPassword').get(function () {
   return this.password;
 });
-UserSchema.virtual('username').get(function () {
-  return `${this.firstName} ${this.lastName}`;
-});
+// UserSchema.virtual('username').get(function () {
+//   return `${this.firstName} ${this.lastName}`;
+// });
 UserSchema.virtual('roles', {
   ref: RoleSchemaClass.name,
   localField: 'roleIds',

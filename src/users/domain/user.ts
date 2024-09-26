@@ -41,23 +41,23 @@ export class User {
   @Expose({ groups: ['me', 'admin'] })
   socialId?: string | null;
 
-  @ApiProperty({
-    type: String,
-    example: 'John',
-  })
-  firstName: string | null;
-
-  @ApiProperty({
-    type: String,
-    example: 'Doe',
-  })
-  lastName: string | null;
+  // @ApiProperty({
+  //   type: String,
+  //   example: 'John',
+  // })
+  // firstName: string | null;
+  //
+  // @ApiProperty({
+  //   type: String,
+  //   example: 'Doe',
+  // })
+  // lastName: string | null;
 
   @ApiProperty({
     type: String,
     example: 'John Doe',
   })
-  username?: string;
+  username: string;
 
   @ApiProperty({
     type: () => FileType,

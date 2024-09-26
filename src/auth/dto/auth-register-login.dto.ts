@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { lowerCaseTransformer } from '../../utils/transformers/lower-case.transformer';
+import { lowerCaseTransformer } from '@src/utils/transformers/lower-case.transformer';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 
 export class AuthRegisterLoginDto {
@@ -14,15 +14,19 @@ export class AuthRegisterLoginDto {
   @MinLength(6)
   password: string;
 
-  @ApiProperty({ example: 'John' })
-  @IsNotEmpty()
-  firstName: string;
+  // @ApiProperty({ example: 'John' })
+  // @IsNotEmpty()
+  // firstName: string;
+  //
+  // @ApiProperty({ example: 'Doe' })
+  // @IsNotEmpty()
+  // lastName: string;
 
-  @ApiProperty({ example: 'Doe' })
+  @ApiProperty({ example: 'John Doe', type: String })
   @IsNotEmpty()
-  lastName: string;
+  username: string;
 
-  @ApiProperty({ example: 'user' })
+  @ApiProperty({ example: BaseRoleEnum.SUPPLIER })
   @Transform(({ value }) => {
     return !value ? BaseRoleEnum.SUPPLIER : value;
   })

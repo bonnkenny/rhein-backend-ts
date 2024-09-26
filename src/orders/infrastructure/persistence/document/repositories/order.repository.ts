@@ -36,11 +36,11 @@ export class OrderDocumentRepository implements OrderRepository {
         console.log('key', key);
         if (!!filterOrderOptions[key]) {
           switch (true) {
-            case ['parentId', 'userId', 'fromUserId'].indexOf(key) > -1:
+            case ['parentId', 'userId', 'fromUserId'].includes(key):
               if (isValidMongoId(filterOrderOptions[key]))
                 where[key] = toMongoId(filterOrderOptions[key]);
               break;
-            case ['orderNo', 'orderName'].indexOf(key) > -1:
+            case ['orderNo', 'orderName'].includes(key):
               where[key] = new RegExp(`.*${filterOrderOptions[key]}.*`, 'i');
               break;
             default:

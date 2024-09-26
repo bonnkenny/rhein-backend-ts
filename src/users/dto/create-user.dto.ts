@@ -31,13 +31,18 @@ export class CreateUserDto {
 
   socialId?: string | null;
 
-  @ApiProperty({ example: 'John', type: String })
-  @IsNotEmpty()
-  firstName: string | null;
+  // @ApiProperty({ example: 'John', type: String })
+  // @IsNotEmpty()
+  // firstName: string | null;
+  //
+  // @ApiProperty({ example: 'Doe', type: String })
+  // @IsNotEmpty()
+  // lastName: string | null;
 
-  @ApiProperty({ example: 'Doe', type: String })
+  @ApiProperty({ example: 'John Doe', type: String })
   @IsNotEmpty()
-  lastName: string | null;
+  @IsString()
+  username: string;
 
   @ApiPropertyOptional({ type: () => FileDto })
   @IsMongoId()

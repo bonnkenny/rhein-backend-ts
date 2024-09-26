@@ -73,8 +73,7 @@ export class OrdersService {
         status: UserStatusEnum.ACTIVE,
         password: password,
         provider: 'email',
-        firstName: 'Supplier',
-        lastName: random(1000, 9999).toString(),
+        username: 'Supplier' + random(1000, 9999).toString(),
       });
       orderUserId = createOrderUser?.id.toString();
     }

@@ -158,9 +158,12 @@ export class UsersDocumentRepository implements UserRepository {
   }
 
   async remove(id: User['id']): Promise<void> {
-    await this.usersModel.deleteOne({
-      _id: id.toString(),
-    });
+    await this.usersModel.updateOne(
+      {
+        _id: id.toString(),
+      },
+      { $set: { deletedAt: new Date() } },
+    );
   }
 
   async findByFilter(

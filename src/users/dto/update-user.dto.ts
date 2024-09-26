@@ -13,13 +13,13 @@ import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiPropertyOptional({ example: 'test1@example.com', type: String })
   @Transform(lowerCaseTransformer)
-  @IsOptional()
   @IsEmail()
+  @IsOptional()
   email?: string | null;
 
   @ApiPropertyOptional()
-  @IsOptional()
   @MinLength(6)
+  @IsOptional()
   password?: string;
 
   provider?: string;
@@ -38,12 +38,20 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsOptional()
   photo?: FileDto | null;
 
-  @ApiPropertyOptional({ type: String, enum: Object.values(BaseRoleEnum) })
+  @ApiPropertyOptional({
+    type: String,
+    enum: Object.values(BaseRoleEnum),
+    required: false,
+  })
   @IsEnum(Object.keys(BaseRoleEnum), { message: 'Invalid base role' })
   @IsOptional()
   baseRole?: string;
 
-  @ApiPropertyOptional({ type: Number, enum: Object.values(UserStatusEnum) })
+  @ApiPropertyOptional({
+    type: String,
+    enum: Object.values(UserStatusEnum),
+    required: false,
+  })
   @IsEnum(Object.keys(UserStatusEnum), { message: 'Invalid status' })
   @IsOptional()
   status?: string;

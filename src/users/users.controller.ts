@@ -47,19 +47,12 @@ import {
   infinityPagination,
   infinityResponse,
 } from '../utils/infinity-response';
-// import { BaseRolesGuard } from '@src/utils/guards/base-roles.guard';
-// import { BaseRoles } from '@src/utils/guards/base-roles.decorator';
-// import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+
 import { GroupTypesEnum } from '@src/utils/enums/groups.enum';
 import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
-// import { OrderMapper } from '@src/orders/infrastructure/persistence/document/mappers/order.mapper';
-// import { UserMapper } from '@src/users/infrastructure/persistence/document/mappers/user.mapper';
 
 @ApiBearerAuth()
-// @BaseRoles(BaseRoleEnum.ADMIN, BaseRoleEnum.SUPER)
-// @UseGuards(AuthGuard('jwt'), RolesGuard)
-// @UseGuards(AuthGuard('jwt'), BaseRolesGuard)
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('Users')
 @Controller({
@@ -155,6 +148,7 @@ export class UsersController {
     @Param('id') id: User['id'],
     @Body() updateProfileDto: UpdateUserDto,
   ): Promise<User | null> {
+    console.log('updateProfileDto', updateProfileDto);
     return this.usersService.update(id, updateProfileDto);
   }
 

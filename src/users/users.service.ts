@@ -222,19 +222,7 @@ export class UsersService {
       }
     }
 
-    if (clonedPayload.status) {
-      const statusObject = Object.values(UserStatusEnum)
-        .map(String)
-        .includes(String(clonedPayload.status));
-      if (!statusObject) {
-        throw new UnprocessableEntityException({
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            status: 'statusNotExists',
-          },
-        });
-      }
-    }
+    console.log('update body', clonedPayload);
 
     return this.usersRepository.update(id, clonedPayload);
   }
