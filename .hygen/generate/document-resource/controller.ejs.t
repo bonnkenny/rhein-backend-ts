@@ -24,20 +24,14 @@ import {
 } from '@nestjs/swagger';
 import { <%= name %> } from './domain/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>';
 import { AuthGuard } from '@nestjs/passport';
-# import {
-#   InfinityPaginationResponse,
-#   InfinityPaginationResponseDto,
-# } from '../utils/dto/infinity-pagination-response.dto';
-# import { infinityPagination } from '../utils/infinity-pagination';
+
 import {
   InfinityApiResponse,
-  InfinityApiResponseDto,
   InfinityPaginationResponse,
   InfinityPaginationResponseDto,
 } from '../utils/dto/infinity-base-response.dto';
 
 import {
-  errorBody,
   infinityPagination,
   infinityResponse,
 } from '../utils/infinity-response';
@@ -59,7 +53,7 @@ export class <%= h.inflection.transform(name, ['pluralize']) %>Controller {
     type: InfinityApiResponse(<%= name %>),
   })
   create(@Body() create<%= name %>Dto: Create<%= name %>Dto) {
-    const entity this.<%= h.inflection.camelize(h.inflection.pluralize(name), true) %>Service.create(create<%= name %>Dto);
+    const entity = this.<%= h.inflection.camelize(h.inflection.pluralize(name), true) %>Service.create(create<%= name %>Dto);
     return infinityResponse(entity);
   }
 
@@ -100,7 +94,7 @@ export class <%= h.inflection.transform(name, ['pluralize']) %>Controller {
     @Param('id') id: string,
     @Body() update<%= name %>Dto: Update<%= name %>Dto,
   ) {
-    const entity this.<%= h.inflection.camelize(h.inflection.pluralize(name), true) %>Service.update(id, update<%= name %>Dto);
+    const entity = this.<%= h.inflection.camelize(h.inflection.pluralize(name), true) %>Service.update(id, update<%= name %>Dto);
     return infinityResponse(entity);
   }
 
