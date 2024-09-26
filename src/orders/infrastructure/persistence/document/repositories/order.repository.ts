@@ -53,6 +53,7 @@ export class OrderDocumentRepository implements OrderRepository {
     const entityObjects = await this.orderModel
       .find(where)
       .skip((page - 1) * limit)
+      .sort({ createdAt: -1 })
       .limit(limit);
 
     return [

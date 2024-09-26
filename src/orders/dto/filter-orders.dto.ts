@@ -1,4 +1,7 @@
-import { InfinityFindAllDto } from '@src/utils/dto/infinity-query-all.dto';
+import {
+  InfinityFindAllDto,
+  InfinitySortDto,
+} from '@src/utils/dto/infinity-query-all.dto';
 import { IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import {
@@ -6,6 +9,7 @@ import {
   OrderStatusEnum,
   OrderTypeEnum,
 } from '@src/utils/enums/order-type.enum';
+import { OrderSchemaClass } from '@src/orders/infrastructure/persistence/document/entities/order.schema';
 
 export class FilterOrdersDto extends InfinityFindAllDto {
   @ApiProperty({
@@ -80,3 +84,5 @@ export class FilterOrdersDto extends InfinityFindAllDto {
   @IsOptional()
   fillStatus?: string;
 }
+
+export class SortOrdersDto extends InfinitySortDto<OrderSchemaClass> {}
