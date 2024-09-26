@@ -29,27 +29,26 @@ export class OrderDocumentRepository implements OrderRepository {
   ): Promise<[Order[], number]> {
     const { page, limit } = filterOrderOptions;
     const where: FilterQuery<OrderSchemaClass> = {};
-    if (filterOrderOptions.checkStatus) {
-      where.checkStatus = filterOrderOptions.checkStatus;
-    }
-    if (filterOrderOptions.fillStatus) {
-      where.fillStatus = filterOrderOptions.fillStatus;
-    }
-    if (isValidMongoId(filterOrderOptions.parentId)) {
-      where.parentId = toMongoId(filterOrderOptions.parentId);
-    }
-    if (isValidMongoId(filterOrderOptions.userId)) {
-      where.userId = toMongoId(filterOrderOptions.userId);
-    }
-    if (isValidMongoId(filterOrderOptions.fromUserId)) {
-      where.fromUserId = toMongoId(filterOrderOptions.fromUserId);
-    }
-    if (filterOrderOptions.orderNo) {
-      where.orderNo = new RegExp(filterOrderOptions.orderNo, 'i');
-    }
-    if (filterOrderOptions.orderName) {
-      where.orderName = new RegExp(filterOrderOptions.orderName, 'i');
-    }
+
+    Object.keys(filterOrderOptions)
+      .filter((k) => k !== 'page' && k !== 'limit')
+      .forEach((key) => {
+        console.log('key', key);
+        if (!!filterOrderOptions[key]) {
+          switch (true) {
+            case ['parentId', 'userId', 'fromUserId'].indexOf(key) > -1:
+              if (isValidMongoId(filterOrderOptions[key]))
+                where[key] = toMongoId(filterOrderOptions[key]);
+              break;
+            case ['orderNo', 'orderName'].indexOf(key) > -1:
+              where[key] = new RegExp(`.*${filterOrderOptions[key]}.*`, 'i');
+              break;
+            default:
+              where[key] = filterOrderOptions[key];
+          }
+        }
+      });
+    console.log('where', where);
     const total = await this.orderModel.find(where).countDocuments();
     const entityObjects = await this.orderModel
       .find(where)

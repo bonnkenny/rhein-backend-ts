@@ -4,12 +4,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   OrderFillStatusEnum,
   OrderStatusEnum,
+  OrderTypeEnum,
 } from '@src/utils/enums/order-type.enum';
 
 export class FilterOrdersDto extends InfinityFindAllDto {
   @ApiProperty({
     type: String,
     description: 'Parent order id',
+    required: false,
   })
   // @IsMongoId()
   @IsOptional()
@@ -18,6 +20,7 @@ export class FilterOrdersDto extends InfinityFindAllDto {
   @ApiProperty({
     type: String,
     description: 'User id',
+    required: false,
   })
   // @IsMongoId()
   @IsOptional()
@@ -26,6 +29,7 @@ export class FilterOrdersDto extends InfinityFindAllDto {
   @ApiProperty({
     type: String,
     description: 'From user id',
+    required: false,
   })
   // @IsMongoId()
   @IsOptional()
@@ -34,19 +38,24 @@ export class FilterOrdersDto extends InfinityFindAllDto {
   @ApiProperty({
     type: String,
     description: '订单名称',
+    required: false,
   })
+  @IsOptional()
   orderName?: string;
 
   @ApiProperty({
     type: String,
     description: '订单编号',
+    required: false,
   })
+  @IsOptional()
   orderNo?: string;
 
   @ApiProperty({
     type: String,
     enum: Object.keys(OrderStatusEnum),
     description: '审核状态',
+    required: false,
   })
   // @IsEnum(Object.keys(OrderStatusEnum))
   @IsOptional()
@@ -54,8 +63,18 @@ export class FilterOrdersDto extends InfinityFindAllDto {
 
   @ApiProperty({
     type: String,
+    enum: Object.keys(OrderTypeEnum),
+    description: '订单类型',
+    required: false,
+  })
+  @IsOptional()
+  orderType?: string;
+
+  @ApiProperty({
+    type: String,
     enum: Object.keys(OrderFillStatusEnum),
     description: '填写状态',
+    required: false,
   })
   // @IsEnum(Object.keys(OrderFillStatusEnum))
   @IsOptional()

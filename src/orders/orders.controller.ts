@@ -76,6 +76,7 @@ export class OrdersController {
     if (baseRole === BaseRoleEnum.SUPPLIER) {
       query = { ...query, userId: id };
     }
+    console.log('query', query);
     const [items, total] =
       await this.ordersService.findAllWithPagination(query);
     return infinityPagination(items, total, { page, limit });
