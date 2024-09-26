@@ -96,7 +96,7 @@ export class UsersController {
   async findAll(
     @Query() query: FilterUserDto,
   ): Promise<InfinityPaginationResponseDto<User>> {
-    console.log('query', query);
+    // console.log('query', query);
     const [items, total] =
       await this.usersService.findManyWithPagination(query);
     return infinityPagination(items, total, query);
@@ -124,7 +124,7 @@ export class UsersController {
     type: InfinityApiResponse(User),
   })
   async checkSupplier(@Query('email') email: string) {
-    console.log('email', email);
+    // console.log('email', email);
 
     if (!email) {
       throw new BadRequestException(errorBody('Email is required'));

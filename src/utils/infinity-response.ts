@@ -24,7 +24,7 @@ export const infinityPagination = <T>(
   success?: boolean,
   message?: string,
 ): InfinityPaginationResponseDto<T> => {
-  console.log('options', options);
+  // console.log('options', options);
   const paginationData: PaginationDataDto<T> = {
     items: data,
     pageSize: options.limit,

@@ -89,6 +89,7 @@ export class OrdersService {
     const materials: OrderMaterial[] = [];
     if (templates.length) {
       for (const template of templates) {
+        // console.log('template >>> ', template);
         const material = await this.orderMaterialService.create({
           orderId: order.id.toString(),
           orderType: orderType,

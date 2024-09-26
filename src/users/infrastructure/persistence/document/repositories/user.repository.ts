@@ -20,7 +20,7 @@ export class UsersDocumentRepository implements UserRepository {
   async create(data: User): Promise<User> {
     const persistenceModel = UserMapper.toPersistence(data);
     const createdUser = new this.usersModel(persistenceModel);
-    console.log('user persistenceModel', persistenceModel);
+    // console.log('user persistenceModel', persistenceModel);
     const userObject = await createdUser.save();
     return UserMapper.toDomain(userObject);
   }
@@ -29,7 +29,7 @@ export class UsersDocumentRepository implements UserRepository {
     filterOptions: FilterUserDto,
   ): Promise<[User[], number]> {
     const { page, limit } = filterOptions;
-    console.log('filterOptions', filterOptions);
+    // console.log('filterOptions', filterOptions);
     const where: FilterQuery<UserSchemaClass> = {};
     Object.keys(filterOptions)
       .filter((v) => v !== 'page' && v !== 'limit')
@@ -57,7 +57,7 @@ export class UsersDocumentRepository implements UserRepository {
         }
       });
 
-    console.log('where', where);
+    // console.log('where', where);
 
     const count = await this.usersModel.countDocuments(where);
     const userObjects = await this.usersModel

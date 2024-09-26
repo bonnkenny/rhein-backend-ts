@@ -57,6 +57,5 @@ RoleSchema.virtual('menus', {
 });
 
 RoleSchema.path('type').get(function (v) {
-  console.log('asdssssss');
   return BaseRoleEnum[v] ?? undefined;
 });

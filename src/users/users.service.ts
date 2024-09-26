@@ -123,7 +123,7 @@ export class UsersService {
     }
 
     clonedPayload.status = UserStatusEnum.ACTIVE;
-    console.log('cloned payload', clonedPayload);
+    // console.log('cloned payload', clonedPayload);
 
     return this.usersRepository.create(clonedPayload);
   }

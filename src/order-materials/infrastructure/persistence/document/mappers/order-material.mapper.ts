@@ -1,4 +1,4 @@
-import { OrderMaterial } from '../../../../domain/order-material';
+import { OrderMaterial } from '@src/order-materials/domain/order-material';
 import { OrderMaterialSchemaClass } from '../entities/order-material.schema';
 import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
 import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
@@ -77,7 +77,7 @@ export class OrderMaterialMapper {
     persistenceSchema.createdAt = domainEntity.createdAt;
     persistenceSchema.updatedAt = domainEntity.updatedAt;
 
-    console.log('order material persistenceSchema >>', persistenceSchema);
+    // console.log('order material persistenceSchema >>', persistenceSchema);
 
     return persistenceSchema;
   }

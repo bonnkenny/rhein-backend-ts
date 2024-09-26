@@ -38,7 +38,7 @@ export class RolesService {
     const roles = await this.roleRepository.findAll({
       filterOptions: filterOptions ?? null,
     });
-    console.log('roles >>>', roles);
+    // console.log('roles >>>', roles);
     const menuArr: Menu[] = [];
     const menusIds: Set<string> = new Set();
     roles.forEach((role) => {
