@@ -7,6 +7,7 @@ import { Update<%= name %>Dto } from './dto/update-<%= h.inflection.transform(na
 import { <%= name %>Repository } from './infrastructure/persistence/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>.repository';
 import { IPaginationOptions } from '../utils/types/pagination-options';
 import { <%= name %> } from './domain/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>';
+import { FindAll<%= h.inflection.transform(name, ['pluralize']) %>Dto } from './dto/find-all-<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>.dto';
 
 @Injectable()
 export class <%= h.inflection.transform(name, ['pluralize']) %>Service {
@@ -16,17 +17,8 @@ export class <%= h.inflection.transform(name, ['pluralize']) %>Service {
     return this.<%= h.inflection.camelize(name, true) %>Repository.create(create<%= name %>Dto);
   }
 
-  findAllWithPagination({
-    paginationOptions,
-  }: {
-    paginationOptions: IPaginationOptions;
-  }) {
-    return this.<%= h.inflection.camelize(name, true) %>Repository.findAllWithPagination({
-      paginationOptions: {
-        page: paginationOptions.page,
-        limit: paginationOptions.limit,
-      },
-    });
+  findAllWithPagination(filterOptions: FindAll<%= h.inflection.transform(name, ['pluralize']) %>Dto) {
+    return this.<%= h.inflection.camelize(name, true) %>Repository.findAllWithPagination(filterOptions);
   }
 
   findOne(id: <%= name %>['id']) {

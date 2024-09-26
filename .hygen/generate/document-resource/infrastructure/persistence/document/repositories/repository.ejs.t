@@ -2,14 +2,15 @@
 to: src/<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>/infrastructure/persistence/document/repositories/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>.repository.ts
 ---
 import { Injectable } from '@nestjs/common';
-import { NullableType } from '../../../../../utils/types/nullable.type';
+import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, FilterQuery } from 'mongoose';
 import { <%= name %>SchemaClass } from '../entities/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>.schema';
 import { <%= name %>Repository } from '../../<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>.repository';
 import { <%= name %> } from '../../../../domain/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>';
 import { <%= name %>Mapper } from '../mappers/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>.mapper';
-import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { FindAll<%= h.inflection.transform(name, ['pluralize']) %>Dto } from '../../../../dto/find-all-<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>.dto';
+
 
 @Injectable()
 export class <%= name %>DocumentRepository implements <%= name %>Repository {
@@ -25,19 +26,22 @@ export class <%= name %>DocumentRepository implements <%= name %>Repository {
     return <%= name %>Mapper.toDomain(entityObject);
   }
 
-  async findAllWithPagination({
-    paginationOptions,
-  }: {
-    paginationOptions: IPaginationOptions;
-  }): Promise<<%= name %>[]> {
-    const entityObjects = await this.<%= h.inflection.camelize(name, true) %>Model
-      .find()
-      .skip((paginationOptions.page - 1) * paginationOptions.limit)
-      .limit(paginationOptions.limit);
+  async findAllWithPagination(filterOptions: FindAll<%= h.inflection.transform(name, ['pluralize']) %>Dto): Promise<[<%= name %>[], number]> {
+    const {page, limit} = filterOptions;
 
-    return entityObjects.map((entityObject) =>
+    const where: FilterQuery<<%= name %>SchemaClass> = {};
+
+    const totalCount = await this.<%= h.inflection.camelize(name, true) %>Model.find(where).countDocuments();
+
+    const entityObjects = await this.<%= h.inflection.camelize(name, true) %>Model
+      .find(where)
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const items = entityObjects.map((entityObject) =>
       <%= name %>Mapper.toDomain(entityObject),
     );
+    return [items, totalCount];
   }
 
   async findById(id: <%= name %>['id']): Promise<NullableType<<%= name %>>> {

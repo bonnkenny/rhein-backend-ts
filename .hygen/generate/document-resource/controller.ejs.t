@@ -24,11 +24,24 @@ import {
 } from '@nestjs/swagger';
 import { <%= name %> } from './domain/<%= h.inflection.transform(name, ['underscore', 'dasherize']) %>';
 import { AuthGuard } from '@nestjs/passport';
+# import {
+#   InfinityPaginationResponse,
+#   InfinityPaginationResponseDto,
+# } from '../utils/dto/infinity-pagination-response.dto';
+# import { infinityPagination } from '../utils/infinity-pagination';
 import {
+  InfinityApiResponse,
+  InfinityApiResponseDto,
   InfinityPaginationResponse,
   InfinityPaginationResponseDto,
-} from '../utils/dto/infinity-pagination-response.dto';
-import { infinityPagination } from '../utils/infinity-pagination';
+} from '../utils/dto/infinity-base-response.dto';
+
+import {
+  errorBody,
+  infinityPagination,
+  infinityResponse,
+} from '../utils/infinity-response';
+
 import { FindAll<%= h.inflection.transform(name, ['pluralize']) %>Dto } from './dto/find-all-<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>.dto';
 
 @ApiTags('<%= h.inflection.transform(name, ['pluralize', 'humanize']) %>')
@@ -43,10 +56,11 @@ export class <%= h.inflection.transform(name, ['pluralize']) %>Controller {
 
   @Post()
   @ApiCreatedResponse({
-    type: <%= name %>,
+    type: InfinityApiResponse(<%= name %>),
   })
   create(@Body() create<%= name %>Dto: Create<%= name %>Dto) {
-    return this.<%= h.inflection.camelize(h.inflection.pluralize(name), true) %>Service.create(create<%= name %>Dto);
+    const entity this.<%= h.inflection.camelize(h.inflection.pluralize(name), true) %>Service.create(create<%= name %>Dto);
+    return infinityResponse(entity);
   }
 
   @Get()
@@ -56,21 +70,8 @@ export class <%= h.inflection.transform(name, ['pluralize']) %>Controller {
   async findAll(
     @Query() query: FindAll<%= h.inflection.transform(name, ['pluralize']) %>Dto,
   ): Promise<InfinityPaginationResponseDto<<%= name %>>> {
-    const page = query?.page ?? 1;
-    let limit = query?.limit ?? 10;
-    if (limit > 50) {
-      limit = 50;
-    }
-
-    return infinityPagination(
-      await this.<%= h.inflection.camelize(h.inflection.pluralize(name), true) %>Service.findAllWithPagination({
-        paginationOptions: {
-          page,
-          limit,
-        },
-      }),
-      { page, limit },
-    );
+    const [items, total] = await this.<%= h.inflection.camelize(h.inflection.pluralize(name), true) %>Service.findAllWithPagination(query);
+    return infinityPagination(items, total, query);
   }
 
   @Get(':id')
@@ -93,14 +94,16 @@ export class <%= h.inflection.transform(name, ['pluralize']) %>Controller {
     required: true,
   })
   @ApiOkResponse({
-    type: <%= name %>,
+    type: InfinityApiResponse(<%= name %>),
   })
   update(
     @Param('id') id: string,
     @Body() update<%= name %>Dto: Update<%= name %>Dto,
   ) {
-    return this.<%= h.inflection.camelize(h.inflection.pluralize(name), true) %>Service.update(id, update<%= name %>Dto);
+    const entity this.<%= h.inflection.camelize(h.inflection.pluralize(name), true) %>Service.update(id, update<%= name %>Dto);
+    return infinityResponse(entity);
   }
+
 
   @Delete(':id')
   @ApiParam({
