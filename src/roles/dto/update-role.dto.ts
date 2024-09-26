@@ -12,6 +12,7 @@ import {
 } from 'class-validator';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { Transform } from 'class-transformer';
+import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 
 export class UpdateRoleDto extends PartialType(CreateRoleDto) {
   @ApiProperty({ type: String })
@@ -30,6 +31,12 @@ export class UpdateRoleDto extends PartialType(CreateRoleDto) {
     return BaseRoleEnum[value];
   })
   type?: string;
+
+  @ApiProperty({ type: String, enum: Object.keys(UserStatusEnum) })
+  @IsEnum(UserStatusEnum)
+  @IsString()
+  @IsOptional()
+  status?: string;
 
   @ApiProperty({ type: String })
   @IsString()

@@ -17,12 +17,14 @@ import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { JwtPayloadType } from '@src/auth/strategies/types/jwt-payload.type';
 import { errorBody } from '@src/utils/infinity-response';
 import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
+import { SessionService } from '@src/session/session.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly usersRepository: UserRepository,
     private readonly filesService: FilesService,
+    private sessionService: SessionService,
   ) {}
 
   async register(createProfileDto: CreateUserDto): Promise<User> {
@@ -220,6 +222,13 @@ export class UsersService {
           },
         });
       }
+    }
+
+    if (
+      clonedPayload?.status &&
+      clonedPayload?.status === UserStatusEnum.INACTIVE
+    ) {
+      await this.sessionService.deleteByUserId({ userId: id });
     }
 
     console.log('update body', clonedPayload);

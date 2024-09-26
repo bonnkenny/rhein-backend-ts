@@ -5,7 +5,10 @@ import { FilterRolesOptionDto } from '@src/roles/dto/filter-roles-option.dto';
 
 export abstract class RoleRepository {
   abstract create(
-    data: Omit<Role, 'id' | 'createdAt' | 'updatedAt'>,
+    data: Omit<
+      Role,
+      'id' | 'description' | 'status' | 'createdAt' | 'updatedAt'
+    >,
   ): Promise<Role>;
 
   abstract findAllWithPagination(

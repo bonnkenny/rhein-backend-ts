@@ -32,6 +32,9 @@ export class RoleDocumentRepository implements RoleRepository {
     if (!!filterOptions?.type) {
       where.type = filterOptions.type;
     }
+    if (!!filterOptions?.status) {
+      where.status = filterOptions.status;
+    }
     if (!!filterOptions?.ids) {
       where.id = { $in: filterOptions.ids.map((v) => new Types.ObjectId(v)) };
     }
@@ -84,7 +87,10 @@ export class RoleDocumentRepository implements RoleRepository {
   }
 
   async remove(id: Role['id']): Promise<void> {
-    await this.roleModel.deleteOne({ _id: id });
+    await this.roleModel.updateOne(
+      { _id: id },
+      { $set: { deletedAt: new Date() } },
+    );
   }
 
   async findAll({

@@ -3,11 +3,14 @@ import {
   IsArray,
   IsEnum,
   IsMongoId,
+  IsNotEmpty,
+  IsOptional,
   IsString,
   MaxLength,
 } from 'class-validator';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { Types } from 'mongoose';
+import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 
 export class CreateRoleDto {
   // Don't forget to use the class-validator decorators in the DTO properties.
@@ -19,10 +22,11 @@ export class CreateRoleDto {
   @ApiProperty({
     type: String,
     enum: Object.keys(BaseRoleEnum),
-    description: 'Base role type: Admin or Supplier,values:2 or 3',
+    description: 'Base role type: Admin or Supplier',
   })
   @IsString()
-  @IsEnum(Object.keys(BaseRoleEnum))
+  @IsEnum(BaseRoleEnum)
+  @IsNotEmpty()
   type: string;
 
   @ApiProperty({ type: String })
@@ -30,8 +34,15 @@ export class CreateRoleDto {
   @MaxLength(100)
   description?: string;
 
+  @ApiProperty({ type: String, enum: Object.keys(UserStatusEnum) })
+  @IsEnum(UserStatusEnum)
+  @IsString()
+  @IsOptional()
+  status?: string;
+
   @ApiProperty({ type: [Types.ObjectId] })
   @IsArray()
   @IsMongoId({ each: true, message: 'Invalid menu id' })
+  @IsOptional()
   menuIds?: string[];
 }

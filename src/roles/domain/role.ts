@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { MenuSchemaClass } from '@src/menus/infrastructure/persistence/document/entities/menu.schema';
 import { Menu } from '@src/menus/domain/menu';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 
 export class Role {
   @ApiProperty({
@@ -15,6 +16,11 @@ export class Role {
     enum: Object.keys(BaseRoleEnum),
   })
   type: string;
+  @ApiProperty({
+    type: String,
+    enum: Object.keys(UserStatusEnum),
+  })
+  status: string;
   @ApiProperty({
     type: String,
   })

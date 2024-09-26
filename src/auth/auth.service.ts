@@ -31,6 +31,7 @@ import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { Role } from '@src/roles/domain/role';
 import { Menu } from '@src/menus/domain/menu';
+import { errorBody } from '@src/utils/infinity-response';
 
 @Injectable()
 export class AuthService {
@@ -87,6 +88,12 @@ export class AuthService {
           password: 'incorrectPassword',
         },
       });
+    }
+
+    if (user.status !== UserStatusEnum.ACTIVE) {
+      throw new UnauthorizedException(
+        errorBody('User status is abnormal, please contact the administrator'),
+      );
     }
 
     const hash = crypto

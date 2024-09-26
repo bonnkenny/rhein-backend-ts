@@ -11,6 +11,7 @@ export class RoleMapper {
     domainEntity.name = raw.name;
     domainEntity.description = raw.description;
     domainEntity.type = raw.type;
+    domainEntity.status = raw?.status;
     // console.log('domain,type', domainEntity.type);
     // console.log('raw,type', raw.type);
     if (raw?.menuIds && raw.menuIds.length) {
@@ -33,6 +34,7 @@ export class RoleMapper {
     }
 
     persistenceSchema.name = domainEntity.name;
+    persistenceSchema.status = domainEntity.status;
     persistenceSchema.description = domainEntity?.description ?? '';
     if (!!domainEntity?.type) {
       persistenceSchema.type = BaseRoleEnum[domainEntity.type];
