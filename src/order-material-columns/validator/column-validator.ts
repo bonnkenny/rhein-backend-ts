@@ -5,11 +5,15 @@ import {
   validateSync,
 } from 'class-validator';
 import {
+  AutoSizeTypeClass,
+  FieldPropsTypeClass,
   LabelTypeClass,
+  OptionTypeClass,
   OrderMaterialColumn,
 } from '@src/order-material-columns/domain/order-material-column';
 import { plainToInstance } from 'class-transformer';
 import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
+import { formatErrors } from '@src/utils/functions';
 
 @ValidatorConstraint({ async: false })
 export class IsLabelType implements ValidatorConstraintInterface {
@@ -63,7 +67,7 @@ export class IsColumnsType implements ValidatorConstraintInterface {
       if (errors.length) console.log('validate errore', errors);
       if (errors.length) {
         throw new BadRequestException(
-          'The columns field invalid,' + this.formatErrors(errors),
+          'The columns field invalid,' + formatErrors(errors),
         );
       }
     }
@@ -74,11 +78,6 @@ export class IsColumnsType implements ValidatorConstraintInterface {
   defaultMessage(): string {
     return 'The columns must be type of OrderMaterialColumn objects.';
   }
-  private formatErrors(errors: any[]): string {
-    return errors
-      .map((err) => Object.values(err.constraints).join(', '))
-      .join('; ');
-  }
 }
 
 @ValidatorConstraint({ async: false })
@@ -88,6 +87,8 @@ export class IsValueType implements ValidatorConstraintInterface {
       return false;
     }
     //判断value是否为 String or Boolean or Number
+    console.log('value is >> ', value);
+    console.log('value type >> ', typeof value);
     return (
       typeof value === 'string' ||
       typeof value === 'boolean' ||
@@ -98,9 +99,55 @@ export class IsValueType implements ValidatorConstraintInterface {
   defaultMessage(): string {
     return 'The value must be type of String or Boolean or Number.';
   }
-  private formatErrors(errors: any[]): string {
-    return errors
-      .map((err) => Object.values(err.constraints).join(', '))
-      .join('; ');
+}
+
+@ValidatorConstraint({ async: false })
+export class IsOptionsType implements ValidatorConstraintInterface {
+  validate(option: any): boolean {
+    const optionInstance = plainToInstance(OptionTypeClass, option);
+    const errors = validateSync(optionInstance);
+    if (errors.length) {
+      throw new BadRequestException(
+        'The options field invalid,' + formatErrors(errors),
+      );
+    }
+    return true;
+  }
+  defaultMessage(): string {
+    return 'The options must be type of Options type';
+  }
+}
+
+@ValidatorConstraint({ async: false })
+export class IsAutoSizeType implements ValidatorConstraintInterface {
+  validate(autoSize: any): boolean {
+    const fieldPropsInstance = plainToInstance(AutoSizeTypeClass, autoSize);
+    const errors = validateSync(fieldPropsInstance);
+    if (errors.length) {
+      throw new BadRequestException(
+        'The fieldProps.autosize field invalid,' + formatErrors(errors),
+      );
+    }
+    return true;
+  }
+  defaultMessage(): string {
+    return 'The  fieldProps.autosize must be type of autoSize type';
+  }
+}
+
+@ValidatorConstraint({ async: false })
+export class IsFieldPropsType implements ValidatorConstraintInterface {
+  validate(fieldProps: any): boolean {
+    const fieldPropsInstance = plainToInstance(FieldPropsTypeClass, fieldProps);
+    const errors = validateSync(fieldPropsInstance);
+    if (errors.length) {
+      throw new BadRequestException(
+        'The options field invalid,' + formatErrors(errors),
+      );
+    }
+    return true;
+  }
+  defaultMessage(): string {
+    return 'The options must be type of Options type';
   }
 }

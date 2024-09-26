@@ -9,8 +9,11 @@ import {
   IsRuleType,
   IsValueType,
 } from '@src/order-material-columns/validator/column-validator';
-import { LabelType, RuleType } from '@src/utils/types/order-types';
-import { LabelTypeClass } from '@src/order-material-columns/domain/order-material-column';
+import { LabelType } from '@src/utils/types/order-types';
+import {
+  LabelTypeClass,
+  RuleTypeClass,
+} from '@src/order-material-columns/domain/order-material-column';
 
 export class UpdateOrderMaterialColumnDto extends PartialType(
   CreateOrderMaterialColumnDto,
@@ -23,10 +26,13 @@ export class UpdateOrderMaterialColumnDto extends PartialType(
   label: LabelType;
   @IsString()
   valueType: string;
-  @ApiProperty()
+  @ApiProperty({
+    type: [RuleTypeClass],
+  })
   @IsArray()
   @Validate(IsRuleType, { each: true })
-  rules: RuleType[];
+  rules?: RuleTypeClass[];
+
   @ApiProperty({
     oneOf: [
       { type: 'string' },

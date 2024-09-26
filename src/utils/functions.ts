@@ -19,3 +19,9 @@ export function toMongoId(id: string | undefined): Types.ObjectId {
     throw new BadRequestException(errorBody('switch to mongo id error'));
   }
 }
+
+export function formatErrors(errors: any[]): string {
+  return errors
+    .map((err) => Object.values(err.constraints).join(', '))
+    .join('; ');
+}
