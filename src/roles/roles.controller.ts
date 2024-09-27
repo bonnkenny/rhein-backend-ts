@@ -66,11 +66,18 @@ export class RolesController {
   @ApiOkResponse({
     type: InfinityPaginationResponse(Role),
   })
-  async findAll(
+  async findAllWithPagination(
     @Query() query: FilterRolesOptionDto,
   ): Promise<InfinityPaginationResponseDto<Role>> {
     const [items, total] = await this.rolesService.findAllWithPagination(query);
     return infinityPagination(items, total, query);
+  }
+  @Get('all/items')
+  async findAll(
+    @Query() query: FilterRolesOptionDto,
+  ): Promise<InfinityApiResponseDto<Role[]>> {
+    const items = await this.rolesService.findAll(query);
+    return infinityResponse(items);
   }
 
   @Get(':id')

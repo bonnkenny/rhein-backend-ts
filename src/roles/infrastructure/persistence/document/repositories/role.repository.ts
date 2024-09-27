@@ -96,14 +96,13 @@ export class RoleDocumentRepository implements RoleRepository {
     );
   }
 
-  async findAll({
-    filterOptions,
-  }: {
-    filterOptions: FilterRolesOptionDto | null | undefined;
-  }): Promise<Role[]> {
+  async findAll(filterOptions: FilterRolesOptionDto): Promise<Role[]> {
     const where: FilterQuery<Role> = {};
     if (filterOptions?.ids) {
       where['id'] = { $in: filterOptions.ids };
+    }
+    if (filterOptions?.type) {
+      where['type'] = { $in: filterOptions.type };
     }
     const entities = await this.roleModel.find(where).populate('menus');
     return entities.map(RoleMapper.toDomain);

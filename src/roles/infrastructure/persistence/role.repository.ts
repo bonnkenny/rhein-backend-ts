@@ -24,9 +24,5 @@ export abstract class RoleRepository {
 
   abstract remove(id: Role['id']): Promise<void>;
 
-  abstract findAll({
-    filterOptions,
-  }: {
-    filterOptions: FilterRolesOptionDto | null | undefined;
-  }): Promise<Role[]>;
+  abstract findAll(filterOptions: FilterRolesOptionDto): Promise<Role[]>;
 }

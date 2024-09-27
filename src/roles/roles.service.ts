@@ -20,6 +20,10 @@ export class RolesService {
     return this.roleRepository.findAllWithPagination(filterOptions);
   }
 
+  findAll(filterOptions: FilterRolesOptionDto) {
+    return this.roleRepository.findAll(filterOptions);
+  }
+
   findOne(id: Role['id']): Promise<NullableType<Role>> {
     return this.roleRepository.findById(id);
   }
@@ -32,12 +36,8 @@ export class RolesService {
     return this.roleRepository.remove(id);
   }
 
-  async getMenuTree(
-    filterOptions: FilterRolesOptionDto | null | undefined,
-  ): Promise<MenuTree[]> {
-    const roles = await this.roleRepository.findAll({
-      filterOptions: filterOptions ?? null,
-    });
+  async getMenuTree(filterOptions: FilterRolesOptionDto): Promise<MenuTree[]> {
+    const roles = await this.roleRepository.findAll(filterOptions);
     // console.log('roles >>>', roles);
     const menuArr: Menu[] = [];
     const menusIds: Set<string> = new Set();
