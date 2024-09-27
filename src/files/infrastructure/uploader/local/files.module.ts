@@ -12,7 +12,7 @@ import { randomStringGenerator } from '@nestjs/common/utils/random-string-genera
 import { FilesLocalService } from './files.service';
 
 import { DocumentFilePersistenceModule } from '../../persistence/document/document-persistence.module';
-import { AllConfigType } from '../../../../config/config.type';
+import { AllConfigType } from '@src/config/config.type';
 
 const infrastructurePersistenceModule = DocumentFilePersistenceModule;
 
@@ -25,12 +25,12 @@ const infrastructurePersistenceModule = DocumentFilePersistenceModule;
       useFactory: (configService: ConfigService<AllConfigType>) => {
         return {
           fileFilter: (request, file, callback) => {
-            if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+            if (!file.originalname.match(/\.(jpg|jpeg|png|gif|pdf)$/i)) {
               return callback(
                 new UnprocessableEntityException({
                   status: HttpStatus.UNPROCESSABLE_ENTITY,
                   errors: {
-                    file: `cantUploadFileType`,
+                    file: `Can't upload this file type`,
                   },
                 }),
                 false,

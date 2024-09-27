@@ -30,4 +30,9 @@ export class FilterRolesOptionDto extends InfinityFindAllDto {
   @IsString()
   @IsOptional()
   status: string;
+
+  @ApiProperty({ type: String, description: '角色描述', required: false })
+  @IsString()
+  @IsOptional()
+  description: string;
 }

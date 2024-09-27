@@ -41,14 +41,17 @@ export class RoleDocumentRepository implements RoleRepository {
     if (!!filterOptions?.name) {
       where.name = { $regex: filterOptions.name, $options: 'i' };
     }
+    if (!!filterOptions?.description) {
+      where.description = { $regex: filterOptions.description, $options: 'i' };
+    }
 
     const entityObjects = await this.roleModel
-      .find()
+      .find(where)
       .skip((page - 1) * limit)
       .limit(limit)
       .populate('menus')
       .exec();
-    const total = await this.roleModel.countDocuments();
+    const total = await this.roleModel.find(where).countDocuments();
     return [
       entityObjects.map((entityObject) => RoleMapper.toDomain(entityObject)),
       total,
