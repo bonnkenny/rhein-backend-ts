@@ -109,7 +109,20 @@ export class OrdersService {
     };
   }
 
-  findAllWithPagination(filterOrderOptions: FilterOrdersDto) {
+  findAllWithPagination(
+    user: JwtPayloadType,
+    filterOrderOptions: FilterOrdersDto,
+  ) {
+    const { baseRole, id } = user;
+
+    if (baseRole === BaseRoleEnum.SUPPLIER) {
+      filterOrderOptions = {
+        ...filterOrderOptions,
+        userId: id,
+        fromUserId: id,
+      };
+    }
+
     return this.orderRepository.findAllWithPagination(filterOrderOptions);
   }
 

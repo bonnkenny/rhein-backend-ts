@@ -20,4 +20,8 @@ export abstract class OrderRepository {
   ): Promise<Order | null>;
 
   abstract remove(id: Order['id']): Promise<void>;
+
+  abstract findAllBySupplier(
+    filterOrderOptions: FilterOrdersDto,
+  ): Promise<[Order[], number]>;
 }

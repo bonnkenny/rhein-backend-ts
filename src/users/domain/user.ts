@@ -12,7 +12,7 @@ export class User {
   @ApiProperty({
     type: idType,
   })
-  id: number | string;
+  id: string;
 
   @ApiProperty({
     type: String,
