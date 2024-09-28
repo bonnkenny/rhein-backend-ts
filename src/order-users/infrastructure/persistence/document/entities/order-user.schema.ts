@@ -3,7 +3,7 @@ import { now, HydratedDocument, Types } from 'mongoose';
 import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
 
-export type orderUserSchemaDocument = HydratedDocument<orderUserSchemaClass>;
+export type OrderUserSchemaDocument = HydratedDocument<OrderUserSchemaClass>;
 
 @Schema({
   timestamps: true,
@@ -12,7 +12,7 @@ export type orderUserSchemaDocument = HydratedDocument<orderUserSchemaClass>;
     getters: true,
   },
 })
-export class orderUserSchemaClass extends EntityDocumentHelper {
+export class OrderUserSchemaClass extends EntityDocumentHelper {
   @Prop({ type: Types.ObjectId, nullable: false })
   userId: Types.ObjectId;
 
@@ -29,6 +29,6 @@ export class orderUserSchemaClass extends EntityDocumentHelper {
 }
 
 export const orderUserSchema =
-  SchemaFactory.createForClass(orderUserSchemaClass);
+  SchemaFactory.createForClass(OrderUserSchemaClass);
 
 orderUserSchema.index({ userId: 1, orderId: 1 }, { unique: true });

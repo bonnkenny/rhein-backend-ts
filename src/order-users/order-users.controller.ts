@@ -9,9 +9,9 @@ import {
   UseGuards,
   Query,
 } from '@nestjs/common';
-import { orderUsersService } from './order-users.service';
+import { OrderUsersService } from './order-users.service';
 import { CreateOrderUserDto } from './dto/create-order-user.dto';
-import { UpdateorderUserDto } from './dto/update-order-user.dto';
+import { UpdateOrderUserDto } from './dto/update-order-user.dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -33,7 +33,7 @@ import {
   infinityResponse,
 } from '../utils/infinity-response';
 
-import { FindAllorderUsersDto } from './dto/find-all-order-users.dto';
+import { FindAllOrderUsersDto } from './dto/find-all-order-users.dto';
 
 @ApiTags('Orderusers')
 @ApiBearerAuth()
@@ -42,15 +42,15 @@ import { FindAllorderUsersDto } from './dto/find-all-order-users.dto';
   path: 'order-users',
   version: '1',
 })
-export class orderUsersController {
-  constructor(private readonly orderUsersService: orderUsersService) {}
+export class OrderUsersController {
+  constructor(private readonly orderUsersService: OrderUsersService) {}
 
   @Post()
   @ApiCreatedResponse({
     type: InfinityApiResponse(orderUser),
   })
-  create(@Body() createorderUserDto: CreateOrderUserDto) {
-    const entity = this.orderUsersService.create(createorderUserDto);
+  create(@Body() createOrderUserDto: CreateOrderUserDto) {
+    const entity = this.orderUsersService.create(createOrderUserDto);
     return infinityResponse(entity);
   }
 
@@ -59,7 +59,7 @@ export class orderUsersController {
     type: InfinityPaginationResponse(orderUser),
   })
   async findAll(
-    @Query() query: FindAllorderUsersDto,
+    @Query() query: FindAllOrderUsersDto,
   ): Promise<InfinityPaginationResponseDto<orderUser>> {
     const [items, total] =
       await this.orderUsersService.findAllWithPagination(query);
@@ -90,7 +90,7 @@ export class orderUsersController {
   })
   update(
     @Param('id') id: string,
-    @Body() updateorderUserDto: UpdateorderUserDto,
+    @Body() updateorderUserDto: UpdateOrderUserDto,
   ) {
     const entity = this.orderUsersService.update(id, updateorderUserDto);
     return infinityResponse(entity);

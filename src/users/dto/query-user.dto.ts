@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
+import { IsMongoId, IsOptional } from 'class-validator';
 import { InfinityFindAllDto } from '@src/utils/dto/infinity-query-all.dto';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 // import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
@@ -32,4 +32,11 @@ export class FilterUserDto extends InfinityFindAllDto {
   @ApiPropertyOptional({ type: String })
   @IsOptional()
   status?: string;
+}
+
+export class FilterUserOrderDto extends FilterUserDto {
+  @ApiPropertyOptional({ type: String })
+  @IsMongoId()
+  @IsOptional()
+  orderId: string;
 }

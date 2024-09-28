@@ -1,7 +1,7 @@
 import { DeepPartial } from '@src/utils/types/deep-partial.type';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { orderUser } from '../../domain/order-user';
-import { FindAllorderUsersDto } from '../../dto/find-all-order-users.dto';
+import { FindAllOrderUsersDto } from '../../dto/find-all-order-users.dto';
 
 export abstract class orderUserRepository {
   abstract create(
@@ -9,8 +9,12 @@ export abstract class orderUserRepository {
   ): Promise<orderUser>;
 
   abstract findAllWithPagination(
-    filterOptions: FindAllorderUsersDto,
+    filterOptions: FindAllOrderUsersDto,
   ): Promise<[orderUser[], number]>;
+
+  abstract findAll(
+    filterOptions: Omit<FindAllOrderUsersDto, 'page' | 'limit'>,
+  ): Promise<orderUser[]>;
 
   abstract findById(id: orderUser['id']): Promise<NullableType<orderUser>>;
 

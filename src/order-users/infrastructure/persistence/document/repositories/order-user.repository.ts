@@ -1,33 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, FilterQuery } from 'mongoose';
-import { orderUserSchemaClass } from '../entities/order-user.schema';
+import { FilterQuery, Model } from 'mongoose';
+import { OrderUserSchemaClass } from '../entities/order-user.schema';
 import { orderUserRepository } from '../../order-user.repository';
 import { orderUser } from '../../../../domain/order-user';
-import { orderUserMapper } from '../mappers/order-user.mapper';
-import { FindAllorderUsersDto } from '../../../../dto/find-all-order-users.dto';
+import { OrderUserMapper } from '../mappers/order-user.mapper';
+import { FindAllOrderUsersDto } from '../../../../dto/find-all-order-users.dto';
+import { toMongoId } from '@src/utils/functions';
 
 @Injectable()
-export class orderUserDocumentRepository implements orderUserRepository {
+export class OrderUserDocumentRepository implements orderUserRepository {
   constructor(
-    @InjectModel(orderUserSchemaClass.name)
-    private readonly orderUserModel: Model<orderUserSchemaClass>,
+    @InjectModel(OrderUserSchemaClass.name)
+    private readonly orderUserModel: Model<OrderUserSchemaClass>,
   ) {}
 
   async create(data: orderUser): Promise<orderUser> {
-    const persistenceModel = orderUserMapper.toPersistence(data);
+    const persistenceModel = OrderUserMapper.toPersistence(data);
     const createdEntity = new this.orderUserModel(persistenceModel);
     const entityObject = await createdEntity.save();
-    return orderUserMapper.toDomain(entityObject);
+    return OrderUserMapper.toDomain(entityObject);
   }
 
   async findAllWithPagination(
-    filterOptions: FindAllorderUsersDto,
+    filterOptions: FindAllOrderUsersDto,
   ): Promise<[orderUser[], number]> {
     const { page, limit } = filterOptions;
 
-    const where: FilterQuery<orderUserSchemaClass> = {};
+    const where: FilterQuery<OrderUserSchemaClass> = {};
 
     const totalCount = await this.orderUserModel.find(where).countDocuments();
 
@@ -37,14 +38,33 @@ export class orderUserDocumentRepository implements orderUserRepository {
       .limit(limit);
 
     const items = entityObjects.map((entityObject) =>
-      orderUserMapper.toDomain(entityObject),
+      OrderUserMapper.toDomain(entityObject),
     );
     return [items, totalCount];
   }
 
+  async findAll(
+    filterOptions: Omit<FindAllOrderUsersDto, 'page' | 'limit'>,
+  ): Promise<orderUser[]> {
+    const where: FilterQuery<OrderUserSchemaClass> = {};
+    if (filterOptions.orderId) {
+      where.orderId = toMongoId(filterOptions.orderId);
+    }
+
+    if (filterOptions.userId) {
+      where.userId = toMongoId(filterOptions.userId);
+    }
+
+    const entityObjects = await this.orderUserModel.find(where);
+
+    return entityObjects.map((entityObject) =>
+      OrderUserMapper.toDomain(entityObject),
+    );
+  }
+
   async findById(id: orderUser['id']): Promise<NullableType<orderUser>> {
     const entityObject = await this.orderUserModel.findById(id);
-    return entityObject ? orderUserMapper.toDomain(entityObject) : null;
+    return entityObject ? OrderUserMapper.toDomain(entityObject) : null;
   }
 
   async update(
@@ -63,14 +83,14 @@ export class orderUserDocumentRepository implements orderUserRepository {
 
     const entityObject = await this.orderUserModel.findOneAndUpdate(
       filter,
-      orderUserMapper.toPersistence({
-        ...orderUserMapper.toDomain(entity),
+      OrderUserMapper.toPersistence({
+        ...OrderUserMapper.toDomain(entity),
         ...clonedPayload,
       }),
       { new: true },
     );
 
-    return entityObject ? orderUserMapper.toDomain(entityObject) : null;
+    return entityObject ? OrderUserMapper.toDomain(entityObject) : null;
   }
 
   async remove(id: orderUser['id']): Promise<void> {

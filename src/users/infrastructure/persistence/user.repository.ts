@@ -28,7 +28,7 @@ export abstract class UserRepository {
     filterOptions: FilterUserDto,
   ): Promise<[User[], number]>;
 
-  abstract findMany(
+  abstract findAdmins(
     filterOptions: Omit<FilterUserDto, 'page' | 'limit'>,
   ): Promise<User[]>;
 

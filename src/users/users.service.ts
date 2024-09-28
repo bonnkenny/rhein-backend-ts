@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { NullableType } from '../utils/types/nullable.type';
-import { FilterUserDto } from './dto/query-user.dto';
+import { FilterUserDto, FilterUserOrderDto } from './dto/query-user.dto';
 import { UserRepository } from './infrastructure/persistence/user.repository';
 import { User } from './domain/user';
 import bcrypt from 'bcryptjs';
@@ -18,12 +18,15 @@ import { JwtPayloadType } from '@src/auth/strategies/types/jwt-payload.type';
 import { errorBody } from '@src/utils/infinity-response';
 import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
 import { SessionService } from '@src/session/session.service';
+import { OrderUsersService } from '@src/order-users/order-users.service';
+import { omit } from 'lodash';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly usersRepository: UserRepository,
     private readonly filesService: FilesService,
+    private readonly orderUserService: OrderUsersService,
     private sessionService: SessionService,
   ) {}
 
@@ -136,10 +139,26 @@ export class UsersService {
     return this.usersRepository.findManyWithPagination(filterOptions);
   }
 
-  findMany(
-    filterOptions: Omit<FilterUserDto, 'page' | 'limit'>,
+  async findAdmins(
+    filterOptions: Omit<FilterUserOrderDto, 'page' | 'limit'>,
   ): Promise<User[]> {
-    return this.usersRepository.findMany(filterOptions);
+    const { orderId } = filterOptions;
+    let assignedAdminIds: string[] = [];
+    if (orderId) {
+      const assignedAdmins = await this.orderUserService.findAll({ orderId });
+      assignedAdminIds = assignedAdmins?.map((admin) => admin.userId) || [];
+    }
+
+    const admins = await this.usersRepository.findAdmins(
+      omit(filterOptions, ['orderId']),
+    );
+
+    return admins.map((admin) => {
+      return {
+        ...admin,
+        isAssigned: assignedAdminIds?.includes(admin.id),
+      };
+    });
   }
 
   findById(id: User['id']): Promise<NullableType<User>> {

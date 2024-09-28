@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { UserMapper } from '../mappers/user.mapper';
 import { isValidMongoId, toMongoId } from '@src/utils/functions';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 
 @Injectable()
 export class UsersDocumentRepository implements UserRepository {
@@ -88,10 +89,12 @@ export class UsersDocumentRepository implements UserRepository {
     ];
   }
 
-  async findMany(
+  async findAdmins(
     filterOptions: Omit<FilterUserDto, 'page' | 'limit'>,
   ): Promise<User[]> {
-    const where: FilterQuery<UserSchemaClass> = {};
+    const where: FilterQuery<UserSchemaClass> = {
+      baseRole: BaseRoleEnum.ADMIN,
+    };
     if (filterOptions) {
       Object.keys(filterOptions).forEach((key) => {
         if (!!filterOptions[key]) {

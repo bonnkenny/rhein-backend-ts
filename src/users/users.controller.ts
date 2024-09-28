@@ -37,7 +37,7 @@ import {
   InfinityPaginationResponseDto,
 } from '../utils/dto/infinity-base-response.dto';
 import { NullableType } from '../utils/types/nullable.type';
-import { FilterUserDto } from './dto/query-user.dto';
+import { FilterUserDto, FilterUserOrderDto } from './dto/query-user.dto';
 import { User } from './domain/user';
 import { UsersService } from './users.service';
 // import { RolesGuard } from '../roles/roles.guard';
@@ -51,6 +51,8 @@ import {
 import { GroupTypesEnum } from '@src/utils/enums/groups.enum';
 import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+import { BaseRolesGuard } from '@src/utils/guards/base-roles.guard';
+import { BaseRoles } from '@src/utils/guards/base-roles.decorator';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
@@ -98,12 +100,15 @@ export class UsersController {
   @ApiOkResponse({
     type: InfinityApiResponse(User),
   })
+  @BaseRoles(BaseRoleEnum.SUPER)
+  @UseGuards(BaseRolesGuard)
   @Get('all/items')
   @HttpCode(HttpStatus.OK)
-  async findAll(
-    @Query() filterOptions: Omit<FilterUserDto, 'page' | 'limit'>,
+  async findAdmins(
+    @Request() request,
+    @Query() filterOptions: Omit<FilterUserOrderDto, 'page' | 'limit'>,
   ): Promise<InfinityApiResponseDto<User[]>> {
-    const items: User[] = await this.usersService.findMany({
+    const items: User[] = await this.usersService.findAdmins({
       ...filterOptions,
       baseRole: BaseRoleEnum.ADMIN,
     });

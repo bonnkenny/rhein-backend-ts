@@ -1,9 +1,9 @@
 import { orderUser } from '../../../../domain/order-user';
-import { orderUserSchemaClass } from '../entities/order-user.schema';
+import { OrderUserSchemaClass } from '../entities/order-user.schema';
 import { Types } from 'mongoose';
 
-export class orderUserMapper {
-  public static toDomain(raw: orderUserSchemaClass): orderUser {
+export class OrderUserMapper {
+  public static toDomain(raw: OrderUserSchemaClass): orderUser {
     const domainEntity = new orderUser();
     domainEntity.id = raw._id.toString();
     domainEntity.orderId = raw.orderId.toString();
@@ -14,8 +14,8 @@ export class orderUserMapper {
     return domainEntity;
   }
 
-  public static toPersistence(domainEntity: orderUser): orderUserSchemaClass {
-    const persistenceSchema = new orderUserSchemaClass();
+  public static toPersistence(domainEntity: orderUser): OrderUserSchemaClass {
+    const persistenceSchema = new OrderUserSchemaClass();
     if (domainEntity.id) {
       persistenceSchema._id = domainEntity.id;
     }

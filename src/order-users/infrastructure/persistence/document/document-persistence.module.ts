@@ -2,23 +2,23 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
   orderUserSchema,
-  orderUserSchemaClass,
+  OrderUserSchemaClass,
 } from './entities/order-user.schema';
 import { orderUserRepository } from '../order-user.repository';
-import { orderUserDocumentRepository } from './repositories/order-user.repository';
+import { OrderUserDocumentRepository } from './repositories/order-user.repository';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: orderUserSchemaClass.name, schema: orderUserSchema },
+      { name: OrderUserSchemaClass.name, schema: orderUserSchema },
     ]),
   ],
   providers: [
     {
       provide: orderUserRepository,
-      useClass: orderUserDocumentRepository,
+      useClass: OrderUserDocumentRepository,
     },
   ],
   exports: [orderUserRepository],
 })
-export class DocumentorderUserPersistenceModule {}
+export class DocumentOrderUserPersistenceModule {}
