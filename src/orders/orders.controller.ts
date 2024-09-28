@@ -34,7 +34,6 @@ import {
 } from '../utils/infinity-response';
 import { FilterOrdersDto } from './dto/filter-orders.dto';
 import { NullableType } from '@src/utils/types/nullable.type';
-import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 
 @ApiTags('Orders')
 @ApiBearerAuth()
@@ -71,12 +70,7 @@ export class OrdersController {
     @Request() request,
     @Query() query: FilterOrdersDto,
   ): Promise<InfinityPaginationResponseDto<Order>> {
-    const { id, baseRole } = request.user;
     const { page, limit } = query;
-    if (baseRole === BaseRoleEnum.SUPPLIER) {
-      query = { ...query, userId: id };
-    }
-    // console.log('query', query);
     const [items, total] = await this.ordersService.findAllWithPagination(
       request.user,
       query,
