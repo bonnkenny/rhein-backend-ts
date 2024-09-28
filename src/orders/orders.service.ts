@@ -137,13 +137,6 @@ export class OrdersService {
         fromUserId: id,
       };
     }
-    if (baseRole === BaseRoleEnum.SUPPLIER) {
-      options = {
-        ...filterOrderOptions,
-        userId: id,
-        fromUserId: id,
-      };
-    }
 
     return this.orderRepository.findAllWithPagination(options);
   }
