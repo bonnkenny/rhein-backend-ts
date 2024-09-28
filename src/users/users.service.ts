@@ -154,6 +154,8 @@ export class UsersService {
     );
 
     return admins.map((admin) => {
+      delete admin?.password;
+      delete admin?.previousPassword;
       return {
         ...admin,
         isAssigned: assignedAdminIds?.includes(admin.id),

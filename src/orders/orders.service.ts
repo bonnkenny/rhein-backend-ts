@@ -14,6 +14,7 @@ import { FilterOrdersDto } from '@src/orders/dto/filter-orders.dto';
 import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 import { JwtPayloadType } from '@src/auth/strategies/types/jwt-payload.type';
 import { random } from 'lodash';
+import { OrderUsersService } from '@src/order-users/order-users.service';
 
 @Injectable()
 export class OrdersService {
@@ -21,6 +22,7 @@ export class OrdersService {
     private readonly orderRepository: OrderRepository,
     private usersService: UsersService,
     private orderMaterialTemplateService: OrderMaterialTemplatesService,
+    private orderUsersService: OrderUsersService,
     @Inject(forwardRef(() => OrderMaterialsService))
     private orderMaterialService: OrderMaterialsService,
   ) {}
@@ -109,21 +111,41 @@ export class OrdersService {
     };
   }
 
-  findAllWithPagination(
+  async findAllWithPagination(
     user: JwtPayloadType,
     filterOrderOptions: FilterOrdersDto,
   ) {
     const { baseRole, id } = user;
+    let options: FilterOrdersDto = {
+      ...filterOrderOptions,
+    };
+    if (BaseRoleEnum.ADMIN == baseRole) {
+      const assignedOrders = await this.orderUsersService.findAll({
+        userId: id,
+      });
+      const assignedOrderIds = assignedOrders.map((order) => order.orderId);
+      options = {
+        ...options,
+        ids: assignedOrderIds,
+      };
+    }
 
+    if (BaseRoleEnum.SUPPLIER == baseRole) {
+      options = {
+        ...options,
+        userId: id,
+        fromUserId: id,
+      };
+    }
     if (baseRole === BaseRoleEnum.SUPPLIER) {
-      filterOrderOptions = {
+      options = {
         ...filterOrderOptions,
         userId: id,
         fromUserId: id,
       };
     }
 
-    return this.orderRepository.findAllWithPagination(filterOrderOptions);
+    return this.orderRepository.findAllWithPagination(options);
   }
 
   findOne(id: Order['id']) {

@@ -2,7 +2,7 @@ import {
   InfinityFindAllDto,
   InfinitySortDto,
 } from '@src/utils/dto/infinity-query-all.dto';
-import { IsOptional } from 'class-validator';
+import { IsArray, IsMongoId, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   OrderFillStatusEnum,
@@ -12,6 +12,15 @@ import {
 import { OrderSchemaClass } from '@src/orders/infrastructure/persistence/document/entities/order.schema';
 
 export class FilterOrdersDto extends InfinityFindAllDto {
+  @ApiProperty({
+    type: String,
+    description: 'Parent order id',
+    required: false,
+  })
+  @IsMongoId({ each: true })
+  @IsArray()
+  @IsOptional()
+  ids?: string[];
   @ApiProperty({
     type: String,
     description: 'Parent order id',

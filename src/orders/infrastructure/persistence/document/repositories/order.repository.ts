@@ -8,7 +8,7 @@ import { Order } from '../../../../domain/order';
 import { OrderMapper } from '../mappers/order.mapper';
 import { FilterOrdersDto } from '@src/orders/dto/filter-orders.dto';
 import { errorBody } from '@src/utils/infinity-response';
-import { isValidMongoId, toMongoId } from '@src/utils/functions';
+import { toMongoId } from '@src/utils/functions';
 import { omit } from 'lodash';
 
 @Injectable()
@@ -30,25 +30,44 @@ export class OrderDocumentRepository implements OrderRepository {
   ): Promise<[Order[], number]> {
     const { page, limit } = filterOrderOptions;
     const where: FilterQuery<OrderSchemaClass> = {};
+    if (filterOrderOptions.parentId) {
+      where.parentId = toMongoId(filterOrderOptions.parentId);
+    }
+    if (filterOrderOptions.fillStatus) {
+      where.fillStatus = filterOrderOptions.fillStatus;
+    }
+    if (filterOrderOptions.checkStatus) {
+      where.checkStatus = filterOrderOptions.checkStatus;
+    }
+    if (!!filterOrderOptions.userId && !!filterOrderOptions.fromUserId) {
+      where.$or = [
+        { userId: toMongoId(filterOrderOptions.userId) },
+        { fromUserId: toMongoId(filterOrderOptions.fromUserId) },
+      ];
+    } else {
+      if (!!filterOrderOptions.userId) {
+        where.userId = toMongoId(filterOrderOptions.userId);
+      }
+      if (!!filterOrderOptions.fromUserId) {
+        where.fromUserId = toMongoId(filterOrderOptions.fromUserId);
+      }
+    }
 
-    Object.keys(filterOrderOptions)
-      .filter((k) => k !== 'page' && k !== 'limit')
-      .forEach((key) => {
-        console.log('key', key);
-        if (!!filterOrderOptions[key]) {
-          switch (true) {
-            case ['parentId', 'userId', 'fromUserId'].includes(key):
-              if (isValidMongoId(filterOrderOptions[key]))
-                where[key] = toMongoId(filterOrderOptions[key]);
-              break;
-            case ['orderNo', 'orderName'].includes(key):
-              where[key] = new RegExp(`.*${filterOrderOptions[key]}.*`, 'i');
-              break;
-            default:
-              where[key] = filterOrderOptions[key];
-          }
-        }
-      });
+    if (filterOrderOptions.orderType) {
+      where.orderType = filterOrderOptions.orderType;
+    }
+
+    if (filterOrderOptions.orderNo) {
+      where.orderNo = new RegExp(`.*${filterOrderOptions.orderNo}.*`, 'i');
+    }
+    if (filterOrderOptions.orderName) {
+      where.orderName = new RegExp(`.*${filterOrderOptions.orderName}.*`, 'i');
+    }
+
+    if (filterOrderOptions.ids) {
+      where._id = { $in: filterOrderOptions.ids.map(toMongoId) };
+    }
+
     // console.log('where', where);
     const total = await this.orderModel.find(where).countDocuments();
     const entityObjects = await this.orderModel
