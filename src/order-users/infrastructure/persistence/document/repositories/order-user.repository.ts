@@ -18,6 +18,16 @@ export class OrderUserDocumentRepository implements orderUserRepository {
 
   async create(data: orderUser): Promise<orderUser> {
     const persistenceModel = OrderUserMapper.toPersistence(data);
+
+    const checkRecord = await this.orderUserModel.findOne({
+      orderId: persistenceModel.orderId,
+      userId: persistenceModel.userId,
+    });
+
+    if (checkRecord) {
+      return OrderUserMapper.toDomain(checkRecord);
+    }
+
     const createdEntity = new this.orderUserModel(persistenceModel);
     const entityObject = await createdEntity.save();
     return OrderUserMapper.toDomain(entityObject);
