@@ -150,7 +150,7 @@ export class UserSchemaClass extends EntityDocumentHelper {
 export const UserSchema = SchemaFactory.createForClass(UserSchemaClass);
 
 // soft delete
-UserSchema.pre<Query<UserSchemaClass, Document>>(/^find/, function () {
+UserSchema.pre<Query<UserSchemaClass, Document>>(/^find|count/, function () {
   this.where({ deletedAt: null }); // 自动过滤已删除文档
 });
 
