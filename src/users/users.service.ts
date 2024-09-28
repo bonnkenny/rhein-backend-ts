@@ -136,6 +136,12 @@ export class UsersService {
     return this.usersRepository.findManyWithPagination(filterOptions);
   }
 
+  findMany(
+    filterOptions: Omit<FilterUserDto, 'page' | 'limit'>,
+  ): Promise<User[]> {
+    return this.usersRepository.findMany(filterOptions);
+  }
+
   findById(id: User['id']): Promise<NullableType<User>> {
     return this.usersRepository.findById(id);
   }

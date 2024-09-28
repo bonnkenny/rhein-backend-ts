@@ -35,8 +35,11 @@ import { OrderMaterialTemplatesModule } from './order-material-templates/order-m
 
 // import { OrderMaterialColumnsModule } from './order-material-columns/order-material-columns.module';
 
+import { orderUsersModule } from './order-users/order-users.module';
+
 @Module({
   imports: [
+    orderUsersModule,
     // OrderMaterialColumnsModule,
     OrderMaterialTemplatesModule,
     OrderMaterialsModule,

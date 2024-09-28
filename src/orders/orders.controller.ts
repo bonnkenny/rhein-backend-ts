@@ -77,8 +77,10 @@ export class OrdersController {
       query = { ...query, userId: id };
     }
     // console.log('query', query);
-    const [items, total] =
-      await this.ordersService.findAllWithPagination(query);
+    const [items, total] = await this.ordersService.findAllWithPagination(
+      request.user,
+      query,
+    );
     return infinityPagination(items, total, { page, limit });
   }
 

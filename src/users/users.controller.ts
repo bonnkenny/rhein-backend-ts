@@ -86,13 +86,28 @@ export class UsersController {
   })
   @Get()
   @HttpCode(HttpStatus.OK)
-  async findAll(
+  async findAllWithPagination(
     @Query() query: FilterUserDto,
   ): Promise<InfinityPaginationResponseDto<User>> {
     // console.log('query', query);
     const [items, total] =
       await this.usersService.findManyWithPagination(query);
     return infinityPagination(items, total, query);
+  }
+
+  @ApiOkResponse({
+    type: InfinityApiResponse(User),
+  })
+  @Get('all/items')
+  @HttpCode(HttpStatus.OK)
+  async findAll(
+    @Query() filterOptions: Omit<FilterUserDto, 'page' | 'limit'>,
+  ): Promise<InfinityApiResponseDto<User[]>> {
+    const items: User[] = await this.usersService.findMany({
+      ...filterOptions,
+      baseRole: BaseRoleEnum.ADMIN,
+    });
+    return infinityResponse(items);
   }
 
   @ApiOkResponse({

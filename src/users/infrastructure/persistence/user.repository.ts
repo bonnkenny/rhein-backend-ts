@@ -28,6 +28,10 @@ export abstract class UserRepository {
     filterOptions: FilterUserDto,
   ): Promise<[User[], number]>;
 
+  abstract findMany(
+    filterOptions: Omit<FilterUserDto, 'page' | 'limit'>,
+  ): Promise<User[]>;
+
   abstract findById(id: User['id']): Promise<NullableType<User>>;
   abstract findByEmail({
     email,

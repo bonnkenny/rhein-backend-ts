@@ -88,6 +88,39 @@ export class UsersDocumentRepository implements UserRepository {
     ];
   }
 
+  async findMany(
+    filterOptions: Omit<FilterUserDto, 'page' | 'limit'>,
+  ): Promise<User[]> {
+    const where: FilterQuery<UserSchemaClass> = {};
+    if (filterOptions) {
+      Object.keys(filterOptions).forEach((key) => {
+        if (!!filterOptions[key]) {
+          switch (key) {
+            case 'id':
+              if (isValidMongoId(filterOptions[key])) {
+                where['_id'] = toMongoId(filterOptions[key]);
+              }
+              break;
+            case 'email':
+              where['email'] = new RegExp(filterOptions[key], 'i');
+              break;
+            case 'username':
+              const userNameRegex = new RegExp(filterOptions[key], 'i'); // 不区分大小写的搜索
+              where['$or'] = [
+                { firstName: userNameRegex },
+                { lastName: userNameRegex },
+              ];
+              break;
+            default:
+              where[key] = filterOptions[key];
+          }
+        }
+      });
+    }
+    const userObjects = await this.usersModel.find(where);
+    return userObjects.map((userObject) => UserMapper.toDomain(userObject));
+  }
+
   async findById(id: User['id']): Promise<NullableType<User>> {
     const userObject = await this.usersModel.findById(id);
     return userObject ? UserMapper.toDomain(userObject) : null;
