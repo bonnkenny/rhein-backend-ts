@@ -46,10 +46,18 @@ export class UsersDocumentRepository implements UserRepository {
               where['email'] = new RegExp(filterOptions[key], 'i');
               break;
             case 'username':
-              const userNameRegex = new RegExp(filterOptions[key], 'i'); // 不区分大小写的搜索
-              where['$or'] = [
-                { firstName: userNameRegex },
-                { lastName: userNameRegex },
+              // const userNameRegex = new RegExp(filterOptions[key], 'i'); // 不区分大小写的搜索
+              // where['$or'] = [
+              //   { firstName: userNameRegex },
+              //   { lastName: userNameRegex },
+              // ];
+              where['username'] = new RegExp(filterOptions[key], 'i');
+              break;
+            case 'createdAt':
+              const [startedAt, endedAt] = filterOptions[key];
+              where['$and'] = [
+                { createdAt: { $gte: startedAt } },
+                { createdAt: { $lte: endedAt } },
               ];
               break;
             default:
@@ -211,8 +219,8 @@ export class UsersDocumentRepository implements UserRepository {
       where['email'] = new RegExp(email, 'i');
     }
     if (!!username) {
-      const regex = new RegExp(username, 'i'); // 不区分大小写的搜索
-      where['$or'] = [{ firstName: regex }, { lastName: regex }];
+      // where['$or'] = [{ firstName: regex }, { lastName: regex }];
+      where['username'] = new RegExp(username, 'i');
     }
     if (!Object.keys(where)) {
       return null;
