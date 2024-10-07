@@ -12,7 +12,10 @@ import {
 } from '@nestjs/common';
 import { OrderMaterialsService } from './order-materials.service';
 import { CreateOrderMaterialDto } from './dto/create-order-material.dto';
-import { UpdateOrderMaterialDto } from './dto/update-order-material.dto';
+import {
+  UpdateOrderMaterialDto,
+  UpdateOrderMaterialStatusDto,
+} from './dto/update-order-material.dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -85,7 +88,11 @@ export class OrderMaterialsController {
   })
   update(
     @Param('id') id: string,
-    @Body() updateOrderMaterialDto: UpdateOrderMaterialDto,
+    @Body()
+    updateOrderMaterialDto: Omit<
+      UpdateOrderMaterialDto,
+      'checkStatus' | 'reason'
+    >,
   ) {
     return this.orderMaterialsService.update(id, updateOrderMaterialDto);
   }
@@ -108,7 +115,8 @@ export class OrderMaterialsController {
   })
   check(
     @Param('id') id: string,
-    @Body() updateOrderMaterialDto: UpdateOrderMaterialDto,
+    @Body()
+    updateOrderMaterialDto: UpdateOrderMaterialStatusDto,
     @Request() request,
   ) {
     return this.orderMaterialsService.check(

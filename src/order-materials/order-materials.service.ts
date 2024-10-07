@@ -6,7 +6,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateOrderMaterialDto } from './dto/create-order-material.dto';
-import { UpdateOrderMaterialDto } from './dto/update-order-material.dto';
+import {
+  UpdateOrderMaterialDto,
+  UpdateOrderMaterialStatusDto,
+} from './dto/update-order-material.dto';
 import { OrderMaterialRepository } from './infrastructure/persistence/order-material.repository';
 import { OrderMaterial } from './domain/order-material';
 import { OrdersService } from '@src/orders/orders.service';
@@ -14,6 +17,7 @@ import { BadRequestException } from '@nestjs/common/exceptions/bad-request.excep
 import { errorBody } from '@src/utils/infinity-response';
 import { FindAllOrderMaterialsDto } from '@src/order-materials/dto/find-all-order-materials.dto';
 import { JwtPayloadType } from '@src/auth/strategies/types/jwt-payload.type';
+import { OrderStatusEnum } from '@src/utils/enums/order-type.enum';
 
 @Injectable()
 export class OrderMaterialsService {
@@ -54,9 +58,14 @@ export class OrderMaterialsService {
 
   async check(
     id: OrderMaterial['id'],
-    updateBody: UpdateOrderMaterialDto,
+    updateBody: UpdateOrderMaterialStatusDto,
     checker: JwtPayloadType,
   ) {
+    const { checkStatus, reason } = updateBody;
+    if (checkStatus === OrderStatusEnum.REJECTED && !reason) {
+      throw new BadRequestException(errorBody('Reason is required'));
+    }
+
     const material = await this.orderMaterialRepository.findById(id);
     if (!material) {
       throw new NotFoundException(errorBody('Data undefined'));
