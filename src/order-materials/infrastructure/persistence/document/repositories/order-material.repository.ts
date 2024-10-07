@@ -55,7 +55,9 @@ export class OrderMaterialDocumentRepository
   async findById(
     id: OrderMaterial['id'],
   ): Promise<NullableType<OrderMaterial>> {
-    const entityObject = await this.orderMaterialModel.findById(id);
+    const entityObject = await this.orderMaterialModel
+      .findById(id)
+      .populate({ path: 'order' });
     return entityObject ? OrderMaterialMapper.toDomain(entityObject) : null;
   }
 

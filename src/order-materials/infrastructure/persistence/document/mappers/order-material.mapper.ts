@@ -4,6 +4,7 @@ import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
 import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
 import { Types } from 'mongoose';
 import { OrderMaterialColumnsMapper } from '@src/order-material-columns/infrastructure/persistence/document/mappers/order-material-columns.mapper';
+import { OrderMapper } from '@src/orders/infrastructure/persistence/document/mappers/order.mapper';
 
 export class OrderMaterialMapper {
   public static toDomain(raw: OrderMaterialSchemaClass): OrderMaterial {
@@ -47,6 +48,10 @@ export class OrderMaterialMapper {
     domainEntity.isMultiple = raw.isMultiple;
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
+
+    if (raw?.order) {
+      domainEntity.order = OrderMapper.toDomain(raw.order);
+    }
 
     // console.log('domainEntity', domainEntity);
 

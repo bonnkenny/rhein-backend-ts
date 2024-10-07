@@ -1,10 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   defaultLabelTemplate,
   LabelTypeClass,
   OrderMaterialColumn,
 } from '@src/order-material-columns/domain/order-material-column';
 import { LabelType } from '@src/utils/types/order-types';
+import { Order } from '@src/orders/domain/order';
 
 export class OrderMaterial {
   @ApiProperty({
@@ -60,4 +61,9 @@ export class OrderMaterial {
   createdAt: Date;
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiPropertyOptional({
+    type: () => Order,
+  })
+  order?: Order;
 }

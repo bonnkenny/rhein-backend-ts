@@ -5,6 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { LabelType } from '@src/utils/types/order-types';
 import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
 import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
+import { OrderSchemaClass } from '@src/orders/infrastructure/persistence/document/entities/order.schema';
 
 export type OrderMaterialSchemaDocument =
   HydratedDocument<OrderMaterialSchemaClass>;
@@ -63,8 +64,20 @@ export class OrderMaterialSchemaClass extends EntityDocumentHelper {
   @ApiProperty()
   @Prop({ default: now })
   updatedAt: Date;
+
+  @ApiProperty({
+    type: OrderSchemaClass,
+  })
+  order?: OrderSchemaClass;
 }
 
 export const OrderMaterialSchema = SchemaFactory.createForClass(
   OrderMaterialSchemaClass,
 );
+
+OrderMaterialSchema.virtual('order', {
+  ref: OrderSchemaClass.name,
+  localField: 'orderId',
+  foreignField: '_id',
+  justOne: true,
+});
