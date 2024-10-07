@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  Request,
 } from '@nestjs/common';
 import { OrderMaterialsService } from './order-materials.service';
 import { CreateOrderMaterialDto } from './dto/create-order-material.dto';
@@ -97,5 +98,23 @@ export class OrderMaterialsController {
   })
   remove(@Param('id') id: string) {
     return this.orderMaterialsService.remove(id);
+  }
+
+  @Patch(':id/check')
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  check(
+    @Param('id') id: string,
+    @Body() updateOrderMaterialDto: UpdateOrderMaterialDto,
+    @Request() request,
+  ) {
+    return this.orderMaterialsService.check(
+      id,
+      updateOrderMaterialDto,
+      request.user,
+    );
   }
 }

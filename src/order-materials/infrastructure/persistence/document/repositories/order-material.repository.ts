@@ -8,6 +8,7 @@ import { OrderMaterial } from '../../../../domain/order-material';
 import { OrderMaterialMapper } from '../mappers/order-material.mapper';
 import { FindAllOrderMaterialsDto } from '@src/order-materials/dto/find-all-order-materials.dto';
 import { isValidMongoId, toMongoId } from '@src/utils/functions';
+import { pick } from 'lodash';
 
 @Injectable()
 export class OrderMaterialDocumentRepository
@@ -64,6 +65,7 @@ export class OrderMaterialDocumentRepository
   async update(
     id: OrderMaterial['id'],
     payload: Partial<OrderMaterial>,
+    isCheck?: boolean,
   ): Promise<NullableType<OrderMaterial>> {
     const clonedPayload = { ...payload };
     delete clonedPayload.id;
@@ -74,14 +76,24 @@ export class OrderMaterialDocumentRepository
     if (!entity) {
       throw new Error('Record not found');
     }
-
-    const entityObject = await this.orderMaterialModel.findOneAndUpdate(
-      filter,
-      OrderMaterialMapper.toPersistence({
+    let update: object = {};
+    if (isCheck === true) {
+      update = pick(clonedPayload, ['checkStatus', 'reason']);
+    } else {
+      let updateBody = {
         ...OrderMaterialMapper.toDomain(entity),
         ...clonedPayload,
-        filledAt: new Date(),
-      }),
+      };
+      if (!!entity?.filledAt) {
+        updateBody = { ...updateBody, filledAt: new Date() };
+      }
+      delete updateBody?.reason;
+      delete updateBody?.checkStatus;
+      update = OrderMaterialMapper.toPersistence(updateBody);
+    }
+    const entityObject = await this.orderMaterialModel.findOneAndUpdate(
+      filter,
+      update,
       { new: true },
     );
     return entityObject ? OrderMaterialMapper.toDomain(entityObject) : null;

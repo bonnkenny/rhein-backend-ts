@@ -6,6 +6,7 @@ import {
 } from '@src/order-material-columns/domain/order-material-column';
 import { LabelType } from '@src/utils/types/order-types';
 import { Order } from '@src/orders/domain/order';
+import { OrderStatusEnum } from '@src/utils/enums/order-type.enum';
 
 export class OrderMaterial {
   @ApiProperty({
@@ -56,6 +57,17 @@ export class OrderMaterial {
 
   @ApiProperty()
   filledAt: Date | null;
+
+  @ApiPropertyOptional({
+    type: String,
+    enum: OrderStatusEnum,
+  })
+  checkStatus?: string;
+
+  @ApiPropertyOptional({
+    type: String,
+  })
+  reason?: string;
 
   @ApiProperty()
   createdAt: Date;

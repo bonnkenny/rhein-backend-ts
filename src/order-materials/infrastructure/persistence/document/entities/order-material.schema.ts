@@ -4,7 +4,10 @@ import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
 import { LabelType } from '@src/utils/types/order-types';
 import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
-import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
+import {
+  OrderStatusEnum,
+  OrderTypeEnum,
+} from '@src/utils/enums/order-type.enum';
 import { OrderSchemaClass } from '@src/orders/infrastructure/persistence/document/entities/order.schema';
 
 export type OrderMaterialSchemaDocument =
@@ -56,6 +59,16 @@ export class OrderMaterialSchemaClass extends EntityDocumentHelper {
 
   @Prop({ type: Types.ObjectId })
   files: Array<Types.ObjectId>;
+
+  @ApiProperty({
+    enum: OrderStatusEnum,
+  })
+  @Prop({ default: OrderStatusEnum.PENDING, enum: OrderStatusEnum })
+  checkStatus: string;
+
+  @ApiProperty({ type: String, nullable: true })
+  @Prop({ default: null, nullable: true })
+  reason: string;
 
   @ApiProperty()
   @Prop({ default: now })

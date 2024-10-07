@@ -1,6 +1,9 @@
 import { OrderMaterial } from '@src/order-materials/domain/order-material';
 import { OrderMaterialSchemaClass } from '../entities/order-material.schema';
-import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
+import {
+  OrderStatusEnum,
+  OrderTypeEnum,
+} from '@src/utils/enums/order-type.enum';
 import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
 import { Types } from 'mongoose';
 import { OrderMaterialColumnsMapper } from '@src/order-material-columns/infrastructure/persistence/document/mappers/order-material-columns.mapper';
@@ -44,6 +47,8 @@ export class OrderMaterialMapper {
     }
 
     domainEntity.filledAt = raw.filledAt ?? null;
+    domainEntity.checkStatus = raw.checkStatus ?? OrderStatusEnum.PENDING;
+    domainEntity.reason = raw.reason ?? null;
     domainEntity.isOptional = raw.isOptional;
     domainEntity.isMultiple = raw.isMultiple;
     domainEntity.createdAt = raw.createdAt;
@@ -79,6 +84,11 @@ export class OrderMaterialMapper {
     persistenceSchema.isOptional = domainEntity.isOptional ?? false;
     persistenceSchema.isMultiple = domainEntity.isMultiple ?? false;
     persistenceSchema.filledAt = domainEntity.filledAt ?? null;
+    persistenceSchema.checkStatus =
+      domainEntity.checkStatus ?? OrderStatusEnum.PENDING;
+    if (domainEntity.reason) {
+      persistenceSchema.reason = domainEntity.reason;
+    }
     persistenceSchema.createdAt = domainEntity.createdAt;
     persistenceSchema.updatedAt = domainEntity.updatedAt;
 

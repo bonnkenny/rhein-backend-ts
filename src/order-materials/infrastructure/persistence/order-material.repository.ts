@@ -19,6 +19,7 @@ export abstract class OrderMaterialRepository {
   abstract update(
     id: OrderMaterial['id'],
     payload: DeepPartial<OrderMaterial>,
+    isCheck?: boolean,
   ): Promise<OrderMaterial | null>;
 
   abstract remove(id: OrderMaterial['id']): Promise<void>;
