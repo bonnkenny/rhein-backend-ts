@@ -83,7 +83,7 @@ export class OrderMaterialDocumentRepository
     if (!entity) {
       throw new Error('Record not found');
     }
-    let update: object = {};
+    let update: object;
     if (isCheck === true) {
       update = pick(clonedPayload, ['checkStatus', 'reason']);
     } else {
