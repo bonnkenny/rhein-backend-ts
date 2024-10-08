@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
@@ -9,6 +9,10 @@ import { OrderMaterialMapper } from '../mappers/order-material.mapper';
 import { FindAllOrderMaterialsDto } from '@src/order-materials/dto/find-all-order-materials.dto';
 import { isValidMongoId, toMongoId } from '@src/utils/functions';
 import { pick } from 'lodash';
+import { UpdateOrderMaterialStatusDto } from '@src/order-materials/dto/update-order-material.dto';
+import { OrderStatusEnum } from '@src/utils/enums/order-type.enum';
+import { errorBody } from '@src/utils/infinity-response';
+import { OrderSchemaClass } from '@src/orders/infrastructure/persistence/document/entities/order.schema';
 
 @Injectable()
 export class OrderMaterialDocumentRepository
@@ -17,6 +21,9 @@ export class OrderMaterialDocumentRepository
   constructor(
     @InjectModel(OrderMaterialSchemaClass.name)
     private readonly orderMaterialModel: Model<OrderMaterialSchemaClass>,
+
+    @InjectModel(OrderSchemaClass.name)
+    private readonly orderModel: Model<OrderSchemaClass>,
   ) {}
 
   async create(data: OrderMaterial): Promise<OrderMaterial> {
@@ -96,6 +103,67 @@ export class OrderMaterialDocumentRepository
       update,
       { new: true },
     );
+    return entityObject ? OrderMaterialMapper.toDomain(entityObject) : null;
+  }
+
+  async updateCheckStatus(
+    id: OrderMaterial['id'],
+    updateBody: UpdateOrderMaterialStatusDto,
+  ): Promise<NullableType<OrderMaterial>> {
+    const entity = await this.orderMaterialModel.findOne({ _id: id });
+
+    if (!entity) {
+      throw new Error('Record not found');
+    }
+    const otherMaterials = await this.orderMaterialModel.find({
+      orderId: entity.orderId,
+      checkStatus: 'PENDING',
+      _id: { $ne: id },
+    });
+    const rejectedCount = otherMaterials.filter(
+      (material) => material.checkStatus === OrderStatusEnum.REJECTED,
+    ).length;
+
+    const pendingCount = otherMaterials.filter(
+      (material) => material.checkStatus === OrderStatusEnum.PENDING,
+    ).length;
+    const currentStatus = updateBody.checkStatus;
+    const session = await this.orderMaterialModel.db.startSession();
+    let entityObject: any;
+    session.startTransaction();
+    try {
+      entityObject = await this.orderMaterialModel.findOneAndUpdate(
+        { _id: id },
+        updateBody,
+        { new: false },
+      );
+      if (pendingCount === 0) {
+        if (currentStatus === OrderStatusEnum.APPROVED && rejectedCount === 0) {
+          //更新订单状态为APPROVED
+          await this.orderModel.findOneAndUpdate(
+            { _id: entity.orderId },
+            { status: OrderStatusEnum.APPROVED },
+            { new: false },
+          );
+        } else {
+          //更新订单状态为REJECTED
+          await this.orderModel.findOneAndUpdate(
+            { _id: entity.orderId },
+            { status: OrderStatusEnum.REJECTED },
+            { new: false },
+          );
+        }
+      }
+
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      console.log('transaction error', error);
+      throw new InternalServerErrorException(
+        errorBody('Update failed,please retry later'),
+      );
+    }
+
     return entityObject ? OrderMaterialMapper.toDomain(entityObject) : null;
   }
 

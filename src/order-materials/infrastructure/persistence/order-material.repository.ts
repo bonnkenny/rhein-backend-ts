@@ -2,6 +2,7 @@ import { DeepPartial } from '@src/utils/types/deep-partial.type';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { OrderMaterial } from '../../domain/order-material';
 import { FindAllOrderMaterialsDto } from '@src/order-materials/dto/find-all-order-materials.dto';
+import { UpdateOrderMaterialStatusDto } from '@src/order-materials/dto/update-order-material.dto';
 
 export abstract class OrderMaterialRepository {
   abstract create(
@@ -23,4 +24,9 @@ export abstract class OrderMaterialRepository {
   ): Promise<OrderMaterial | null>;
 
   abstract remove(id: OrderMaterial['id']): Promise<void>;
+
+  abstract updateCheckStatus(
+    id: OrderMaterial['id'],
+    updateBody: UpdateOrderMaterialStatusDto,
+  ): Promise<OrderMaterial | null>;
 }

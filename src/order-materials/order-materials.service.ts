@@ -76,6 +76,6 @@ export class OrderMaterialsService {
         errorBody('Has no permission for this order'),
       );
     }
-    return this.orderMaterialRepository.update(id, updateBody, true);
+    return this.orderMaterialRepository.updateCheckStatus(id, updateBody);
   }
 }

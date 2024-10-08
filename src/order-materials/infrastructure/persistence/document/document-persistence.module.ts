@@ -6,11 +6,16 @@ import {
 } from './entities/order-material.schema';
 import { OrderMaterialRepository } from '../order-material.repository';
 import { OrderMaterialDocumentRepository } from './repositories/order-material.repository';
+import {
+  OrderSchema,
+  OrderSchemaClass,
+} from '@src/orders/infrastructure/persistence/document/entities/order.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: OrderMaterialSchemaClass.name, schema: OrderMaterialSchema },
+      { name: OrderSchemaClass.name, schema: OrderSchema },
     ]),
   ],
   providers: [
