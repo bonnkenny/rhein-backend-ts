@@ -1,10 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 import {
   OrderStatusEnum,
   OrderTypeEnum,
 } from '@src/utils/enums/order-type.enum';
 import { InfinityFindAllDto } from '@src/utils/dto/infinity-query-all.dto';
+import { Transform } from 'class-transformer';
 
 export class FindAllOrderMaterialsDto extends InfinityFindAllDto {
   @ApiPropertyOptional({
@@ -34,7 +35,15 @@ export class FindAllOrderMaterialsDto extends InfinityFindAllDto {
     type: Boolean,
     description: '是否可选',
   })
-  @IsBoolean()
+  @Transform(({ value }): boolean | undefined => {
+    if (value.toLowerCase() === 'true') {
+      return true;
+    }
+    if (value.toLowerCase() === 'false') {
+      return false;
+    }
+    return undefined;
+  })
   @IsOptional()
   isOptional: boolean;
 }

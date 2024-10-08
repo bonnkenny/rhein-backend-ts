@@ -51,17 +51,24 @@ export class OrderMaterialDocumentRepository
     const params = omit(filterOptions, ['page', 'limit']);
 
     Object.keys(params).forEach((key) => {
-      if (params[key] !== undefined && params[key] !== null) {
+      if (
+        params[key] !== undefined &&
+        params[key] !== null &&
+        params[key] !== ''
+      ) {
         switch (true) {
           case key === 'id':
             where['_id'] = toMongoId(params[key]);
+            break;
+          case key === 'orderId':
+            where['orderId'] = toMongoId(params[key]);
             break;
           default:
             where[key] = params[key];
         }
       }
     });
-
+    console.log('where ->', where);
     const total = await this.orderMaterialModel.find(where).countDocuments();
     const entityObjects = await this.orderMaterialModel
       .find(where)
