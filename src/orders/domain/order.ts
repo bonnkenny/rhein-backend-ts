@@ -55,6 +55,11 @@ export class Order {
   fromUserId: string | null;
 
   @ApiProperty({
+    type: Boolean,
+  })
+  proxySet: boolean;
+
+  @ApiProperty({
     type: String,
     enum: Object.keys(OrderStatusEnum),
   })

@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { OrderRepository } from './infrastructure/persistence/order.repository';
@@ -55,6 +60,7 @@ export class OrdersService {
       ...createOrderDto,
       userId: userId.toString(),
       fromUserId: user.id.toString(),
+      proxySet: false,
     });
   }
 
@@ -146,9 +152,14 @@ export class OrdersService {
         userId: id,
       });
       const assignedOrderIds = assignedOrders.map((order) => order.orderId);
+      const proxyOrders = await this.orderRepository.findAll({
+        proxySet: true,
+        fromUserId: id,
+      });
+      const proxyOrderIds = proxyOrders.map((order) => order.id);
       options = {
         ...options,
-        ids: assignedOrderIds,
+        ids: [...assignedOrderIds, ...proxyOrderIds],
       };
     }
 
@@ -167,11 +178,32 @@ export class OrdersService {
     return this.orderRepository.findById(id);
   }
 
-  update(id: Order['id'], updateOrderDto: UpdateOrderDto) {
+  update(
+    id: Order['id'],
+    updateOrderDto: Pick<UpdateOrderDto, 'orderName' | 'orderNo'>,
+  ) {
     return this.orderRepository.update(id, updateOrderDto);
   }
 
   remove(id: Order['id']) {
     return this.orderRepository.remove(id);
+  }
+
+  async updateProxySet(
+    id: Order['id'],
+    user: JwtPayloadType,
+    updateOrderDto: Pick<UpdateOrderDto, 'proxySet'>,
+  ) {
+    const { proxySet } = updateOrderDto;
+    if (true !== proxySet && false !== proxySet) {
+      throw new BadRequestException(errorBody('ProxySet value is required!'));
+    }
+    const order = await this.orderRepository.findById(id);
+    if (order?.userId !== user.id) {
+      throw new ForbiddenException(
+        errorBody('Has no permission for this order'),
+      );
+    }
+    return this.orderRepository.update(id, { proxySet: proxySet });
   }
 }

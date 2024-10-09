@@ -92,6 +92,14 @@ export class FilterOrdersDto extends InfinityFindAllDto {
   // @IsEnum(Object.keys(OrderFillStatusEnum))
   @IsOptional()
   fillStatus?: string;
+
+  @ApiProperty({
+    type: Boolean,
+    description: '是否代理',
+    required: false,
+  })
+  @IsOptional()
+  proxySet?: boolean;
 }
 
 export class SortOrdersDto extends InfinitySortDto<OrderSchemaClass> {}

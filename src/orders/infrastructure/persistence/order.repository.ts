@@ -24,4 +24,8 @@ export abstract class OrderRepository {
   abstract findAllBySupplier(
     filterOrderOptions: FilterOrdersDto,
   ): Promise<[Order[], number]>;
+
+  abstract findAll(
+    filterOrderOptions: Omit<FilterOrdersDto, 'page' | 'limit'>,
+  ): Promise<Order[]>;
 }
