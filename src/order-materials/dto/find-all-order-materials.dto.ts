@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional } from 'class-validator';
+import { IsEnum, IsMongoId, IsOptional } from 'class-validator';
 import {
   OrderStatusEnum,
   OrderTypeEnum,
@@ -12,7 +12,8 @@ export class FindAllOrderMaterialsDto extends InfinityFindAllDto {
     type: String,
     description: '订单ID',
   })
-  // @IsMongoId()
+  @IsMongoId()
+  @Transform(({ value }) => (!!value ? value : undefined))
   @IsOptional()
   orderId: string;
   @ApiProperty({
