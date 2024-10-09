@@ -19,6 +19,8 @@ export class FindAllOrderMaterialsDto extends InfinityFindAllDto {
     type: String,
     enum: Object.keys(OrderTypeEnum),
   })
+  @IsEnum(OrderStatusEnum)
+  @Transform(({ value }) => (!!value ? value : undefined))
   @IsOptional()
   orderType: string;
 
@@ -28,6 +30,7 @@ export class FindAllOrderMaterialsDto extends InfinityFindAllDto {
     description: '审核状态',
   })
   @IsEnum(OrderStatusEnum)
+  @Transform(({ value }) => (!!value ? value : undefined))
   @IsOptional()
   checkStatus: string;
 
