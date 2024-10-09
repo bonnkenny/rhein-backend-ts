@@ -2,7 +2,7 @@ import { Order } from '../../../../domain/order';
 import { OrderSchemaClass } from '../entities/order.schema';
 import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
 import { Types } from 'mongoose';
-import { findKey } from 'lodash';
+import { findKey, isBoolean } from 'lodash';
 
 export class OrderMapper {
   public static toDomain(raw: OrderSchemaClass): Order {
@@ -24,6 +24,7 @@ export class OrderMapper {
     if (raw.parentId) {
       domainEntity.parentId = raw?.parentId?.toString();
     }
+    domainEntity.proxySet = raw?.proxySet ?? false;
     domainEntity.fillStatus = raw.fillStatus;
     domainEntity.checkStatus = raw.checkStatus;
     domainEntity.createdAt = raw.createdAt;
@@ -54,6 +55,11 @@ export class OrderMapper {
     if (domainEntity.fillStatus) {
       persistenceSchema.fillStatus = domainEntity.fillStatus;
     }
+
+    if (isBoolean(domainEntity?.proxySet)) {
+      persistenceSchema.proxySet = domainEntity.proxySet;
+    }
+
     persistenceSchema.orderNo = domainEntity.orderNo;
     persistenceSchema.email = domainEntity?.email || '';
     persistenceSchema.orderName = domainEntity.orderName;

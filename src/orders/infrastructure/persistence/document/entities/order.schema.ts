@@ -73,6 +73,13 @@ export class OrderSchemaClass extends EntityDocumentHelper {
   })
   checkStatus: string;
 
+  @ApiProperty({
+    type: Boolean,
+    description: '是否代理给发起者',
+  })
+  @Prop({ default: false })
+  proxySet: boolean;
+
   @ApiProperty()
   @Prop()
   deletedAt: Date;
