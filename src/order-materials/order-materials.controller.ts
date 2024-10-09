@@ -32,7 +32,7 @@ import {
 import { infinityPagination } from '../utils/infinity-response';
 import { FindAllOrderMaterialsDto } from './dto/find-all-order-materials.dto';
 
-@ApiTags('Ordermaterials')
+@ApiTags('OrderMaterials')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 @Controller({

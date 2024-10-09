@@ -119,10 +119,10 @@ export class OrderMaterialDocumentRepository
     delete updateBody?.checkStatus;
     const update = OrderMaterialMapper.toPersistence(updateBody);
 
-    const otherMaterial = this.orderMaterialModel.find({
+    const otherMaterial = await this.orderMaterialModel.find({
       orderId: entity.orderId,
       isOptional: false,
-      filledAt: { $isnull: true },
+      filledAt: { $eq: null },
       _id: { $ne: id },
     });
 
@@ -133,13 +133,13 @@ export class OrderMaterialDocumentRepository
       entityObject = await this.orderMaterialModel.findOneAndUpdate(
         filter,
         update,
-        { new: true },
+        { new: true, session: dbSession },
       );
-      if ((await otherMaterial.countDocuments()) === 0) {
+      if (otherMaterial.length === 0) {
         await this.orderModel.findOneAndUpdate(
           { _id: entity.orderId },
           { fillStatus: OrderFillStatusEnum.FILLED },
-          { new: false },
+          { new: false, session: dbSession },
         );
       }
       await dbSession.commitTransaction();
@@ -198,14 +198,14 @@ export class OrderMaterialDocumentRepository
           await this.orderModel.findOneAndUpdate(
             { _id: entity.orderId },
             { checkStatus: OrderStatusEnum.APPROVED },
-            { new: false },
+            { new: false, session: session },
           );
         } else {
           //更新订单状态为REJECTED
           await this.orderModel.findOneAndUpdate(
             { _id: entity.orderId },
             { checkStatus: OrderStatusEnum.REJECTED },
-            { new: false },
+            { new: false, session: session },
           );
         }
       }
