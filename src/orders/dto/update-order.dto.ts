@@ -16,6 +16,7 @@ import {
   OrderFillStatusEnum,
   OrderStatusEnum,
 } from '@src/utils/enums/order-type.enum';
+import { Transform } from 'class-transformer';
 
 export class UpdateOrderDto extends PartialType(CreateOrderDto) {
   // Don't forget to use the class-validator decorators in the DTO properties.
@@ -82,4 +83,19 @@ export class UpdateOrderDto extends PartialType(CreateOrderDto) {
   @IsEnum(Object.keys(OrderFillStatusEnum))
   @IsOptional()
   fillStatus?: string;
+
+  @ApiProperty({
+    type: Boolean,
+  })
+  @Transform(({ value }) => {
+    if (value === 'false') {
+      return false;
+    }
+    if (value === 'true') {
+      return true;
+    }
+    return undefined;
+  })
+  @IsOptional()
+  proxySet?: boolean;
 }

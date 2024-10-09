@@ -92,7 +92,7 @@ export class OrderDocumentRepository implements OrderRepository {
     payload: Partial<Order>,
   ): Promise<NullableType<Order>> {
     const clonedPayload = { ...payload };
-    delete clonedPayload.id;
+    delete clonedPayload?.id;
 
     const filter = { _id: id.toString() };
     const entity = await this.orderModel.findOne(filter);
@@ -163,5 +163,56 @@ export class OrderDocumentRepository implements OrderRepository {
       .sort({ createdAt: -1 })
       .limit(limit);
     return [entityObjects.map((item) => OrderMapper.toDomain(item)), total];
+  }
+
+  async findAll(
+    filterOrderOptions: Omit<FilterOrdersDto, 'page' | 'limit'>,
+  ): Promise<Order[]> {
+    const where: FilterQuery<OrderSchemaClass> = {};
+    if (filterOrderOptions.parentId) {
+      where.parentId = toMongoId(filterOrderOptions.parentId);
+    }
+    if (filterOrderOptions.fillStatus) {
+      where.fillStatus = filterOrderOptions.fillStatus;
+    }
+    if (filterOrderOptions.checkStatus) {
+      where.checkStatus = filterOrderOptions.checkStatus;
+    }
+    if (!!filterOrderOptions.userId && !!filterOrderOptions.fromUserId) {
+      where.$or = [
+        { userId: toMongoId(filterOrderOptions.userId) },
+        { fromUserId: toMongoId(filterOrderOptions.fromUserId) },
+      ];
+    } else {
+      if (!!filterOrderOptions.userId) {
+        where.userId = toMongoId(filterOrderOptions.userId);
+      }
+      if (!!filterOrderOptions.fromUserId) {
+        where.fromUserId = toMongoId(filterOrderOptions.fromUserId);
+      }
+    }
+
+    if (filterOrderOptions.orderType) {
+      where.orderType = filterOrderOptions.orderType;
+    }
+
+    if (filterOrderOptions.orderNo) {
+      where.orderNo = new RegExp(`.*${filterOrderOptions.orderNo}.*`, 'i');
+    }
+    if (filterOrderOptions.orderName) {
+      where.orderName = new RegExp(`.*${filterOrderOptions.orderName}.*`, 'i');
+    }
+
+    if (filterOrderOptions.ids) {
+      where._id = { $in: filterOrderOptions.ids.map(toMongoId) };
+    }
+
+    // console.log('where', where);
+    const entityObjects = await this.orderModel
+      .find(where)
+      .sort({ createdAt: -1 });
+    return entityObjects.map((entityObject) =>
+      OrderMapper.toDomain(entityObject),
+    );
   }
 }

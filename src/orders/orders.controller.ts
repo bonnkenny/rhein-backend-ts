@@ -15,6 +15,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiParam,
@@ -104,7 +105,7 @@ export class OrdersController {
   })
   update(
     @Param('id') id: string,
-    @Body() updateOrderDto: UpdateOrderDto,
+    @Body() updateOrderDto: Pick<UpdateOrderDto, 'orderName' | 'orderNo'>,
   ): InfinityApiResponseDto<Promise<Order | null>> {
     return infinityResponse(this.ordersService.update(id, updateOrderDto));
   }
@@ -117,5 +118,33 @@ export class OrdersController {
   })
   remove(@Param('id') id: string) {
     return this.ordersService.remove(id);
+  }
+
+  @Patch(':id/proxy-set')
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        proxySet: { type: 'boolean', example: true },
+      },
+      required: ['proxySet'],
+    },
+  })
+  @ApiOkResponse({
+    type: InfinityApiResponse(Order),
+  })
+  updateProxySet(
+    @Param('id') id: string,
+    @Request() request: any,
+    @Body() updateOrderDto: Pick<UpdateOrderDto, 'proxySet'>,
+  ): InfinityApiResponseDto<Promise<Order | null>> {
+    return infinityResponse(
+      this.ordersService.updateProxySet(id, request.user, updateOrderDto),
+    );
   }
 }
