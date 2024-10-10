@@ -7,7 +7,7 @@ RUN npm i -g @nestjs/cli typescript ts-node
 
 COPY package*.json /tmp/app/
 # 使用 CACHEBUST 来强制 npm install 不缓存，ARG 被引用
-RUN cd /tmp/app && rm -rf node_modules && npm cache clean --force && npm ci
+RUN cd /tmp/app && rm -rf node_modules && npm install
 
 COPY . /usr/src/app
 RUN cp -a /tmp/app/node_modules /usr/src/app
