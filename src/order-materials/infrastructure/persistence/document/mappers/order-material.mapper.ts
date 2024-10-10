@@ -1,6 +1,7 @@
 import { OrderMaterial } from '@src/order-materials/domain/order-material';
 import { OrderMaterialSchemaClass } from '../entities/order-material.schema';
 import {
+  MaterialTemplateTypeEnum,
   OrderStatusEnum,
   OrderTypeEnum,
 } from '@src/utils/enums/order-type.enum';
@@ -15,6 +16,7 @@ export class OrderMaterialMapper {
     domainEntity.id = raw._id.toString();
     domainEntity.orderId = raw.orderId.toString();
     domainEntity.orderType = raw.orderType;
+    domainEntity.templateType = raw.templateType;
 
     domainEntity.label = {
       ch: raw.label?.ch ?? '',
@@ -67,13 +69,18 @@ export class OrderMaterialMapper {
     domainEntity: OrderMaterial,
   ): OrderMaterialSchemaClass {
     const persistenceSchema = new OrderMaterialSchemaClass();
-    if (domainEntity.id && typeof domainEntity.id === 'string') {
+    if (domainEntity.id) {
       persistenceSchema._id = domainEntity.id;
     }
     if (domainEntity.orderId)
       persistenceSchema.orderId = new Types.ObjectId(domainEntity.orderId);
     if (domainEntity.orderType) {
       persistenceSchema.orderType = OrderTypeEnum[domainEntity.orderType];
+    }
+
+    if (domainEntity.templateType) {
+      persistenceSchema.templateType =
+        MaterialTemplateTypeEnum[domainEntity.templateType];
     }
 
     persistenceSchema.columns = domainEntity.columns;

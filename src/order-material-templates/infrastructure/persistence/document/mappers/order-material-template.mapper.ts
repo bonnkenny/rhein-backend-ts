@@ -1,6 +1,6 @@
 import { OrderMaterialTemplate } from '@src/order-material-templates/domain/order-material-template';
 import { OrderMaterialTemplateSchemaClass } from '../entities/order-material-template.schema';
-import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
+import { MaterialTemplateTypeEnum } from '@src/utils/enums/order-type.enum';
 import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
 import { OrderMaterialColumnsMapper } from '@src/order-material-columns/infrastructure/persistence/document/mappers/order-material-columns.mapper';
 
@@ -10,7 +10,7 @@ export class OrderMaterialTemplateMapper {
   ): OrderMaterialTemplate {
     const domainEntity = new OrderMaterialTemplate();
     domainEntity.id = raw._id.toString();
-    domainEntity.orderType = raw.orderType;
+    domainEntity.templateType = raw.templateType;
     domainEntity.label = {
       ch: raw.label?.ch ?? '',
       en: raw.label?.en ?? '',
@@ -60,8 +60,9 @@ export class OrderMaterialTemplateMapper {
       persistenceSchema._id = domainEntity.id;
     }
 
-    if (domainEntity.orderType) {
-      persistenceSchema.orderType = OrderTypeEnum[domainEntity.orderType];
+    if (domainEntity.templateType) {
+      persistenceSchema.templateType =
+        MaterialTemplateTypeEnum[domainEntity.templateType];
     }
 
     persistenceSchema.columns = domainEntity.columns;

@@ -17,7 +17,10 @@ import {
   IsLabelType,
 } from '@src/order-material-columns/validator/column-validator';
 import { LabelType } from '@src/utils/types/order-types';
-import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
+import {
+  MaterialTemplateTypeEnum,
+  OrderTypeEnum,
+} from '@src/utils/enums/order-type.enum';
 import { Transform } from 'class-transformer';
 
 export class CreateOrderMaterialDto {
@@ -41,11 +44,19 @@ export class CreateOrderMaterialDto {
 
   @ApiProperty({
     type: String,
-    enum: Object.keys(OrderTypeEnum),
+    enum: OrderTypeEnum,
   })
-  @IsEnum(Object.keys(OrderTypeEnum))
+  @IsEnum(OrderTypeEnum)
   @IsNotEmpty()
   orderType: string;
+
+  @ApiProperty({
+    type: String,
+    enum: MaterialTemplateTypeEnum,
+  })
+  @IsEnum(OrderTypeEnum)
+  @IsNotEmpty()
+  templateType: string;
 
   @ApiProperty({
     type: () => [[OrderMaterialColumn]],

@@ -22,6 +22,10 @@ export class OrderMaterial {
   })
   orderType: string;
   @ApiProperty({
+    type: String,
+  })
+  templateType: string;
+  @ApiProperty({
     type: LabelTypeClass,
     default: defaultLabelTemplate,
   })

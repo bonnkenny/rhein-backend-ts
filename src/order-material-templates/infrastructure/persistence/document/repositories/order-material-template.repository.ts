@@ -43,7 +43,8 @@ export class OrderMaterialTemplateDocumentRepository
     const { page, limit } = filterOptions;
 
     const where: FilterQuery<OrderMaterialTemplateSchemaClass> = {};
-    if (!!filterOptions.orderType) where.orderType = filterOptions.orderType;
+    if (!!filterOptions.templateType)
+      where.templateType = filterOptions.templateType;
 
     const total = await this.orderMaterialTemplateModel
       .find(where)
@@ -109,11 +110,11 @@ export class OrderMaterialTemplateDocumentRepository
   }
 
   async findAll({
-    orderType,
+    templateType,
   }: {
-    orderType: OrderMaterialTemplate['orderType'];
+    templateType: OrderMaterialTemplate['templateType'];
   }): Promise<OrderMaterialTemplate[]> {
-    const items = await this.orderMaterialTemplateModel.find({ orderType });
+    const items = await this.orderMaterialTemplateModel.find({ templateType });
 
     return items.map((item) => OrderMaterialTemplateMapper.toDomain(item));
   }

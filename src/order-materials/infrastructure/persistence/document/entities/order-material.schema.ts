@@ -5,6 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { LabelType } from '@src/utils/types/order-types';
 import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
 import {
+  MaterialTemplateTypeEnum,
   OrderStatusEnum,
   OrderTypeEnum,
 } from '@src/utils/enums/order-type.enum';
@@ -26,8 +27,11 @@ export class OrderMaterialSchemaClass extends EntityDocumentHelper {
   orderId: Types.ObjectId;
 
   @ApiProperty({ type: String })
-  @Prop({ required: true, enum: Object.values(OrderTypeEnum) })
+  @Prop({ required: true, enum: OrderTypeEnum })
   orderType: string;
+
+  @Prop({ required: true, enum: MaterialTemplateTypeEnum })
+  templateType: string;
 
   @ApiProperty({ type: Object })
   @Prop({ required: true, type: { en: String, ch: String } })

@@ -1,13 +1,39 @@
 export enum OrderTypeEnum {
   // 林场|农户
-  MATERIAL_PRODUCER = 'MATERIAL_PRODUCER',
-  // 材料加工厂
-  MATERIAL_PROCESSOR = 'MATERIAL_PROCESSOR',
+  FOREST_OWNER = 'FOREST_OWNER',
+  // 加工厂
+  PAPER_MANUFACTURER = 'PAPER_MANUFACTURER',
+  MDF_MANUFACTURER = 'MDF_MANUFACTURER',
+  BOARD_MANUFACTURER = 'BOARD_MANUFACTURER',
+  RUBBER_MANUFACTURER = 'RUBBER_MANUFACTURER',
+  PRODUCT_MANUFACTURER = 'PRODUCT_MANUFACTURER',
+  OTHER_MANUFACTURER = 'OTHER_MANUFACTURER',
   // 贸易商
   TRADER = 'TRADER',
-  // 生产商
-  PRODUCT_PRODUCER = 'PRODUCT_PRODUCER',
+  AGENT = 'AGENT',
+  SUPPLIER = 'SUPPLIER',
 }
+
+export enum MaterialTemplateTypeEnum {
+  FOREST_OWNER = 'FOREST_OWNER',
+  MANUFACTURER = 'MANUFACTURER',
+  TRADER = 'TRADER',
+}
+
+export const ManufacturerArray = [
+  OrderTypeEnum.PAPER_MANUFACTURER.toString(),
+  OrderTypeEnum.MDF_MANUFACTURER.toString(),
+  OrderTypeEnum.BOARD_MANUFACTURER.toString(),
+  OrderTypeEnum.RUBBER_MANUFACTURER.toString(),
+  OrderTypeEnum.PRODUCT_MANUFACTURER.toString(),
+  OrderTypeEnum.OTHER_MANUFACTURER.toString(),
+];
+
+export const TraderArray = [
+  OrderTypeEnum.TRADER.toString(),
+  OrderTypeEnum.AGENT.toString(),
+  OrderTypeEnum.SUPPLIER.toString(),
+];
 
 export enum OrderStatusEnum {
   // 待审核

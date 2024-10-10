@@ -15,6 +15,11 @@ import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 import { JwtPayloadType } from '@src/auth/strategies/types/jwt-payload.type';
 import { random } from 'lodash';
 import { OrderUsersService } from '@src/order-users/order-users.service';
+import {
+  ManufacturerArray,
+  MaterialTemplateTypeEnum,
+  TraderArray,
+} from '@src/utils/enums/order-type.enum';
 
 @Injectable()
 export class OrdersService {
@@ -83,9 +88,25 @@ export class OrdersService {
       ...createOrderDto,
       userId: orderUserId,
     });
-    const orderType = order.orderType;
+    let templateType: MaterialTemplateTypeEnum | undefined;
+    switch (true) {
+      case ManufacturerArray.includes(order.orderType):
+        templateType = MaterialTemplateTypeEnum.MANUFACTURER;
+        break;
+      case TraderArray.includes(order.orderType):
+        templateType = MaterialTemplateTypeEnum.TRADER;
+        break;
+      case order.orderType === MaterialTemplateTypeEnum.FOREST_OWNER.toString():
+        templateType = MaterialTemplateTypeEnum.FOREST_OWNER;
+        break;
+      default:
+        templateType = undefined;
+    }
+    if (!templateType) {
+      throw new BadRequestException(errorBody('Material type not found'));
+    }
     const templates = await this.orderMaterialTemplateService.findAll({
-      orderType,
+      templateType,
     });
     const materials: OrderMaterial[] = [];
     if (templates.length) {
@@ -93,7 +114,8 @@ export class OrdersService {
         // console.log('template >>> ', template);
         const material = await this.orderMaterialService.create({
           orderId: order.id.toString(),
-          orderType: orderType,
+          orderType: order.orderType,
+          templateType: templateType,
           label: template.label,
           description: template.description,
           subDescription: template?.subDescription ?? null,

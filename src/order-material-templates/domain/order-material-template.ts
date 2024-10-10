@@ -5,6 +5,7 @@ import {
   OrderMaterialColumn,
 } from '@src/order-material-columns/domain/order-material-column';
 import { LabelType } from '@src/utils/types/order-types';
+import { MaterialTemplateTypeEnum } from '@src/utils/enums/order-type.enum';
 
 export class OrderMaterialTemplate {
   @ApiProperty({
@@ -13,8 +14,9 @@ export class OrderMaterialTemplate {
   id: string;
   @ApiProperty({
     type: String,
+    enum: MaterialTemplateTypeEnum,
   })
-  orderType: string;
+  templateType: string;
   @ApiProperty({
     type: LabelTypeClass,
     default: defaultLabelTemplate,

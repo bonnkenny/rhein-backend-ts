@@ -11,7 +11,7 @@ import {
   IsOptional,
   Validate,
 } from 'class-validator';
-import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
+import { MaterialTemplateTypeEnum } from '@src/utils/enums/order-type.enum';
 import {
   IsColumnsType,
   IsLabelType,
@@ -32,11 +32,11 @@ export class CreateOrderMaterialTemplateDto {
 
   @ApiProperty({
     type: String,
-    enum: Object.keys(OrderTypeEnum),
+    enum: MaterialTemplateTypeEnum,
   })
-  @IsEnum(Object.keys(OrderTypeEnum))
+  @IsEnum(MaterialTemplateTypeEnum)
   @IsNotEmpty()
-  orderType: string;
+  templateType: string;
 
   @ApiProperty({
     type: () => [[OrderMaterialColumn]],

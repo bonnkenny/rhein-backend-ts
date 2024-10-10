@@ -32,7 +32,7 @@ import {
 } from '../utils/infinity-response';
 import { FilterOrderMaterialTemplatesDto } from './dto/find-all-order-material-templates.dto';
 
-@ApiTags('Ordermaterialtemplates')
+@ApiTags('OrderMaterialTemplates')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 @Controller({
