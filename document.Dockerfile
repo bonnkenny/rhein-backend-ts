@@ -5,8 +5,10 @@ RUN npm config set registry https://registry.npmmirror.com
 
 RUN npm i -g @nestjs/cli typescript ts-node
 
+ARG CACHEBUST=1
 COPY package*.json /tmp/app/
-RUN cd /tmp/app && npm install
+# 使用 CACHEBUST 来强制 npm install 不缓存，ARG 被引用
+RUN echo $CACHEBUST && cd /tmp/app && npm install
 
 COPY . /usr/src/app
 RUN cp -a /tmp/app/node_modules /usr/src/app
