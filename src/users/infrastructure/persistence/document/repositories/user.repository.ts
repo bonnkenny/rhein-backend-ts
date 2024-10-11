@@ -225,6 +225,7 @@ export class UsersDocumentRepository implements UserRepository {
     if (!Object.keys(where)) {
       return null;
     }
-    return this.usersModel.findOne(where) ?? null;
+    const userObject = await this.usersModel.findOne(where);
+    return userObject ? UserMapper.toDomain(userObject) : null;
   }
 }

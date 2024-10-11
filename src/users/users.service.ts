@@ -167,6 +167,12 @@ export class UsersService {
     return this.usersRepository.findById(id);
   }
 
+  findOneByFilter(
+    filter: Omit<FilterUserDto, 'page' | 'limit'>,
+  ): Promise<NullableType<User>> {
+    return this.usersRepository.findByFilter(filter);
+  }
+
   findByEmail({
     email,
     withROleMenu,

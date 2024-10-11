@@ -142,13 +142,15 @@ export class UsersController {
     if (!email) {
       throw new BadRequestException(errorBody('Email is required'));
     }
-    const result = await this.usersService.findByEmail({
+    const result = await this.usersService.findOneByFilter({
       email: email,
+      baseRole: BaseRoleEnum.SUPPLIER,
     });
-    if (!result || result.baseRole !== BaseRoleEnum.SUPPLIER) {
-      return infinityResponse({});
-    }
-    return infinityResponse(result);
+    console.log('result', result);
+    // if (!result || result.baseRole !== BaseRoleEnum.SUPPLIER.toString()) {
+    //   return infinityResponse({});
+    // }
+    return infinityResponse(result ?? {});
   }
 
   @ApiOkResponse({
