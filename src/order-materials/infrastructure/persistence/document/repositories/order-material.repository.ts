@@ -117,6 +117,7 @@ export class OrderMaterialDocumentRepository
     }
     delete updateBody?.reason;
     delete updateBody?.checkStatus;
+
     const update = OrderMaterialMapper.toPersistence(updateBody);
 
     const otherMaterial = await this.orderMaterialModel.find({
@@ -127,24 +128,25 @@ export class OrderMaterialDocumentRepository
     });
 
     let entityObject: any;
-    const dbSession = await this.orderMaterialModel.db.startSession();
-    dbSession.startTransaction();
+    // const dbSession = await this.orderMaterialModel.db.startSession();
+    // dbSession.startTransaction();
     try {
       entityObject = await this.orderMaterialModel.findOneAndUpdate(
         filter,
         update,
-        { new: true, session: dbSession },
+        { new: true },
       );
       if (otherMaterial.length === 0) {
         await this.orderModel.findOneAndUpdate(
           { _id: entity.orderId },
           { fillStatus: OrderFillStatusEnum.FILLED },
-          { new: false, session: dbSession },
+          { new: false },
         );
+        console.log('here-4');
       }
-      await dbSession.commitTransaction();
+      // await dbSession.commitTransaction();
     } catch (error) {
-      await dbSession.abortTransaction();
+      // await dbSession.abortTransaction();
       console.log('transaction error->', error);
       throw new InternalServerErrorException(
         errorBody('Update error,please try again!'),
@@ -182,9 +184,9 @@ export class OrderMaterialDocumentRepository
         !material?.isOptional,
     ).length;
     const currentStatus = updateBody.checkStatus;
-    const session = await this.orderMaterialModel.db.startSession();
+    // const session = await this.orderMaterialModel.db.startSession();
     let entityObject: any;
-    session.startTransaction();
+    // session.startTransaction();
     try {
       entityObject = await this.orderMaterialModel.findOneAndUpdate(
         { _id: id },
@@ -198,21 +200,21 @@ export class OrderMaterialDocumentRepository
           await this.orderModel.findOneAndUpdate(
             { _id: entity.orderId },
             { checkStatus: OrderStatusEnum.APPROVED },
-            { new: false, session: session },
+            { new: false },
           );
         } else {
           //更新订单状态为REJECTED
           await this.orderModel.findOneAndUpdate(
             { _id: entity.orderId },
             { checkStatus: OrderStatusEnum.REJECTED },
-            { new: false, session: session },
+            { new: false },
           );
         }
       }
 
-      await session.commitTransaction();
+      // await session.commitTransaction();
     } catch (error) {
-      await session.abortTransaction();
+      // await session.abortTransaction();
       console.log('transaction error', error);
       throw new InternalServerErrorException(
         errorBody('Update failed,please retry later'),

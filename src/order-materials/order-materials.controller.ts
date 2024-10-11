@@ -29,7 +29,10 @@ import {
   InfinityPaginationResponse,
   InfinityPaginationResponseDto,
 } from '../utils/dto/infinity-base-response.dto';
-import { infinityPagination } from '../utils/infinity-response';
+import {
+  infinityPagination,
+  infinityResponse,
+} from '../utils/infinity-response';
 import { FindAllOrderMaterialsDto } from './dto/find-all-order-materials.dto';
 
 @ApiTags('OrderMaterials')
@@ -84,7 +87,7 @@ export class OrderMaterialsController {
     required: true,
   })
   @ApiOkResponse({
-    type: OrderMaterial,
+    type: InfinityPaginationResponse(OrderMaterial),
   })
   update(
     @Param('id') id: string,
@@ -94,7 +97,9 @@ export class OrderMaterialsController {
       'checkStatus' | 'reason'
     >,
   ) {
-    return this.orderMaterialsService.update(id, updateOrderMaterialDto);
+    return infinityResponse(
+      this.orderMaterialsService.update(id, updateOrderMaterialDto),
+    );
   }
 
   @Delete(':id')

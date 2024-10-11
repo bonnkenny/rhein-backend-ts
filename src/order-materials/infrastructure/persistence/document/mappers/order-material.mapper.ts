@@ -69,9 +69,9 @@ export class OrderMaterialMapper {
     domainEntity: OrderMaterial,
   ): OrderMaterialSchemaClass {
     const persistenceSchema = new OrderMaterialSchemaClass();
-    if (domainEntity.id) {
-      persistenceSchema._id = domainEntity.id;
-    }
+    // if (domainEntity.id) {
+    //   persistenceSchema._id = domainEntity.id;
+    // }
     if (domainEntity.orderId)
       persistenceSchema.orderId = new Types.ObjectId(domainEntity.orderId);
     if (domainEntity.orderType) {
