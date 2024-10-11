@@ -45,23 +45,22 @@ export class FilesOssService extends OSSBase {
     return await this.ossClient.deleteMulti(targets);
   }
 
-  public async upload(file: Express.Multer.File): Promise<FileType> {
+  public async upload(file: Express.Multer.File): Promise<{ file: FileType }> {
     const size = file.size;
     const mimetype = file.mimetype;
-    console.log('file ->', file);
-    console.log('file size ->', size);
-    console.log('file mime ->', mimetype);
     const result: UploadResult[] = await this.uploadOSS(file);
     if (result.length > 0) {
       const fileInfo: UploadResult = result[0];
       const saveData = {
-        path: fileInfo.path,
+        path: `/${fileInfo.path}`,
         size: size,
         mime: mimetype,
       };
       console.log('upload ret ->', fileInfo);
       console.log('save-data ->', saveData);
-      return this.fileRepository.create(saveData);
+      return {
+        file: await this.fileRepository.create(saveData),
+      };
     } else {
       throw new Error('upload failed');
     }

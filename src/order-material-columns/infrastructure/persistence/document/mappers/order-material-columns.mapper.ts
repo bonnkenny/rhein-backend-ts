@@ -4,6 +4,7 @@ import {
   OrderMaterialColumn,
 } from '@src/order-material-columns/domain/order-material-column';
 import { isArray } from 'lodash';
+import { OssUtils } from '@src/files/infrastructure/uploader/oss/oss.utils';
 
 export class OrderMaterialColumnsMapper {
   static toDomain(raw: OrderMaterialColumn): OrderMaterialColumn {
@@ -24,7 +25,13 @@ export class OrderMaterialColumnsMapper {
     if (!!raw?.tooltip) {
       domain.tooltip = { en: raw.tooltip.en, ch: raw.tooltip.ch };
     }
-    domain.value = raw?.value ?? undefined;
+    let fieldValue = raw?.value ?? undefined;
+    if (raw.prop === 'file' && fieldValue) {
+      fieldValue = new OssUtils().getOssSign(fieldValue.toString());
+      fieldValue = fieldValue ? fieldValue : undefined;
+    }
+
+    domain.value = fieldValue;
     domain.valueType = raw.valueType;
     if (!!raw?.options && isArray(raw?.options)) {
       domain.options = raw.options?.map((v) => {

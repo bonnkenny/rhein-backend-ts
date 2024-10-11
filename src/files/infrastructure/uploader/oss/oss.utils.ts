@@ -58,13 +58,21 @@ export class OssUtils {
     }
   }
 
-  public getSrcSign(path: string, width?: number, height?: number) {
+  public getOssPrefix(https?: boolean) {
+    const http = !https;
     const clientOption = this.options.client;
-    const { endpoint, bucket, accessKeySecret, accessKeyId } = clientOption;
+    const { endpoint, bucket } = clientOption;
     let ossPrefix = `${bucket}.${endpoint}`;
     if (this.options.domain) {
       ossPrefix = this.options.domain;
     }
+    return `${http ? 'http://' : 'https://'}${ossPrefix}`;
+  }
+
+  public getSrcSign(path: string, width?: number, height?: number) {
+    const clientOption = this.options.client;
+    const { bucket, accessKeySecret, accessKeyId } = clientOption;
+    const ossPrefix = this.getOssPrefix(true);
     // 读取配置初始化参数
     const signDateTime = parseInt(moment().format('X'), 10);
     const outTime = 2 * 3600; // 失效时间
@@ -78,7 +86,8 @@ export class OssUtils {
     toSignString = `${toSignString}${contentType}\n`;
     toSignString = `${toSignString}${expireTime}\n`;
     let resource = '';
-
+    //去除path前的/
+    path = path.replace(/^\//, '');
     if (width && height) {
       resource = `/${bucket}/${path}?x-oss-process=image/resize,m_fill,w_${width},h_${height},limit_0`;
     } else {
@@ -95,9 +104,9 @@ export class OssUtils {
     );
     let urlReturn = '';
     if (width && height) {
-      urlReturn = `https://${ossPrefix}/${path}?x-oss-process=image/resize,m_fill,w_${width},h_${height},limit_0&OSSAccessKeyId=${accessKeyId}&Expires=${expireTime}&Signature=${sign}`;
+      urlReturn = `${ossPrefix}/${path}?x-oss-process=image/resize,m_fill,w_${width},h_${height},limit_0&OSSAccessKeyId=${accessKeyId}&Expires=${expireTime}&Signature=${sign}`;
     } else {
-      urlReturn = `https://${ossPrefix}/${path}?OSSAccessKeyId=${accessKeyId}&Expires=${expireTime}&Signature=${sign}`;
+      urlReturn = `${ossPrefix}/${path}?OSSAccessKeyId=${accessKeyId}&Expires=${expireTime}&Signature=${sign}`;
     }
 
     return urlReturn;
