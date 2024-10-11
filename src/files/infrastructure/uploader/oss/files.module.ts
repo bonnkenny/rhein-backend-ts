@@ -1,5 +1,5 @@
 import {
-  HttpStatus,
+  // HttpStatus,
   Module,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -16,6 +16,7 @@ import {
   OSSOptions,
   ossProvider,
 } from '@src/files/infrastructure/uploader/oss/oss.provider';
+import { OssUtils } from '@src/files/infrastructure/uploader/oss/oss.utils';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import {
             if (!file.originalname.match(/\.(jpg|jpeg|png|pdf)$/i)) {
               return callback(
                 new UnprocessableEntityException({
-                  status: HttpStatus.UNPROCESSABLE_ENTITY,
+                  // status: HttpStatus.UNPROCESSABLE_ENTITY,
+                  success: false,
                   errors: {
                     file: `Can't upload file type`,
                   },
@@ -70,6 +72,7 @@ import {
       },
     },
     FilesOssService,
+    OssUtils,
   ],
   exports: [FilesOssService],
 })

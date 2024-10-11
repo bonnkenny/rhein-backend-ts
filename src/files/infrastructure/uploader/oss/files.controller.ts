@@ -1,12 +1,14 @@
 import {
   Controller,
   Post,
-  UploadedFiles,
+  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { FilesOssService } from './files.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { infinityResponse } from '@src/utils/infinity-response';
+import { InfinityApiResponseDto } from '@src/utils/dto/infinity-base-response.dto';
 
 /**
  * AppController
@@ -21,21 +23,12 @@ import { ApiTags } from '@nestjs/swagger';
 export class FilesOssController {
   constructor(private readonly oSSService: FilesOssService) {}
 
-  /**
-   * 多文件上传oss
-   */
+  @ApiOkResponse({ description: 'Upload file', type: InfinityApiResponseDto })
   @Post('upload')
-  @UseInterceptors(FilesInterceptor('file'))
-  public async uploadFile(@UploadedFiles() file: Express.Multer.File) {
-    return await this.oSSService.upload(file);
-    // result [
-    // 	{
-    // 		uploaded: true,
-    // 		path: 'images/20191115/16420962.png',
-    // 		src: 'http://xxxx.oss-cn-shenzhen.aliyuncs.com/images/20191115/16420962.png',
-    // 		srcSign: 'https://xxx.oss-cn-shenzhen.aliyuncs.com/images/20191115/16420962.png?OSSAccessKeyId=LTAI6lgwcBcCbiKX&Expires=1573814530&Signature=brYN7qbDdyxGARc%2BdoRsnblJx2w%3D',
-    // 		message: '上传成功'
-    // 	}
-    // ]
+  @UseInterceptors(FileInterceptor('file'))
+  public async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    // console.log('file -> ', file);
+    const uploaded = await this.oSSService.upload(file);
+    return infinityResponse(uploaded);
   }
 }

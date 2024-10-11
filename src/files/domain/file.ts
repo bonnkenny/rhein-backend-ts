@@ -8,6 +8,7 @@ import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { AppConfig } from '@src/config/app-config.type';
 import appConfig from '../../config/app.config';
+import { OssUtils } from '@src/files/infrastructure/uploader/oss/oss.utils';
 
 export class FileType {
   @ApiProperty({
@@ -23,6 +24,7 @@ export class FileType {
   })
   @Transform(
     ({ value }) => {
+      console.log('file transform', '---------------------\n');
       if ((fileConfig() as FileConfig).driver === FileDriver.LOCAL) {
         return (appConfig() as AppConfig).backendDomain + value;
       } else if (
@@ -44,6 +46,8 @@ export class FileType {
         });
 
         return getSignedUrl(s3, command, { expiresIn: 3600 });
+      } else if ((fileConfig() as FileConfig).driver === FileDriver.OSS) {
+        return new OssUtils().getSrcSign(value);
       }
 
       return value;
@@ -53,4 +57,18 @@ export class FileType {
     },
   )
   path: string;
+
+  @ApiProperty({
+    type: String,
+    example: 'image/jpeg',
+  })
+  @Allow()
+  mime: string;
+
+  @ApiProperty({
+    type: Number,
+    example: 1024,
+  })
+  @Allow()
+  size: number;
 }

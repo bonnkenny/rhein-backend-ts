@@ -6,6 +6,8 @@ export class FileMapper {
     const domainEntity = new FileType();
     domainEntity.id = raw._id.toString();
     domainEntity.path = raw.path;
+    domainEntity.mime = raw.mime;
+    domainEntity.size = raw.size;
     return domainEntity;
   }
   static toPersistence(domainEntity: FileType): FileSchemaClass {
@@ -14,6 +16,8 @@ export class FileMapper {
       persistenceSchema._id = domainEntity.id;
     }
     persistenceSchema.path = domainEntity.path;
+    persistenceSchema.size = domainEntity.size;
+    persistenceSchema.mime = domainEntity.mime;
     return persistenceSchema;
   }
 }

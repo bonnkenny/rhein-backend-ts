@@ -1,4 +1,4 @@
-import { NullableType } from '../../../utils/types/nullable.type';
+import { NullableType } from '@src/utils/types/nullable.type';
 import { FileType } from '../../domain/file';
 
 export abstract class FileRepository {

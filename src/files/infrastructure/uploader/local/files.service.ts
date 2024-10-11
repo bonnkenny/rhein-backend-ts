@@ -28,6 +28,8 @@ export class FilesLocalService {
 
     return {
       file: await this.fileRepository.create({
+        size: file.size,
+        mime: file.mimetype,
         path: `/${this.configService.get('app.apiPrefix', {
           infer: true,
         })}/v1/${file.path}`,

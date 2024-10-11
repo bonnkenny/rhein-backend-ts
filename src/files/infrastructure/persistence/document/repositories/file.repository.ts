@@ -17,8 +17,10 @@ export class FileDocumentRepository implements FileRepository {
   ) {}
 
   async create(data: Omit<FileType, 'id'>): Promise<FileType> {
+    console.log('data ->', data);
     const createdFile = new this.fileModel(data);
     const fileObject = await createdFile.save();
+    console.log('fileObject', fileObject);
     return FileMapper.toDomain(fileObject);
   }
 

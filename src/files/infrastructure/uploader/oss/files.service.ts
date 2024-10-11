@@ -3,6 +3,8 @@ import { DeleteMultiResult } from 'ali-oss';
 import { OSS_CONST, OSS_OPTIONS, OSSOptions } from './oss.provider';
 import { OSSBase, UploadResult } from './oss.base';
 import OSS from 'ali-oss';
+import { FileRepository } from '@src/files/infrastructure/persistence/file.repository';
+import { FileType } from '@src/files/domain/file';
 
 /**
  * OSS
@@ -14,6 +16,7 @@ export class FilesOssService extends OSSBase {
   constructor(
     @Inject(OSS_CONST) protected readonly ossClient: OSS,
     @Inject(OSS_OPTIONS) protected readonly options: OSSOptions,
+    private readonly fileRepository: FileRepository,
   ) {
     super();
   }
@@ -42,18 +45,26 @@ export class FilesOssService extends OSSBase {
     return await this.ossClient.deleteMulti(targets);
   }
 
-  /**
-   * 上传
-   * @param files
-   */
-  public async upload(
-    files: Express.Multer.File[] | Express.Multer.File,
-  ): Promise<UploadResult[]> {
-    //if (this.version >= 11.7 && this.options.multi) {
-    //    return await this.uploadOSSMuit(files);
-    //} else {
-    return await this.uploadOSS(files);
-    //}
+  public async upload(file: Express.Multer.File): Promise<FileType> {
+    const size = file.size;
+    const mimetype = file.mimetype;
+    console.log('file ->', file);
+    console.log('file size ->', size);
+    console.log('file mime ->', mimetype);
+    const result: UploadResult[] = await this.uploadOSS(file);
+    if (result.length > 0) {
+      const fileInfo: UploadResult = result[0];
+      const saveData = {
+        path: fileInfo.path,
+        size: size,
+        mime: mimetype,
+      };
+      console.log('upload ret ->', fileInfo);
+      console.log('save-data ->', saveData);
+      return this.fileRepository.create(saveData);
+    } else {
+      throw new Error('upload failed');
+    }
   }
 
   /**
