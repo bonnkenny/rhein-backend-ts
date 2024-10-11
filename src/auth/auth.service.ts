@@ -46,14 +46,15 @@ export class AuthService {
   async validateLogin(loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
     const user = await this.usersService.findByEmail({
       email: loginDto.email,
-      withROleMenu: true,
+      baseRole: loginDto.baseRole,
+      withRoleMenu: true,
     });
 
     if (!user) {
       throw new UnprocessableEntityException({
         status: HttpStatus.UNPROCESSABLE_ENTITY,
         errors: {
-          email: 'notFound',
+          email: 'Account not found!',
         },
       });
     }
@@ -241,7 +242,6 @@ export class AuthService {
         }),
       },
     );
-
     await this.mailService.userSignUp({
       to: dto.email,
       data: {
@@ -471,7 +471,7 @@ export class AuthService {
     if (userDto.email && userDto.email !== currentUser.email) {
       const userByEmail = await this.usersService.findByEmail({
         email: userDto.email,
-        withROleMenu: true,
+        withRoleMenu: true,
       });
 
       if (userByEmail && userByEmail.id !== currentUser.id) {

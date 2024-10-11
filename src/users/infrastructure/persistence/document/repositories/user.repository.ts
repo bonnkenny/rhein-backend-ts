@@ -130,15 +130,23 @@ export class UsersDocumentRepository implements UserRepository {
 
   async findByEmail({
     email,
+    baseRole,
     withRoleMenu,
   }: {
     email: User['email'];
+    baseRole?: User['baseRole'];
     withRoleMenu?: boolean;
   }): Promise<NullableType<User>> {
     if (!email) return null;
     withRoleMenu = withRoleMenu ?? false;
-
-    const userObject = await this.usersModel.findOne({ email });
+    const where: FilterQuery<UserSchemaClass> = { email };
+    if (!!baseRole) {
+      where['baseRole'] =
+        baseRole === BaseRoleEnum.ADMIN
+          ? { $in: [BaseRoleEnum.SUPER, BaseRoleEnum.ADMIN] }
+          : baseRole;
+    }
+    const userObject = await this.usersModel.findOne(where);
     if (!userObject) return null;
     if (!withRoleMenu) {
       return UserMapper.toDomain(userObject);
@@ -179,7 +187,7 @@ export class UsersDocumentRepository implements UserRepository {
     if (!user) {
       return null;
     }
-
+    delete clonedPayload?.baseRole;
     const userObject = await this.usersModel.findOneAndUpdate(
       filter,
       UserMapper.toPersistence({

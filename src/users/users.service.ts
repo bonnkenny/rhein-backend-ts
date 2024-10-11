@@ -175,14 +175,17 @@ export class UsersService {
 
   findByEmail({
     email,
-    withROleMenu,
+    withRoleMenu,
+    baseRole,
   }: {
     email: User['email'];
-    withROleMenu?: boolean;
+    withRoleMenu?: boolean;
+    baseRole?: User['baseRole'];
   }): Promise<NullableType<User>> {
     return this.usersRepository.findByEmail({
-      email,
-      withRoleMenu: withROleMenu ?? false,
+      email: email,
+      baseRole: baseRole ?? undefined,
+      withRoleMenu: withRoleMenu ?? false,
     });
   }
 
@@ -214,17 +217,19 @@ export class UsersService {
     }
 
     if (clonedPayload.email) {
-      const userObject = await this.usersRepository.findByEmail({
+      const currentUser = await this.usersRepository.findById(id);
+      if (!currentUser) {
+        throw new UnprocessableEntityException(errorBody('User not found!'));
+      }
+      const userObject = await this.usersRepository.findByFilter({
         email: clonedPayload.email,
+        baseRole: currentUser.baseRole,
       });
 
       if (userObject && userObject.id !== id) {
-        throw new UnprocessableEntityException({
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            email: 'emailAlreadyExists',
-          },
-        });
+        throw new UnprocessableEntityException(
+          errorBody('Email already exists!'),
+        );
       }
     }
 
