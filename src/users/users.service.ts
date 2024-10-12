@@ -20,6 +20,10 @@ import { BadRequestException } from '@nestjs/common/exceptions/bad-request.excep
 import { SessionService } from '@src/session/session.service';
 import { OrderUsersService } from '@src/order-users/order-users.service';
 import { omit } from 'lodash';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { AllConfigType } from '@src/config/config.type';
+import { MailService } from '@src/mail/mail.service';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +32,9 @@ export class UsersService {
     private readonly filesService: FilesService,
     private readonly orderUserService: OrderUsersService,
     private sessionService: SessionService,
+    private jwtService: JwtService,
+    private configService: ConfigService<AllConfigType>,
+    private mailService: MailService,
   ) {}
 
   async register(createProfileDto: CreateUserDto): Promise<User> {
@@ -95,28 +102,24 @@ export class UsersService {
       provider: AuthProvidersEnum.email,
       ...createProfileDto,
     };
-
-    if (clonedPayload.password) {
-      const salt = await bcrypt.genSalt();
-      clonedPayload.password = await bcrypt.hash(clonedPayload.password, salt);
-    }
-
-    if (clonedPayload.avatar?.id) {
-      const fileObject = await this.filesService.findById(
-        clonedPayload.avatar.id,
+    const salt = await bcrypt.genSalt();
+    clonedPayload.password = await bcrypt.hash(clonedPayload.password, salt);
+    if (clonedPayload.avatar?.path) {
+      const fileObject = await this.filesService.findByPath(
+        clonedPayload.avatar.path,
       );
       if (!fileObject) {
         throw new UnprocessableEntityException(errorBody('File not found'));
       }
       clonedPayload.avatar = fileObject;
     }
-    if (userJWTPayload.baseRole === BaseRoleEnum.SUPPLIER) {
-      clonedPayload.baseRole = BaseRoleEnum.SUPPLIER;
-    } else {
-      clonedPayload.baseRole = !!clonedPayload.baseRole
-        ? clonedPayload.baseRole
-        : BaseRoleEnum.ADMIN;
-    }
+    // if (userJWTPayload.baseRole === BaseRoleEnum.SUPPLIER) {
+    //   clonedPayload.baseRole = BaseRoleEnum.SUPPLIER;
+    // } else {
+    //   clonedPayload.baseRole = !!clonedPayload.baseRole
+    //     ? clonedPayload.baseRole
+    //     : BaseRoleEnum.ADMIN;
+    // }
     if (clonedPayload.email) {
       const userObject = await this.usersRepository.findByFilter({
         baseRole: clonedPayload.baseRole,
@@ -131,6 +134,32 @@ export class UsersService {
     // console.log('cloned payload', clonedPayload);
 
     return this.usersRepository.create(clonedPayload);
+  }
+
+  async sendMail(user: User, payload: CreateUserDto) {
+    const hash = await this.jwtService.signAsync(
+      {
+        confirmEmailUserId: user.id,
+      },
+      {
+        secret: this.configService.getOrThrow('auth.confirmEmailSecret', {
+          infer: true,
+        }),
+        expiresIn: this.configService.getOrThrow('auth.confirmEmailExpires', {
+          infer: true,
+        }),
+      },
+    );
+    if (user.email) {
+      await this.mailService.createUser({
+        to: user.email,
+        account: user.email,
+        password: payload.password ?? '',
+        data: {
+          hash,
+        },
+      });
+    }
   }
 
   findManyWithPagination(

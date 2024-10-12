@@ -7,6 +7,8 @@ import { DocumentUserPersistenceModule } from './infrastructure/persistence/docu
 import { FilesModule } from '../files/files.module';
 import { SessionModule } from '@src/session/session.module';
 import { OrderUsersModule } from '@src/order-users/order-users.module';
+import { MailModule } from '@src/mail/mail.module';
+import { JwtModule } from '@nestjs/jwt';
 
 const infrastructurePersistenceModule = DocumentUserPersistenceModule;
 
@@ -16,6 +18,8 @@ const infrastructurePersistenceModule = DocumentUserPersistenceModule;
     FilesModule,
     SessionModule,
     OrderUsersModule,
+    MailModule,
+    JwtModule.register({}),
   ],
   controllers: [UsersController],
   providers: [UsersService],

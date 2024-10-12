@@ -23,9 +23,14 @@ export class CreateUserDto {
   @IsEmail()
   email: string | null;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'secret1',
+    type: String,
+    minLength: 6,
+  })
   @MinLength(6)
-  password?: string;
+  @IsNotEmpty({ message: 'Password is required' })
+  password: string;
 
   provider?: string;
 
@@ -49,13 +54,18 @@ export class CreateUserDto {
   @IsOptional()
   avatar?: FileDto | null;
 
-  @ApiPropertyOptional({ type: String, enum: Object.keys(BaseRoleEnum) })
-  @IsEnum(Object.keys(BaseRoleEnum), { message: 'Invalid base role' })
+  @ApiPropertyOptional({
+    type: String,
+    enum: [BaseRoleEnum.SUPPLIER, BaseRoleEnum.ADMIN],
+  })
+  @IsEnum([BaseRoleEnum.SUPPLIER, BaseRoleEnum.ADMIN], {
+    message: 'Invalid base role',
+  })
   @IsOptional()
   @Transform(({ value }) => {
     return !value ? BaseRoleEnum.SUPPLIER : value;
   })
-  baseRole?: string;
+  baseRole: string;
 
   @ApiPropertyOptional({ type: String, enum: Object.values(UserStatusEnum) })
   @IsEnum(Object.values(UserStatusEnum), { message: 'Invalid status' })

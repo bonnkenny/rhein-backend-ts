@@ -14,14 +14,6 @@ export class AuthRegisterLoginDto {
   @MinLength(6)
   password: string;
 
-  // @ApiProperty({ example: 'John' })
-  // @IsNotEmpty()
-  // firstName: string;
-  //
-  // @ApiProperty({ example: 'Doe' })
-  // @IsNotEmpty()
-  // lastName: string;
-
   @ApiProperty({ example: 'John Doe', type: String })
   @IsNotEmpty()
   username: string;
@@ -30,5 +22,5 @@ export class AuthRegisterLoginDto {
   @Transform(({ value }) => {
     return !value ? BaseRoleEnum.SUPPLIER : value;
   })
-  baseRole?: string;
+  baseRole: string;
 }

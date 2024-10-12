@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { I18nContext } from 'nestjs-i18n';
-import { MailData } from './interfaces/mail-data.interface';
+import {
+  MailData,
+  MailDataWithAccount,
+} from './interfaces/mail-data.interface';
 
 import { MaybeType } from '../utils/types/maybe.type';
 import { MailerService } from '../mailer/mailer.service';
@@ -37,7 +40,57 @@ export class MailService {
       }) + '/confirm-email',
     );
     url.searchParams.set('hash', mailData.data.hash);
+    console.log('before send ->', url.toString());
+    await this.mailerService.sendMail({
+      to: mailData.to,
+      subject: emailConfirmTitle,
+      text: `${url.toString()} ${emailConfirmTitle}`,
+      templatePath: path.join(
+        this.configService.getOrThrow('app.workingDirectory', {
+          infer: true,
+        }),
+        'src',
+        'mail',
+        'mail-templates',
+        'activation.hbs',
+      ),
+      context: {
+        title: emailConfirmTitle,
+        url: url.toString(),
+        actionTitle: emailConfirmTitle,
+        app_name: this.configService.get('app.name', { infer: true }),
+        text1,
+        text2,
+        text3,
+      },
+    });
+  }
 
+  async createUser(
+    mailData: MailDataWithAccount<{ hash: string }>,
+  ): Promise<void> {
+    const i18n = I18nContext.current();
+    let emailConfirmTitle: MaybeType<string>;
+    let text1: MaybeType<string>;
+    let text2: MaybeType<string>;
+    let text3: MaybeType<string>;
+
+    if (i18n) {
+      [emailConfirmTitle, text1, text2, text3] = await Promise.all([
+        i18n.t('common.confirmEmail'),
+        '您的供应商邀请您使用TUV莱茵供应链信息管理系统,以下是您的账户信息:',
+        `登录名称: ${mailData.account}`,
+        `登陆密码: ${mailData.password}`,
+      ]);
+    }
+
+    const url = new URL(
+      this.configService.getOrThrow('app.frontendDomain', {
+        infer: true,
+      }) + '/confirm-email',
+    );
+    url.searchParams.set('hash', mailData.data.hash);
+    console.log('before send ->', url.toString());
     await this.mailerService.sendMail({
       to: mailData.to,
       subject: emailConfirmTitle,
