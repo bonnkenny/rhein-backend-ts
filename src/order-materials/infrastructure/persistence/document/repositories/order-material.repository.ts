@@ -12,7 +12,7 @@ import { OrderMaterial } from '../../../../domain/order-material';
 import { OrderMaterialMapper } from '../mappers/order-material.mapper';
 import { FindAllOrderMaterialsDto } from '@src/order-materials/dto/find-all-order-materials.dto';
 import { toMongoId } from '@src/utils/functions';
-import { omit } from 'lodash';
+import { omit, pick } from 'lodash';
 import { UpdateOrderMaterialStatusDto } from '@src/order-materials/dto/update-order-material.dto';
 import {
   OrderFillStatusEnum,
@@ -96,8 +96,7 @@ export class OrderMaterialDocumentRepository
     id: OrderMaterial['id'],
     payload: Partial<OrderMaterial>,
   ): Promise<NullableType<OrderMaterial>> {
-    const clonedPayload = { ...payload };
-    delete clonedPayload.id;
+    const clonedPayload = pick(payload, ['columns']);
 
     const filter = { _id: id.toString() };
     const entity = await this.orderMaterialModel.findOne(filter);
@@ -112,11 +111,9 @@ export class OrderMaterialDocumentRepository
       ...OrderMaterialMapper.toDomain(entity),
       ...clonedPayload,
     };
-    if (!!entity?.filledAt) {
+    if (!entity?.filledAt) {
       updateBody = { ...updateBody, filledAt: new Date() };
     }
-    delete updateBody?.reason;
-    delete updateBody?.checkStatus;
 
     const update = OrderMaterialMapper.toPersistence(updateBody);
 
