@@ -136,7 +136,14 @@ export class UsersService {
     return this.usersRepository.create(clonedPayload);
   }
 
-  async sendMail(user: User, payload: CreateUserDto) {
+  async sendMail(
+    user: User,
+    {
+      password,
+    }: {
+      password: User['password'];
+    },
+  ) {
     const hash = await this.jwtService.signAsync(
       {
         confirmEmailUserId: user.id,
@@ -154,7 +161,7 @@ export class UsersService {
       await this.mailService.createUser({
         to: user.email,
         account: user.email,
-        password: payload.password ?? '',
+        password: password ?? '',
         data: {
           hash,
         },

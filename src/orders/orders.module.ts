@@ -6,6 +6,7 @@ import { UsersModule } from '@src/users/users.module';
 import { OrderMaterialsModule } from '@src/order-materials/order-materials.module';
 import { OrderMaterialTemplatesModule } from '@src/order-material-templates/order-material-templates.module';
 import { OrderUsersModule } from '@src/order-users/order-users.module';
+import { MailModule } from '@src/mail/mail.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { OrderUsersModule } from '@src/order-users/order-users.module';
     forwardRef(() => OrderMaterialsModule),
     OrderMaterialTemplatesModule,
     OrderUsersModule,
+    MailModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

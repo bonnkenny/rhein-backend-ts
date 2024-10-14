@@ -25,6 +25,8 @@ import {
   MaterialTemplateTypeEnum,
   TraderArray,
 } from '@src/utils/enums/order-type.enum';
+// import { MailService } from '@src/mail/mail.service';
+// import { MailDataWithAccount } from '@src/mail/interfaces/mail-data.interface';
 
 @Injectable()
 export class OrdersService {
@@ -35,6 +37,7 @@ export class OrdersService {
     private orderUsersService: OrderUsersService,
     @Inject(forwardRef(() => OrderMaterialsService))
     private orderMaterialService: OrderMaterialsService,
+    // private mailService: MailService,
   ) {}
 
   async create(user: JwtPayloadType, createOrderDto: CreateOrderDto) {
@@ -88,6 +91,11 @@ export class OrdersService {
         provider: 'email',
         username: 'Supplier' + random(1000, 9999).toString(),
       });
+      // 发送邮件
+      await this.usersService.sendMail(createOrderUser, {
+        password: password,
+      });
+
       orderUserId = createOrderUser?.id.toString();
     }
     const order = await this.create(user, {
