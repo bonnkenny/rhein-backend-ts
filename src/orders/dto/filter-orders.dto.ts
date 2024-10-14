@@ -10,6 +10,7 @@ import {
   OrderTypeEnum,
 } from '@src/utils/enums/order-type.enum';
 import { OrderSchemaClass } from '@src/orders/infrastructure/persistence/document/entities/order.schema';
+import { Transform } from 'class-transformer';
 
 export class FilterOrdersDto extends InfinityFindAllDto {
   @ApiProperty({
@@ -21,6 +22,15 @@ export class FilterOrdersDto extends InfinityFindAllDto {
   @IsArray()
   @IsOptional()
   ids?: string[];
+
+  @ApiProperty({
+    type: String,
+    description: '订单ID',
+  })
+  @IsMongoId()
+  @Transform(({ value }) => (!!value ? value : undefined))
+  @IsOptional()
+  id?: string;
   @ApiProperty({
     type: String,
     description: 'Parent order id',

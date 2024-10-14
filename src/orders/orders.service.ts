@@ -25,6 +25,7 @@ import {
   MaterialTemplateTypeEnum,
   TraderArray,
 } from '@src/utils/enums/order-type.enum';
+// import { OrderMapper } from '@src/orders/infrastructure/persistence/document/mappers/order.mapper';
 // import { MailService } from '@src/mail/mail.service';
 // import { MailDataWithAccount } from '@src/mail/interfaces/mail-data.interface';
 
@@ -213,5 +214,30 @@ export class OrdersService {
       );
     }
     return this.orderRepository.update(id, { proxySet: proxySet });
+  }
+
+  async getOrderChains(id: Order['id']): Promise<Order[]> {
+    const order = await this.orderRepository.findById(id);
+    if (!order) {
+      return [];
+    }
+    let parentIds: string[] = [];
+    if (!!order.parentId) {
+      parentIds = await this.orderRepository.findParentIds(id);
+    }
+    const childrenIds = await this.orderRepository.findChildrenIds(id);
+    const chainsIds = [...parentIds, id, ...childrenIds];
+    return await this.orderRepository.findChainsByIds(chainsIds, true);
+    // chains.map((chain)=>{
+    //   const materials = chain?.materials || [];
+    //   materials.map((material)=>{
+    //     const columns = material?.columns || [];
+    //     columns.map(column=>{
+    //       column.map(c=>{
+    //         if(c.prop === 'sellerName')
+    //       })
+    //     })
+    //   })
+    // })
   }
 }

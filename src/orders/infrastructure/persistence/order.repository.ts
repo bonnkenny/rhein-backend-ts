@@ -27,5 +27,14 @@ export abstract class OrderRepository {
 
   abstract findAll(
     filterOrderOptions: Omit<FilterOrdersDto, 'page' | 'limit'>,
+    withMaterials?: boolean,
   ): Promise<Order[]>;
+
+  abstract findChainsByIds(
+    ids: Order['id'][],
+    withMaterials?: boolean,
+  ): Promise<Order[]>;
+
+  abstract findParentIds(parentId: Order['id']): Promise<[Order['id']] | []>;
+  abstract findChildrenIds(id: Order['id']): Promise<[Order['id']] | []>;
 }

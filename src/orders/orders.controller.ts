@@ -147,4 +147,14 @@ export class OrdersController {
       this.ordersService.updateProxySet(id, request.user, updateOrderDto),
     );
   }
+
+  @Get(':id/chains')
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  getChains(@Param('id') id: string) {
+    return this.ordersService.getOrderChains(id);
+  }
 }

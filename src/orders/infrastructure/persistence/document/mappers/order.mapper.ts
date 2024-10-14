@@ -2,10 +2,12 @@ import { Order } from '../../../../domain/order';
 import { OrderSchemaClass } from '../entities/order.schema';
 import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
 import { Types } from 'mongoose';
-import { findKey, isBoolean } from 'lodash';
+import { findKey, isBoolean, omit } from 'lodash';
+import { OrderMaterialMapper } from '@src/order-materials/infrastructure/persistence/document/mappers/order-material.mapper';
+import { OrderMaterialChainMapper } from '@src/order-materials/infrastructure/persistence/document/mappers/order-material-chain.mapper';
 
 export class OrderMapper {
-  public static toDomain(raw: OrderSchemaClass): Order {
+  public static toDomain(raw: OrderSchemaClass, columnDomain?: string): Order {
     const domainEntity = new Order();
     domainEntity.id = raw._id.toString();
     if (raw?.parentId) {
@@ -23,6 +25,29 @@ export class OrderMapper {
     domainEntity.parentId = null;
     if (raw.parentId) {
       domainEntity.parentId = raw?.parentId?.toString();
+    }
+
+    if (raw.materials) {
+      if (columnDomain === 'chain') {
+        const materialLines = raw.materials.map((item) => {
+          return OrderMaterialChainMapper.toDomain(omit(item, ['order']));
+        });
+        console.log('materialLines', materialLines);
+        const lines: Array<string> = [];
+        for (const item in materialLines) {
+          console.log('item -> ', item);
+          if (materialLines[item].length) {
+            for (let i = 0; i < materialLines[item].length; i++) {
+              lines.push(materialLines[item][i]);
+            }
+          }
+        }
+        domainEntity.nodeLines = lines;
+      } else {
+        domainEntity.materials = raw.materials.map((item) => {
+          return OrderMaterialMapper.toDomain(omit(item, ['order']));
+        });
+      }
     }
     domainEntity.proxySet = raw?.proxySet ?? false;
     domainEntity.fillStatus = raw.fillStatus;

@@ -8,6 +8,10 @@ import {
   OrderTypeEnum,
 } from '@src/utils/enums/order-type.enum';
 import { UserSchemaClass } from '@src/users/infrastructure/persistence/document/entities/user.schema';
+// import { DeepPartial } from '@src/utils/types/deep-partial.type';
+// import { User } from '@src/users/domain/user';
+// import { OrderMaterial } from '@src/order-materials/domain/order-material';
+import { OrderMaterialSchemaClass } from '@src/order-materials/infrastructure/persistence/document/entities/order-material.schema';
 
 export type OrderSchemaDocument = HydratedDocument<OrderSchemaClass>;
 
@@ -91,6 +95,9 @@ export class OrderSchemaClass extends EntityDocumentHelper {
   @ApiProperty()
   @Prop({ default: now })
   updatedAt: Date;
+
+  user?: UserSchemaClass;
+  materials?: [OrderMaterialSchemaClass];
 }
 
 export const OrderSchema = SchemaFactory.createForClass(OrderSchemaClass);
@@ -105,4 +112,12 @@ OrderSchema.virtual('user', {
   ref: UserSchemaClass.name,
   localField: 'userId',
   foreignField: '_id',
+  justOne: true,
+});
+
+OrderSchema.virtual('materials', {
+  ref: 'OrderMaterialSchemaClass',
+  localField: '_id',
+  foreignField: 'orderId',
+  justOne: false,
 });

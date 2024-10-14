@@ -83,4 +83,6 @@ export class Order {
     type: [OrderMaterial],
   })
   materials?: OrderMaterial[];
+
+  nodeLines?: string[];
 }

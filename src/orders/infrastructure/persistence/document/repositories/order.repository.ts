@@ -167,6 +167,7 @@ export class OrderDocumentRepository implements OrderRepository {
 
   async findAll(
     filterOrderOptions: Omit<FilterOrdersDto, 'page' | 'limit'>,
+    withMaterials?: boolean,
   ): Promise<Order[]> {
     const where: FilterQuery<OrderSchemaClass> = {};
     if (filterOrderOptions.parentId) {
@@ -208,11 +209,100 @@ export class OrderDocumentRepository implements OrderRepository {
     }
 
     // console.log('where', where);
-    const entityObjects = await this.orderModel
-      .find(where)
-      .sort({ createdAt: -1 });
+    const entities = this.orderModel.find(where).sort({ createdAt: -1 });
+    let entityObjects: OrderSchemaClass[];
+    if (withMaterials) {
+      entityObjects = await entities.populate('materials');
+    } else {
+      entityObjects = await entities;
+    }
     return entityObjects.map((entityObject) =>
       OrderMapper.toDomain(entityObject),
     );
+  }
+
+  async findChainsByIds(ids: Order['id'][], withMaterials?: boolean) {
+    const entities = this.orderModel.find({
+      _id: { $in: ids.map(toMongoId) },
+    });
+
+    let entityObjects: OrderSchemaClass[];
+    if (withMaterials) {
+      entityObjects = await entities.populate({
+        path: 'materials',
+        match: {
+          $or: [
+            { 'label.en': { $regex: 'invoice', $options: 'i' } },
+            { 'label.en': { $regex: 'contract', $options: 'i' } },
+            { 'label.en': { $regex: 'delivery sheet', $options: 'i' } },
+          ],
+        },
+      });
+    } else {
+      entityObjects = await entities;
+    }
+    return entityObjects.map((entityObject) =>
+      OrderMapper.toDomain(entityObject, 'chain'),
+    );
+  }
+
+  async findParentIds(id: Order['id']): Promise<[Order['id']] | []> {
+    if (!id) {
+      return [];
+    }
+    const parents = await this.orderModel.aggregate([
+      {
+        $match: { _id: toMongoId(id) },
+      },
+      {
+        $graphLookup: {
+          from: OrderSchemaClass.name,
+          startWith: '$parentId',
+          connectFromField: 'parentId',
+          connectToField: '_id',
+          as: 'parents',
+          depthField: 'level',
+        },
+      },
+      {
+        $project: {
+          parentIds: { $concatArrays: [['$parentId'], '$parents._id'] }, // 只选择父订单的 _id
+        },
+      },
+    ]);
+    console.log('parents', parents);
+    return parents.length > 0
+      ? parents[0]?.parentIds?.map((id) => id.toString())
+      : [];
+  }
+
+  async findChildrenIds(id: Order['id']): Promise<[Order['id']] | []> {
+    if (!id) {
+      return [];
+    }
+    const children = await this.orderModel.aggregate([
+      {
+        $match: { _id: id },
+      },
+      {
+        $graphLookup: {
+          from: OrderSchemaClass.name,
+          startWith: '$_id',
+          connectFromField: '_id',
+          connectToField: 'parentId',
+          as: 'children',
+          depthField: 'level',
+          restrictSearchWithMatch: { parentId: { $ne: null } },
+        },
+      },
+      {
+        $project: {
+          childrenIds: '$children._id', // 只选择父订单的 _id
+        },
+      },
+    ]);
+    return children.length > 0
+      ? children[0]?.childrenIds?.map((id) => id.toString())
+      : [];
   }
 }
