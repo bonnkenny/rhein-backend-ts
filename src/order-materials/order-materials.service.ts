@@ -18,6 +18,7 @@ import { errorBody } from '@src/utils/infinity-response';
 import { FindAllOrderMaterialsDto } from '@src/order-materials/dto/find-all-order-materials.dto';
 import { JwtPayloadType } from '@src/auth/strategies/types/jwt-payload.type';
 import { OrderStatusEnum } from '@src/utils/enums/order-type.enum';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 
 @Injectable()
 export class OrderMaterialsService {
@@ -70,8 +71,13 @@ export class OrderMaterialsService {
     if (!material) {
       throw new NotFoundException(errorBody('Data undefined'));
     }
-    const checkerId = checker.id;
-    if (checkerId !== material?.order?.fromUserId) {
+    // const checkerId = checker.id;
+    // if (checkerId !== material?.order?.fromUserId) {
+    if (checker.baseRole === BaseRoleEnum.SUPPLIER || !checker.baseRole) {
+      // if(checker.baseRole === BaseRoleEnum.ADMIN){
+      //   // 检索管理员是否有订单权限
+      //
+      // }
       throw new ForbiddenException(
         errorBody('Has no permission for this order'),
       );
