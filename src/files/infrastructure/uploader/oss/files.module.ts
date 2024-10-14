@@ -74,6 +74,6 @@ import { OssUtils } from '@src/files/infrastructure/uploader/oss/oss.utils';
     FilesOssService,
     OssUtils,
   ],
-  exports: [FilesOssService],
+  exports: [FilesOssService, OssUtils],
 })
 export class FilesOssModule {}

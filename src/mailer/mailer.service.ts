@@ -30,6 +30,7 @@ export class MailerService {
     templatePath: string;
     context: Record<string, unknown>;
   }): Promise<void> {
+    console.log('hhh -> \n');
     let html: string | undefined;
     if (templatePath) {
       const template = await fs.readFile(templatePath, 'utf-8');
@@ -37,7 +38,6 @@ export class MailerService {
         strict: true,
       })(context);
     }
-
     await this.transporter.sendMail({
       ...mailOptions,
       from: mailOptions.from

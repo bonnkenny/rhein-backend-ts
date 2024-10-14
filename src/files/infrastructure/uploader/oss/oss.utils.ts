@@ -58,6 +58,27 @@ export class OssUtils {
     }
   }
 
+  /**
+   * 获取oss文件相对路径
+   * @param url
+   */
+  public getOssResourcePath(url: string) {
+    const isSelfUrl = `${this.options.client.bucket}.${this.options.client.endpoint}`;
+    const isSelfUrlX: string = this.options.domain || '';
+    let target = url;
+    // 判断是否包含有效地址
+    if (url.indexOf(isSelfUrl) > 0 || url.indexOf(isSelfUrlX) > 0) {
+      let targetArray: string[] = [];
+      if (url.indexOf('?') > 0) {
+        targetArray = url.split('?');
+        target = targetArray[0];
+      }
+      targetArray = target.split('com/');
+      target = targetArray[1];
+    }
+    return target;
+  }
+
   public getOssPrefix(https?: boolean) {
     const http = !https;
     const clientOption = this.options.client;
