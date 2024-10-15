@@ -23,7 +23,7 @@ export class InfinityPaginationResponseDto<T> extends InfinityBaseResponseDto {
   data: PaginationDataDto<T>;
 }
 
-export function InfinityApiResponse<T>(classReference: Type<T>) {
+export function InfinityApiResponse<T>(classReference?: Type<T>) {
   abstract class ApiResponse {
     @ApiProperty({ type: Boolean, example: true })
     success: boolean;
@@ -37,7 +37,7 @@ export function InfinityApiResponse<T>(classReference: Type<T>) {
 
   Object.defineProperty(ApiResponse, 'name', {
     writable: false,
-    value: `Infinity${classReference.name}ResponseDto`,
+    value: `Infinity${classReference?.name}ResponseDto`,
   });
 
   return ApiResponse;

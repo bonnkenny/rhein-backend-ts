@@ -29,4 +29,6 @@ export abstract class OrderMaterialRepository {
     id: OrderMaterial['id'],
     updateBody: UpdateOrderMaterialStatusDto,
   ): Promise<OrderMaterial | null>;
+
+  abstract updateIsOptionalCustom(ids: Array<OrderMaterial['id']>);
 }

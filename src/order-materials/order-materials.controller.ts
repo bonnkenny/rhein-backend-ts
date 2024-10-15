@@ -13,6 +13,7 @@ import {
 import { OrderMaterialsService } from './order-materials.service';
 import { CreateOrderMaterialDto } from './dto/create-order-material.dto';
 import {
+  UpdateCustomOptionalDto,
   UpdateOrderMaterialDto,
   UpdateOrderMaterialStatusDto,
 } from './dto/update-order-material.dto';
@@ -26,6 +27,7 @@ import {
 import { OrderMaterial } from './domain/order-material';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  InfinityApiResponse,
   InfinityPaginationResponse,
   InfinityPaginationResponseDto,
 } from '../utils/dto/infinity-base-response.dto';
@@ -34,6 +36,9 @@ import {
   infinityResponse,
 } from '../utils/infinity-response';
 import { FindAllOrderMaterialsDto } from './dto/find-all-order-materials.dto';
+import { BaseRolesGuard } from '@src/utils/guards/base-roles.guard';
+import { BaseRoles } from '@src/utils/guards/base-roles.decorator';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 
 @ApiTags('OrderMaterials')
 @ApiBearerAuth()
@@ -113,6 +118,8 @@ export class OrderMaterialsController {
   }
 
   @Patch(':id/check')
+  @BaseRoles(BaseRoleEnum.SUPER.toString(), BaseRoleEnum.ADMIN.toString())
+  @UseGuards(BaseRolesGuard)
   @ApiParam({
     name: 'id',
     type: String,
@@ -128,6 +135,27 @@ export class OrderMaterialsController {
       id,
       updateOrderMaterialDto,
       request.user,
+    );
+  }
+
+  @Post('check-custom-optional')
+  @ApiParam({
+    name: 'ids',
+    type: Array<string>,
+    required: true,
+  })
+  @ApiOkResponse({
+    type: InfinityApiResponse(),
+  })
+  @BaseRoles(BaseRoleEnum.SUPER.toString(), BaseRoleEnum.ADMIN.toString())
+  @UseGuards(BaseRolesGuard)
+  async checkCustomOptional(
+    @Body() body: UpdateCustomOptionalDto,
+    @Request() request,
+  ) {
+    await this.orderMaterialsService.checkCustomOptional(
+      body.ids,
+      request?.user,
     );
   }
 }

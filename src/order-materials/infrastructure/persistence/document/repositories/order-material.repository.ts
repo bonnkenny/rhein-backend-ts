@@ -2,6 +2,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
@@ -220,6 +221,47 @@ export class OrderMaterialDocumentRepository
     }
 
     return entityObject ? OrderMaterialMapper.toDomain(entityObject) : null;
+  }
+
+  async updateIsOptionalCustom(ids: Array<OrderMaterial['id']>) {
+    const entities = await this.orderMaterialModel.find({ _id: { $in: ids } });
+    const orderIdSet: Set<OrderMaterial['orderId']> = new Set();
+    entities.map((entity) => orderIdSet.add(entity?.orderId?.toString()));
+    if (orderIdSet.size > 1) {
+      throw new UnprocessableEntityException(
+        errorBody('Cant set materials across orders'),
+      );
+    }
+    const orderId = [...orderIdSet][0];
+    const orderEntity = await this.orderModel.findById(orderId);
+    if (!orderEntity) {
+      throw new NotFoundException(errorBody('Order not found'));
+    }
+
+    if (orderEntity.checkStatus === OrderStatusEnum.APPROVED) {
+      throw new UnprocessableEntityException(
+        errorBody('Order has been approved'),
+      );
+    }
+    try {
+      await this.orderMaterialModel.updateMany(
+        { _id: { $in: ids.map(toMongoId) } },
+        { isOptionalCustom: true },
+      );
+      await this.orderMaterialModel.updateMany(
+        { _id: { $nin: ids.map(toMongoId) } },
+        { isOptionalCustom: false },
+      );
+      await this.orderModel.findOneAndUpdate(
+        { _id: orderId },
+        { customerOptionalCheck: OrderStatusEnum.PENDING },
+        { new: false },
+      );
+    } catch (e) {
+      console.log('error', e);
+      throw new InternalServerErrorException(errorBody('Update failed'));
+    }
+    return true;
   }
 
   async remove(id: OrderMaterial['id']): Promise<void> {
