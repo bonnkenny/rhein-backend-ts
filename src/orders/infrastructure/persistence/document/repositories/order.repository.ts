@@ -241,7 +241,7 @@ export class OrderDocumentRepository implements OrderRepository {
         },
         { path: 'user' },
       ]);
-      console.log('entityObjects -> ', entityObjects);
+      // console.log('entityObjects -> ', entityObjects);
     } else {
       entityObjects = await entities;
     }
@@ -274,7 +274,7 @@ export class OrderDocumentRepository implements OrderRepository {
         },
       },
     ]);
-    console.log('parents', parents);
+    // console.log('parents', parents);
     return parents.length > 0
       ? parents[0]?.parentIds?.map((id) => id.toString())
       : [];
@@ -285,7 +285,7 @@ export class OrderDocumentRepository implements OrderRepository {
       return [];
     }
     const mongoId = toMongoId(id);
-    console.log('mongo-id', mongoId);
+    // console.log('mongo-id', mongoId);
     const children = await this.orderModel.aggregate([
       {
         $graphLookup: {
@@ -306,7 +306,7 @@ export class OrderDocumentRepository implements OrderRepository {
         },
       },
     ]);
-    console.log('children->', JSON.stringify(children, null, 2));
+    // console.log('children->', JSON.stringify(children, null, 2));
     return children.length > 0
       ? children[0]?.descendants?.map((id) => id.toString())
       : [];

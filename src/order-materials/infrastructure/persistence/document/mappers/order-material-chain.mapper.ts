@@ -7,10 +7,10 @@ export class OrderMaterialChainMapper {
     if (raw?.columns.length) {
       for (const column of raw.columns) {
         // const columnArray: Array<string> = [];
-        const nameTumple = ['sellerName', 'materialName', 'name'];
-        const specificationTumple = ['specificatuion', 'specification'];
-        const quantityTumple = ['quantity'];
-        const unitTumple = ['unit'];
+        const nameTuple = ['sellerName', 'materialName', 'name'];
+        const specificationTuple = ['specificatuion', 'specification'];
+        const quantityTuple = ['quantity'];
+        const unitTuple = ['unit'];
         let lineName: string = '',
           lineSpecification: string = '',
           lineQuantity: string = '',
@@ -18,16 +18,30 @@ export class OrderMaterialChainMapper {
         for (const row of column) {
           const rowI = OrderMaterialColumnsMapper.toDomain(row);
           // console.log('rowI -> ', rowI);
-          if (!lineName && nameTumple.includes(row.prop)) {
+          if (
+            !lineName &&
+            nameTuple.some((t) => row.prop === t || row.prop.startsWith(t))
+          ) {
             lineName = rowI.value ? String(rowI.value) : '';
           }
-          if (!lineSpecification && specificationTumple.includes(row.prop)) {
+          if (
+            !lineSpecification &&
+            specificationTuple.some(
+              (t) => row.prop === t || row.prop.startsWith(t),
+            )
+          ) {
             lineSpecification = rowI.value ? String(rowI.value) : '';
           }
-          if (!lineQuantity && quantityTumple.includes(row.prop)) {
+          if (
+            !lineQuantity &&
+            quantityTuple.some((t) => row.prop === t || row.prop.startsWith(t))
+          ) {
             lineQuantity = rowI.value ? String(rowI.value) : '';
           }
-          if (!lineUnit && unitTumple.includes(row.prop)) {
+          if (
+            !lineUnit &&
+            unitTuple.some((t) => row.prop === t || row.prop.startsWith(t))
+          ) {
             lineUnit = rowI.value ? String(rowI.value) : '';
           }
         }

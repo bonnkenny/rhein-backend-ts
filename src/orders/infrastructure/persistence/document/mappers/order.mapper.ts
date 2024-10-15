@@ -33,10 +33,10 @@ export class OrderMapper {
         const materialLines = raw.materials.map((item) => {
           return OrderMaterialChainMapper.toDomain(omit(item, ['order']));
         });
-        console.log('materialLines', materialLines);
+        // console.log('materialLines', materialLines);
         const lines: Array<string> = [];
         for (const item in materialLines) {
-          console.log('item -> ', item);
+          // console.log('item -> ', item);
           if (materialLines[item].length) {
             for (let i = 0; i < materialLines[item].length; i++) {
               lines.push(materialLines[item][i]);
