@@ -93,9 +93,9 @@ export class OrdersService {
         username: 'Supplier' + random(1000, 9999).toString(),
       });
       // 发送邮件
-      await this.usersService.sendMail(createOrderUser, {
-        password: password,
-      });
+      // await this.usersService.sendMail(createOrderUser, {
+      //   password: password,
+      // });
 
       orderUserId = createOrderUser?.id.toString();
     }
