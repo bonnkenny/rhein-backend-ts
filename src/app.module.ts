@@ -12,7 +12,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { I18nModule } from 'nestjs-i18n/dist/i18n.module';
 import { HeaderResolver } from 'nestjs-i18n';
 import { MailModule } from './mail/mail.module';
-import { HomeModule } from './home/home.module';
+// import { HomeModule } from './home/home.module';
 import { AllConfigType } from './config/config.type';
 import { SessionModule } from './session/session.module';
 import { MailerModule } from './mailer/mailer.module';
@@ -36,6 +36,7 @@ import { OrderMaterialTemplatesModule } from './order-material-templates/order-m
 // import { OrderMaterialColumnsModule } from './order-material-columns/order-material-columns.module';
 
 import { OrderUsersModule } from './order-users/order-users.module';
+import { PdfModule } from '@src/pdf-lib/pdf.module';
 
 @Module({
   imports: [
@@ -81,7 +82,8 @@ import { OrderUsersModule } from './order-users/order-users.module';
     SessionModule,
     MailModule,
     MailerModule,
-    HomeModule,
+    PdfModule,
+    // HomeModule,
   ],
 })
 export class AppModule {}
