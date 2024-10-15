@@ -228,6 +228,7 @@ export class OrdersService {
     }
     const childrenIds = await this.orderRepository.findChildrenIds(id);
     const chainsIds = [...parentIds, id, ...childrenIds];
+    console.log('chainsIds', chainsIds);
     return await this.orderRepository.findChainsByIds(chainsIds, true);
     // chains.map((chain)=>{
     //   const materials = chain?.materials || [];

@@ -17,7 +17,7 @@ export class OrderMaterialChainMapper {
           lineUnit: string = '';
         for (const row of column) {
           const rowI = OrderMaterialColumnsMapper.toDomain(row);
-          console.log('rowI -> ', rowI);
+          // console.log('rowI -> ', rowI);
           if (!lineName && nameTumple.includes(row.prop)) {
             lineName = rowI.value ? String(rowI.value) : '';
           }
@@ -32,7 +32,7 @@ export class OrderMaterialChainMapper {
           }
         }
         const line = `${lineName} ${lineSpecification} ${lineQuantity} ${lineUnit}`;
-        console.log('line -> ', line);
+        // console.log('line -> ', line);
         if (lineQuantity && line.trim()) {
           // columnArray.push(line);
           domainColumns.push(line);

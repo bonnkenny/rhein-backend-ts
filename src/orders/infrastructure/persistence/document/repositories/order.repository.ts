@@ -260,7 +260,7 @@ export class OrderDocumentRepository implements OrderRepository {
       },
       {
         $graphLookup: {
-          from: OrderSchemaClass.name,
+          from: this.orderModel.collection.name,
           startWith: '$parentId',
           connectFromField: 'parentId',
           connectToField: '_id',
@@ -284,29 +284,31 @@ export class OrderDocumentRepository implements OrderRepository {
     if (!id) {
       return [];
     }
+    const mongoId = toMongoId(id);
+    console.log('mongo-id', mongoId);
     const children = await this.orderModel.aggregate([
       {
-        $match: { _id: id },
+        $graphLookup: {
+          from: this.orderModel.collection.name,
+          startWith: '$_id', // 从当前订单的 _id 开始递归查找
+          connectFromField: '_id', // 当前订单的 _id
+          connectToField: 'parentId', // 子订单的 parentId
+          as: 'descendants', // 查找结果放入 descendants
+        },
       },
       {
-        $graphLookup: {
-          from: OrderSchemaClass.name,
-          startWith: '$_id',
-          connectFromField: '_id',
-          connectToField: 'parentId',
-          as: 'children',
-          depthField: 'level',
-          restrictSearchWithMatch: { parentId: { $ne: null } },
-        },
+        $match: { _id: mongoId },
       },
       {
         $project: {
-          childrenIds: '$children._id', // 只选择父订单的 _id
+          descendants: '$descendants._id',
+          _id: 0,
         },
       },
     ]);
+    console.log('children->', JSON.stringify(children, null, 2));
     return children.length > 0
-      ? children[0]?.childrenIds?.map((id) => id.toString())
+      ? children[0]?.descendants?.map((id) => id.toString())
       : [];
   }
 }
