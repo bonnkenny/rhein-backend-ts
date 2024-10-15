@@ -14,12 +14,11 @@ import { OrderMaterialRepository } from './infrastructure/persistence/order-mate
 import { OrderMaterial } from './domain/order-material';
 import { OrdersService } from '@src/orders/orders.service';
 import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
-import { errorBody, infinityResponse } from '@src/utils/infinity-response';
+import { errorBody } from '@src/utils/infinity-response';
 import { FindAllOrderMaterialsDto } from '@src/order-materials/dto/find-all-order-materials.dto';
 import { JwtPayloadType } from '@src/auth/strategies/types/jwt-payload.type';
 import { OrderStatusEnum } from '@src/utils/enums/order-type.enum';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
-import { InfinityApiResponseDto } from '@src/utils/dto/infinity-base-response.dto';
 
 @Injectable()
 export class OrderMaterialsService {
@@ -89,13 +88,8 @@ export class OrderMaterialsService {
   async checkCustomOptional(
     ids: Array<OrderMaterial['id']>,
     checker: JwtPayloadType,
-  ): Promise<InfinityApiResponseDto<any>> {
+  ) {
     console.log(checker);
-    const ret = await this.orderMaterialRepository.updateIsOptionalCustom(ids);
-    return infinityResponse({
-      data: {},
-      success: !!ret,
-      message: !!ret ? 'Ok' : 'Operation failed',
-    });
+    return await this.orderMaterialRepository.updateIsOptionalCustom(ids);
   }
 }

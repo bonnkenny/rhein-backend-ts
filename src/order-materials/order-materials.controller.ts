@@ -153,9 +153,10 @@ export class OrderMaterialsController {
     @Body() body: UpdateCustomOptionalDto,
     @Request() request,
   ) {
-    await this.orderMaterialsService.checkCustomOptional(
+    const ret = await this.orderMaterialsService.checkCustomOptional(
       body.ids,
       request?.user,
     );
+    return infinityResponse({}, !!ret ? 'Ok' : 'Operation failed!', !!ret);
   }
 }
