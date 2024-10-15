@@ -243,4 +243,11 @@ export class OrdersService {
     //   })
     // })
   }
+
+  checkCustomOptional(
+    id: Order['id'],
+    updateOrderDto: Pick<UpdateOrderDto, 'customerOptionalCheck'>,
+  ) {
+    return this.orderRepository.updateCustomerOptionalCheck(id, updateOrderDto);
+  }
 }

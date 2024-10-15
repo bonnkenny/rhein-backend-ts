@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
@@ -10,12 +14,17 @@ import { FilterOrdersDto } from '@src/orders/dto/filter-orders.dto';
 import { errorBody } from '@src/utils/infinity-response';
 import { toMongoId } from '@src/utils/functions';
 import { omit } from 'lodash';
+import { UpdateOrderDto } from '@src/orders/dto/update-order.dto';
+import { OrderStatusEnum } from '@src/utils/enums/order-type.enum';
+import { OrderMaterialSchemaClass } from '@src/order-materials/infrastructure/persistence/document/entities/order-material.schema';
 
 @Injectable()
 export class OrderDocumentRepository implements OrderRepository {
   constructor(
     @InjectModel(OrderSchemaClass.name)
     private readonly orderModel: Model<OrderSchemaClass>,
+    @InjectModel(OrderMaterialSchemaClass.name)
+    private readonly orderMaterialModel: Model<OrderMaterialSchemaClass>,
   ) {}
 
   async create(data: Order): Promise<Order> {
@@ -310,5 +319,33 @@ export class OrderDocumentRepository implements OrderRepository {
     return children.length > 0
       ? children[0]?.descendants?.map((id) => id.toString())
       : [];
+  }
+
+  async updateCustomerOptionalCheck(
+    id: Order['id'],
+    body: Pick<UpdateOrderDto, 'customerOptionalCheck'>,
+  ) {
+    const entityObject = await this.orderModel.findById(id);
+    const { customerOptionalCheck } = body;
+    if (!entityObject) {
+      throw new NotFoundException(errorBody('Order not found'));
+    }
+    if (
+      entityObject.customerOptionalCheck !== OrderStatusEnum.PENDING.toString()
+    ) {
+      throw new UnprocessableEntityException(
+        errorBody('Check status is not pending'),
+      );
+    }
+    try {
+      await this.orderModel.findByIdAndUpdate(id, {
+        customerOptionalCheck,
+      });
+      await this.orderMaterialModel.updateMany({ orderId: id }, [
+        { $set: { isOptionalCustom: '$isOptional' } },
+      ]);
+    } catch (e) {
+      console.log('update-customer-optional-check failed ->', e);
+    }
   }
 }

@@ -157,4 +157,14 @@ export class OrdersController {
   getChains(@Param('id') id: string): InfinityApiResponseDto<any> {
     return infinityResponse(this.ordersService.getOrderChains(id));
   }
+
+  @Patch(':id/check-customer-optional')
+  @ApiOkResponse({ type: InfinityApiResponse() })
+  checkCustomerOptional(
+    @Param('id') id: string,
+    @Body()
+    updateOrderDto: Pick<UpdateOrderDto, 'customerOptionalCheck'>,
+  ) {
+    return this.ordersService.checkCustomOptional(id, updateOrderDto);
+  }
 }

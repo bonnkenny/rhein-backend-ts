@@ -2,6 +2,7 @@ import { DeepPartial } from '@src/utils/types/deep-partial.type';
 import { NullableType } from '@src/utils/types/nullable.type';
 import { Order } from '../../domain/order';
 import { FilterOrdersDto } from '@src/orders/dto/filter-orders.dto';
+import { UpdateOrderDto } from '@src/orders/dto/update-order.dto';
 
 export abstract class OrderRepository {
   abstract create(
@@ -37,4 +38,9 @@ export abstract class OrderRepository {
 
   abstract findParentIds(parentId: Order['id']): Promise<[Order['id']] | []>;
   abstract findChildrenIds(id: Order['id']): Promise<[Order['id']] | []>;
+
+  abstract updateCustomerOptionalCheck(
+    id: Order['id'],
+    body: Pick<UpdateOrderDto, 'customerOptionalCheck'>,
+  );
 }
