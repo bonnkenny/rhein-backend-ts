@@ -37,6 +37,7 @@ export class OrderMaterialDocumentRepository
   async create(data: OrderMaterial): Promise<OrderMaterial> {
     const persistenceModel = OrderMaterialMapper.toPersistence(data);
     persistenceModel.filledAt = null;
+    persistenceModel.isOptionalCustom = persistenceModel.isOptional;
     const createdEntity = new this.orderMaterialModel(persistenceModel);
 
     const entityObject = await createdEntity.save();

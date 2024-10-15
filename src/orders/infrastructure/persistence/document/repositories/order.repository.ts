@@ -228,16 +228,20 @@ export class OrderDocumentRepository implements OrderRepository {
 
     let entityObjects: OrderSchemaClass[];
     if (withMaterials) {
-      entityObjects = await entities.populate({
-        path: 'materials',
-        match: {
-          $or: [
-            { 'label.en': { $regex: 'invoice', $options: 'i' } },
-            { 'label.en': { $regex: 'contract', $options: 'i' } },
-            { 'label.en': { $regex: 'delivery sheet', $options: 'i' } },
-          ],
+      entityObjects = await entities.populate([
+        {
+          path: 'materials',
+          match: {
+            $or: [
+              { 'label.en': { $regex: 'invoice', $options: 'i' } },
+              { 'label.en': { $regex: 'contract', $options: 'i' } },
+              { 'label.en': { $regex: 'delivery sheet', $options: 'i' } },
+            ],
+          },
         },
-      });
+        { path: 'user' },
+      ]);
+      console.log('entityObjects -> ', entityObjects);
     } else {
       entityObjects = await entities;
     }

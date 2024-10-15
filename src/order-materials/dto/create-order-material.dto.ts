@@ -96,6 +96,13 @@ export class CreateOrderMaterialDto {
     default: false,
   })
   @IsOptional()
+  isOptionalCustom: boolean;
+
+  @ApiProperty({
+    type: Boolean,
+    default: false,
+  })
+  @IsOptional()
   isMultiple: boolean;
 
   @Transform(() => {

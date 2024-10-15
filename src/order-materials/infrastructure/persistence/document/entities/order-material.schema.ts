@@ -51,6 +51,10 @@ export class OrderMaterialSchemaClass extends EntityDocumentHelper {
 
   @ApiProperty()
   @Prop({ default: false, type: Boolean, nullable: false })
+  isOptionalCustom: boolean;
+
+  @ApiProperty()
+  @Prop({ default: false, type: Boolean, nullable: false })
   isMultiple: boolean;
 
   @ApiProperty()

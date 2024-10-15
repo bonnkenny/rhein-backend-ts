@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 // import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
 // import { Transform } from 'class-transformer';
 // import { Types } from 'mongoose';
@@ -9,6 +9,8 @@ import {
   OrderTypeEnum,
 } from '@src/utils/enums/order-type.enum';
 import { OrderMaterial } from '@src/order-materials/domain/order-material';
+import { User } from '@src/users/domain/user';
+import { DeepPartial } from '@src/utils/types/deep-partial.type';
 
 export class Order {
   @ApiProperty({
@@ -83,6 +85,13 @@ export class Order {
     type: [OrderMaterial],
   })
   materials?: OrderMaterial[];
+  @ApiPropertyOptional({
+    type: () => User,
+  })
+  user?: DeepPartial<User>;
 
+  @ApiPropertyOptional({
+    type: () => Array<string>,
+  })
   nodeLines?: string[];
 }

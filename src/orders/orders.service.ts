@@ -137,6 +137,7 @@ export class OrdersService {
           columns: template.columns,
           filledAt: null,
           isOptional: template.isOptional,
+          isOptionalCustom: template.isOptional,
           isMultiple: template.isMultiple,
         });
         materials.push(material);

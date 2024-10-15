@@ -50,6 +50,12 @@ export class OrderMaterial {
 
   @ApiProperty({
     type: Boolean,
+    default: '自定义是否必填',
+  })
+  isOptionalCustom: boolean;
+
+  @ApiProperty({
+    type: Boolean,
     default: '是否为多行',
   })
   isMultiple: boolean;

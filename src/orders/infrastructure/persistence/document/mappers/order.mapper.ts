@@ -2,9 +2,10 @@ import { Order } from '../../../../domain/order';
 import { OrderSchemaClass } from '../entities/order.schema';
 import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
 import { Types } from 'mongoose';
-import { findKey, isBoolean, omit } from 'lodash';
+import { findKey, isBoolean, omit, pick } from 'lodash';
 import { OrderMaterialMapper } from '@src/order-materials/infrastructure/persistence/document/mappers/order-material.mapper';
 import { OrderMaterialChainMapper } from '@src/order-materials/infrastructure/persistence/document/mappers/order-material-chain.mapper';
+import { UserMapper } from '@src/users/infrastructure/persistence/document/mappers/user.mapper';
 
 export class OrderMapper {
   public static toDomain(raw: OrderSchemaClass, columnDomain?: string): Order {
@@ -48,6 +49,12 @@ export class OrderMapper {
           return OrderMaterialMapper.toDomain(omit(item, ['order']));
         });
       }
+    }
+    if (raw.user) {
+      domainEntity.user = pick(UserMapper.toDomain(raw.user), [
+        'username',
+        'id',
+      ]);
     }
     domainEntity.proxySet = raw?.proxySet ?? false;
     domainEntity.fillStatus = raw.fillStatus;

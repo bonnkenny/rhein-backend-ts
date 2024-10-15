@@ -154,7 +154,7 @@ export class OrdersController {
     type: String,
     required: true,
   })
-  getChains(@Param('id') id: string) {
-    return this.ordersService.getOrderChains(id);
+  getChains(@Param('id') id: string): InfinityApiResponseDto<any> {
+    return infinityResponse(this.ordersService.getOrderChains(id));
   }
 }
