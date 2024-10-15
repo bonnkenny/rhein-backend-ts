@@ -84,6 +84,10 @@ export class OrderSchemaClass extends EntityDocumentHelper {
   @Prop({ default: false })
   proxySet: boolean;
 
+  @ApiProperty({ type: String, enum: OrderStatusEnum, default: null })
+  @Prop({ default: null, enum: OrderStatusEnum })
+  customerOptionalCheck: string;
+
   @ApiProperty()
   @Prop()
   deletedAt: Date;

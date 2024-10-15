@@ -65,6 +65,7 @@ export class OrdersService {
       userId: userId.toString(),
       fromUserId: user.id.toString(),
       proxySet: false,
+      customerOptionalCheck: null,
     });
   }
 

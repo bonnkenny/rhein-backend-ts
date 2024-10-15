@@ -98,4 +98,10 @@ export class UpdateOrderDto extends PartialType(CreateOrderDto) {
   })
   @IsOptional()
   proxySet?: boolean;
+
+  @ApiProperty({ type: String, enum: OrderStatusEnum })
+  @IsEnum(OrderStatusEnum)
+  @Transform(({ value }) => (!!value ? value : undefined))
+  @IsOptional()
+  customerOptionalCheck: string;
 }

@@ -76,6 +76,9 @@ export class Order {
   @IsOptional()
   fillStatus?: string;
 
+  @ApiProperty({ type: String, enum: OrderStatusEnum, default: null })
+  customerOptionalCheck: string | null;
+
   @ApiProperty()
   createdAt: Date;
 
