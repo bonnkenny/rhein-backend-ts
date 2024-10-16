@@ -93,7 +93,9 @@ export class OrderDocumentRepository implements OrderRepository {
   }
 
   async findById(id: Order['id']): Promise<NullableType<Order>> {
-    const entityObject = await this.orderModel.findById(id);
+    const entityObject = await this.orderModel.findById(toMongoId(id));
+    console.log('id', id);
+    console.log('entityObject', entityObject);
     return entityObject ? OrderMapper.toDomain(entityObject) : null;
   }
 
@@ -231,32 +233,43 @@ export class OrderDocumentRepository implements OrderRepository {
     );
   }
 
-  async findChainsByIds(ids: Order['id'][], withMaterials?: boolean) {
+  async findChainsByIds(ids: Order['id'][]) {
     const entities = this.orderModel.find({
       _id: { $in: ids.map(toMongoId) },
     });
-
-    let entityObjects: OrderSchemaClass[];
-    if (withMaterials) {
-      entityObjects = await entities.populate([
-        {
-          path: 'materials',
-          match: {
-            $or: [
-              { 'label.en': { $regex: 'invoice', $options: 'i' } },
-              { 'label.en': { $regex: 'contract', $options: 'i' } },
-              { 'label.en': { $regex: 'delivery sheet', $options: 'i' } },
-            ],
-          },
+    const entityObjects = await entities.populate([
+      {
+        path: 'materials',
+        match: {
+          $or: [
+            { 'label.en': { $regex: 'invoice', $options: 'i' } },
+            { 'label.en': { $regex: 'contract', $options: 'i' } },
+            { 'label.en': { $regex: 'delivery sheet', $options: 'i' } },
+          ],
         },
-        { path: 'user' },
-      ]);
-      // console.log('entityObjects -> ', entityObjects);
-    } else {
-      entityObjects = await entities;
-    }
+      },
+      { path: 'user' },
+    ]);
     return entityObjects.map((entityObject) =>
       OrderMapper.toDomain(entityObject, 'chain'),
+    );
+  }
+
+  async findChainsFilesByIds(ids: Order['id'][]) {
+    const entities = this.orderModel.find({
+      _id: { $in: ids.map(toMongoId) },
+    });
+    const entityObjects = await entities.populate([
+      {
+        path: 'materials',
+        match: {
+          // checkStatus: OrderStatusEnum.APPROVED,
+          filledAt: { $exists: true },
+        },
+      },
+    ]);
+    return entityObjects.map((entityObject) =>
+      OrderMapper.toDomain(entityObject, 'export'),
     );
   }
 

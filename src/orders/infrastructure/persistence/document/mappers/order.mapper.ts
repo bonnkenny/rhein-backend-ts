@@ -6,6 +6,7 @@ import { findKey, isBoolean, omit, pick } from 'lodash';
 import { OrderMaterialMapper } from '@src/order-materials/infrastructure/persistence/document/mappers/order-material.mapper';
 import { OrderMaterialChainMapper } from '@src/order-materials/infrastructure/persistence/document/mappers/order-material-chain.mapper';
 import { UserMapper } from '@src/users/infrastructure/persistence/document/mappers/user.mapper';
+import { OrderMaterialExportMapper } from '@src/order-materials/infrastructure/persistence/document/mappers/order-material-export.mapper';
 
 export class OrderMapper {
   public static toDomain(raw: OrderSchemaClass, columnDomain?: string): Order {
@@ -44,6 +45,21 @@ export class OrderMapper {
           }
         }
         domainEntity.nodeLines = lines;
+      } else if (columnDomain === 'export') {
+        const materialLines = raw.materials.map((item) => {
+          return OrderMaterialExportMapper.toDomain(item);
+        });
+
+        const lines: Array<string> = [];
+        for (const item in materialLines) {
+          // console.log('item -> ', item);
+          if (materialLines[item].length) {
+            for (let i = 0; i < materialLines[item].length; i++) {
+              lines.push(materialLines[item][i]);
+            }
+          }
+        }
+        domainEntity.nodeFiles = lines;
       } else {
         domainEntity.materials = raw.materials.map((item) => {
           return OrderMaterialMapper.toDomain(omit(item, ['order']));

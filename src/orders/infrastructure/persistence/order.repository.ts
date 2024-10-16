@@ -31,10 +31,9 @@ export abstract class OrderRepository {
     withMaterials?: boolean,
   ): Promise<Order[]>;
 
-  abstract findChainsByIds(
-    ids: Order['id'][],
-    withMaterials?: boolean,
-  ): Promise<Order[]>;
+  abstract findChainsByIds(ids: Order['id'][]): Promise<Order[]>;
+
+  abstract findChainsFilesByIds(ids: Order['id'][]): Promise<Order[]>;
 
   abstract findParentIds(parentId: Order['id']): Promise<[Order['id']] | []>;
   abstract findChildrenIds(id: Order['id']): Promise<[Order['id']] | []>;

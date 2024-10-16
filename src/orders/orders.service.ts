@@ -218,8 +218,9 @@ export class OrdersService {
     return this.orderRepository.update(id, { proxySet: proxySet });
   }
 
-  async getOrderChains(id: Order['id']): Promise<Order[]> {
+  async getOrderChainIds(id: Order['id']): Promise<Array<Order['id']>> {
     const order = await this.orderRepository.findById(id);
+    console.log('order -> ', order);
     if (!order) {
       return [];
     }
@@ -228,9 +229,13 @@ export class OrdersService {
       parentIds = await this.orderRepository.findParentIds(id);
     }
     const childrenIds = await this.orderRepository.findChildrenIds(id);
-    const chainsIds = [...parentIds, id, ...childrenIds];
-    console.log('chainsIds', chainsIds);
-    return await this.orderRepository.findChainsByIds(chainsIds, true);
+    return [...parentIds, id, ...childrenIds];
+  }
+
+  async getOrderChains(id: Order['id']): Promise<Order[]> {
+    const chainsIds = await this.getOrderChainIds(id);
+    console.log('chainsIds ->', chainsIds);
+    return await this.orderRepository.findChainsByIds(chainsIds);
     // chains.map((chain)=>{
     //   const materials = chain?.materials || [];
     //   materials.map((material)=>{
@@ -242,6 +247,26 @@ export class OrdersService {
     //     })
     //   })
     // })
+  }
+
+  /**
+   * 获取订单链路文件
+   * @param id
+   */
+  async getChainFiles(id: Order['id']) {
+    const chainsIds = await this.getOrderChainIds(id);
+    // console.log('id ->', id);
+    // console.log('chainsIds ->', chainsIds);
+    const orders = await this.orderRepository.findChainsFilesByIds(chainsIds);
+    const filesArray = orders.map((order) => order.nodeFiles);
+    const files: string[] = [];
+    for (const filesArr of filesArray) {
+      if (filesArr?.length) {
+        files.push(...filesArr);
+      }
+    }
+    console.log(' ->', files);
+    return files;
   }
 
   checkCustomOptional(

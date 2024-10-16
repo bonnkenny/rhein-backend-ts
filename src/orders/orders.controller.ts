@@ -158,6 +158,18 @@ export class OrdersController {
     return infinityResponse(this.ordersService.getOrderChains(id));
   }
 
+  @Get(':id/chain-export')
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  @ApiOkResponse({ type: InfinityApiResponse() })
+  async pdfExport(@Param('id') id: string) {
+    const files = await this.ordersService.getChainFiles(id);
+    return infinityResponse(files);
+  }
+
   @Patch(':id/check-customer-optional')
   @ApiBody({
     schema: {

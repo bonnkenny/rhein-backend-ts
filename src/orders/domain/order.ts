@@ -97,4 +97,9 @@ export class Order {
     type: () => Array<string>,
   })
   nodeLines?: string[];
+
+  @ApiPropertyOptional({
+    type: () => Array<string>,
+  })
+  nodeFiles?: string[];
 }
