@@ -29,6 +29,10 @@ export class FilesOssService extends OSSBase {
     return await this.ossClient.getStream(target);
   }
 
+  public async getObject(target: string): Promise<OSS.GetObjectResult> {
+    return await this.ossClient.get(target);
+  }
+
   /**
    * 删除
    * @param target

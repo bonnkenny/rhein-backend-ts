@@ -17,9 +17,7 @@ export class OrderMaterialExportMapper {
             const fileArr = rowI.value.toString().split(',');
             if (fileArr.length) {
               fileArr.forEach((file) => {
-                files.push(
-                  ossUtil.getSrcSign(ossUtil.getOssResourcePath(file)),
-                );
+                files.push(ossUtil.getOssResourcePath(file));
               });
             }
           }

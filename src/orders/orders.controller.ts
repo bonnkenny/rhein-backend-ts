@@ -9,6 +9,7 @@ import {
   UseGuards,
   Query,
   Request,
+  Res,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -35,6 +36,8 @@ import {
 } from '../utils/infinity-response';
 import { FilterOrdersDto } from './dto/filter-orders.dto';
 import { NullableType } from '@src/utils/types/nullable.type';
+import { PdfService } from '@src/pdf-lib/pdf.service';
+import { Response } from 'express';
 
 @ApiTags('Orders')
 @ApiBearerAuth()
@@ -44,7 +47,10 @@ import { NullableType } from '@src/utils/types/nullable.type';
   version: '1',
 })
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(
+    private readonly ordersService: OrdersService,
+    private readonly pdfService: PdfService,
+  ) {}
 
   @Post()
   @ApiCreatedResponse({
@@ -164,10 +170,13 @@ export class OrdersController {
     type: String,
     required: true,
   })
-  @ApiOkResponse({ type: InfinityApiResponse() })
-  async pdfExport(@Param('id') id: string) {
+  // @ApiOkResponse({ type: () })
+  async pdfExport(@Param('id') id: string, @Res() res: Response) {
     const files = await this.ordersService.getChainFiles(id);
-    return infinityResponse(files);
+    const pdfBuffer = await this.pdfService.mergePdfs(files);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=order.pdf');
+    res.send(pdfBuffer);
   }
 
   @Patch(':id/check-customer-optional')

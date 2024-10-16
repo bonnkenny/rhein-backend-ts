@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PDFDocument } from 'pdf-lib';
-import * as fs from 'fs';
+import { FilesOssService } from '@src/files/infrastructure/uploader/oss/files.service';
 
 @Injectable()
 export class PdfService {
+  constructor(@Inject() private readonly ossService: FilesOssService) {}
   // 拼接PDF的方法
   async mergePdfs(pdfPaths: string[]): Promise<Buffer> {
     // 创建一个新的 PDF 文档
@@ -11,8 +12,9 @@ export class PdfService {
 
     for (const pdfPath of pdfPaths) {
       // 读取 PDF 文件
-      const pdfBytes = fs.readFileSync(pdfPath);
+      const pdfObject = await this.ossService.getObject(pdfPath);
       // 加载 PDF 文件
+      const pdfBytes = pdfObject.content;
       const pdf = await PDFDocument.load(pdfBytes);
       // 复制页面
       const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
