@@ -159,12 +159,28 @@ export class OrdersController {
   }
 
   @Patch(':id/check-customer-optional')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        customerOptionalCheck: {
+          type: 'string',
+          enum: ['APPROVED', 'REJECTED'],
+        },
+      },
+      required: ['customerOptionalCheck'],
+    },
+  })
   @ApiOkResponse({ type: InfinityApiResponse() })
-  checkCustomerOptional(
+  async checkCustomerOptional(
     @Param('id') id: string,
     @Body()
     updateOrderDto: Pick<UpdateOrderDto, 'customerOptionalCheck'>,
   ) {
-    return this.ordersService.checkCustomOptional(id, updateOrderDto);
+    const ret = await this.ordersService.checkCustomOptional(
+      id,
+      updateOrderDto,
+    );
+    return infinityResponse({}, !!ret ? 'Ok' : 'Operation failed!', !!ret);
   }
 }

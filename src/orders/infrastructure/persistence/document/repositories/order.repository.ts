@@ -1,5 +1,6 @@
 import {
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -341,11 +342,15 @@ export class OrderDocumentRepository implements OrderRepository {
       await this.orderModel.findByIdAndUpdate(id, {
         customerOptionalCheck,
       });
-      await this.orderMaterialModel.updateMany({ orderId: id }, [
-        { $set: { isOptionalCustom: '$isOptional' } },
-      ]);
+      if (customerOptionalCheck === OrderStatusEnum.APPROVED.toString()) {
+        await this.orderMaterialModel.updateMany({ orderId: id }, [
+          { $set: { isOptionalCustom: '$isOptional' } },
+        ]);
+      }
     } catch (e) {
       console.log('update-customer-optional-check failed ->', e);
+      throw new InternalServerErrorException(errorBody('Failed'));
     }
+    return true;
   }
 }
