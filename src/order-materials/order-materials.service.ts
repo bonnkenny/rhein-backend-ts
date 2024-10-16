@@ -85,11 +85,11 @@ export class OrderMaterialsService {
     return this.orderMaterialRepository.updateCheckStatus(id, updateBody);
   }
 
-  async checkCustomOptional(
+  async setCustomOptional(
     ids: Array<OrderMaterial['id']>,
     checker: JwtPayloadType,
   ) {
     console.log(checker);
-    return await this.orderMaterialRepository.updateIsOptionalCustom(ids);
+    return await this.orderMaterialRepository.setCustomOptional(ids);
   }
 }

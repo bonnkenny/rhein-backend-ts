@@ -223,7 +223,7 @@ export class OrderMaterialDocumentRepository
     return entityObject ? OrderMaterialMapper.toDomain(entityObject) : null;
   }
 
-  async updateIsOptionalCustom(ids: Array<OrderMaterial['id']>) {
+  async setCustomOptional(ids: Array<OrderMaterial['id']>) {
     const entities = await this.orderMaterialModel.find({ _id: { $in: ids } });
     const orderIdSet: Set<OrderMaterial['orderId']> = new Set();
     entities.map((entity) => orderIdSet.add(entity?.orderId?.toString()));

@@ -30,5 +30,5 @@ export abstract class OrderMaterialRepository {
     updateBody: UpdateOrderMaterialStatusDto,
   ): Promise<OrderMaterial | null>;
 
-  abstract updateIsOptionalCustom(ids: Array<OrderMaterial['id']>);
+  abstract setCustomOptional(ids: Array<OrderMaterial['id']>): Promise<boolean>;
 }

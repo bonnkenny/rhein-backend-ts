@@ -138,7 +138,7 @@ export class OrderMaterialsController {
     );
   }
 
-  @Post('check-custom-optional')
+  @Post('set-custom-optional')
   @ApiParam({
     name: 'ids',
     type: Array<string>,
@@ -147,16 +147,14 @@ export class OrderMaterialsController {
   @ApiOkResponse({
     type: InfinityApiResponse(),
   })
-  @BaseRoles(BaseRoleEnum.SUPER.toString(), BaseRoleEnum.ADMIN.toString())
-  @UseGuards(BaseRolesGuard)
-  async checkCustomOptional(
+  async setCustomOptional(
     @Body() body: UpdateCustomOptionalDto,
     @Request() request,
   ) {
-    const ret = await this.orderMaterialsService.checkCustomOptional(
+    const ret = await this.orderMaterialsService.setCustomOptional(
       body.ids,
       request?.user,
     );
-    return infinityResponse({}, !!ret ? 'Ok' : 'Operation failed!', !!ret);
+    return infinityResponse({}, ret ? 'Ok' : 'Operation failed!', ret);
   }
 }
