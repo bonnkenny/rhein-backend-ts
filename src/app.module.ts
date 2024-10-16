@@ -37,6 +37,7 @@ import { OrderMaterialTemplatesModule } from './order-material-templates/order-m
 
 import { OrderUsersModule } from './order-users/order-users.module';
 import { PdfModule } from '@src/pdf-lib/pdf.module';
+import { DashboardModule } from '@src/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -83,6 +84,7 @@ import { PdfModule } from '@src/pdf-lib/pdf.module';
     MailModule,
     MailerModule,
     PdfModule,
+    DashboardModule,
     // HomeModule,
   ],
 })
