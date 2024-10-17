@@ -52,6 +52,10 @@ export class OrderMaterialMapper {
     domainEntity.checkStatus = raw.checkStatus ?? OrderStatusEnum.PENDING;
     domainEntity.reason = raw.reason ?? null;
     domainEntity.isOptional = raw.isOptional;
+    domainEntity.isOptionalCustom = raw.isOptional;
+    if (raw.isOptional !== null || raw.isMultiple !== undefined) {
+      domainEntity.isOptionalCustom = raw.isOptionalCustom;
+    }
     domainEntity.isMultiple = raw.isMultiple;
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
@@ -89,6 +93,14 @@ export class OrderMaterialMapper {
 
     persistenceSchema.subDescription = domainEntity.subDescription ?? null;
     persistenceSchema.isOptional = domainEntity.isOptional ?? false;
+    if (
+      domainEntity?.isOptionalCustom !== undefined &&
+      domainEntity?.isOptionalCustom !== null
+    ) {
+      persistenceSchema.isOptionalCustom =
+        domainEntity.isOptionalCustom ?? false;
+    }
+
     persistenceSchema.isMultiple = domainEntity.isMultiple ?? false;
     persistenceSchema.filledAt = domainEntity.filledAt ?? null;
     persistenceSchema.checkStatus =

@@ -19,6 +19,7 @@ import {
 } from './dto/update-order-material.dto';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiParam,
@@ -139,10 +140,18 @@ export class OrderMaterialsController {
   }
 
   @Post('set-custom-optional')
-  @ApiParam({
-    name: 'ids',
-    type: Array<string>,
-    required: true,
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        ids: {
+          type: 'array',
+          items: {
+            type: 'string',
+          },
+        },
+      },
+    },
   })
   @ApiOkResponse({
     type: InfinityApiResponse(),
