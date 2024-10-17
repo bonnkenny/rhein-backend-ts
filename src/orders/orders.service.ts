@@ -25,6 +25,7 @@ import {
   MaterialTemplateTypeEnum,
   TraderArray,
 } from '@src/utils/enums/order-type.enum';
+import { NewsRecordsService } from '@src/news-records/news-records.service';
 // import { OrderMapper } from '@src/orders/infrastructure/persistence/document/mappers/order.mapper';
 // import { MailService } from '@src/mail/mail.service';
 // import { MailDataWithAccount } from '@src/mail/interfaces/mail-data.interface';
@@ -38,6 +39,8 @@ export class OrdersService {
     private orderUsersService: OrderUsersService,
     @Inject(forwardRef(() => OrderMaterialsService))
     private orderMaterialService: OrderMaterialsService,
+    @Inject(NewsRecordsService)
+    private readonly newsRecordsService: NewsRecordsService,
     // private mailService: MailService,
   ) {}
 
@@ -144,6 +147,10 @@ export class OrdersService {
         materials.push(material);
       }
     }
+    await this.newsRecordsService.create({
+      action: 'create',
+      orderId: order.id.toString(),
+    });
     return {
       ...order,
       materials,

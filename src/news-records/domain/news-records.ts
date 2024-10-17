@@ -19,6 +19,11 @@ export class NewsRecords {
   materialId: string;
 
   @ApiProperty({
+    type: String,
+  })
+  action: string;
+
+  @ApiProperty({
     type: LabelTypeClass,
   })
   description: LabelType;

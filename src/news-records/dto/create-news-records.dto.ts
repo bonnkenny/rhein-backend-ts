@@ -1,8 +1,15 @@
 import { LabelType } from '@src/utils/types/order-types';
 import { ApiProperty } from '@nestjs/swagger';
 import { LabelTypeClass } from '@src/order-material-columns/domain/order-material-column';
-import { IsMongoId, IsNotEmpty, IsOptional, Validate } from 'class-validator';
+import {
+  IsEnum,
+  IsMongoId,
+  IsNotEmpty,
+  IsOptional,
+  Validate,
+} from 'class-validator';
 import { IsLabelType } from '@src/order-material-columns/validator/column-validator';
+import { NewsActionEnum } from '@src/utils/enums/news-action.enum';
 
 export class CreateNewsRecordsDto {
   // Don't forget to use the class-validator decorators in the DTO properties.
@@ -26,10 +33,31 @@ export class CreateNewsRecordsDto {
   materialId?: string;
 
   @ApiProperty({
+    type: String,
+    example: NewsActionEnum.CREATE,
+    enum: NewsActionEnum,
+    description: 'Action',
+    required: true,
+  })
+  @IsEnum(NewsActionEnum)
+  @IsNotEmpty()
+  action: string;
+
+  @ApiProperty({
     type: LabelTypeClass,
     description: 'Description',
   })
   @Validate(IsLabelType)
   @IsNotEmpty()
-  description: LabelType;
+  @IsOptional()
+  description?: LabelType;
+
+  @ApiProperty({
+    type: LabelTypeClass,
+    description: 'Material label',
+  })
+  @Validate(IsLabelType)
+  @IsNotEmpty()
+  @IsOptional()
+  materialLabel?: LabelType;
 }
