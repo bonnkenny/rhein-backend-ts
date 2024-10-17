@@ -154,7 +154,7 @@ export class UsersController {
   }
 
   @ApiOkResponse({
-    type: User,
+    type: InfinityApiResponse<User>,
   })
   @SerializeOptions({
     groups: [GroupTypesEnum.ADMIN],
@@ -166,12 +166,9 @@ export class UsersController {
     type: String,
     required: true,
   })
-  update(
-    @Param('id') id: User['id'],
-    @Body() updateProfileDto: UpdateUserDto,
-  ): Promise<User | null> {
+  update(@Param('id') id: User['id'], @Body() updateProfileDto: UpdateUserDto) {
     console.log('updateProfileDto', updateProfileDto);
-    return this.usersService.update(id, updateProfileDto);
+    return infinityResponse(this.usersService.update(id, updateProfileDto));
   }
 
   @Delete(':id')
