@@ -7,7 +7,9 @@ export class NewsRecordsMapper {
     const domainEntity = new NewsRecords();
     domainEntity.id = raw._id.toString();
     domainEntity.orderId = raw.orderId.toString();
-    domainEntity.materialId = raw.materialId.toString();
+    if (raw?.materialId) {
+      domainEntity.materialId = raw.materialId.toString();
+    }
     domainEntity.description = {
       en: raw?.description?.en,
       ch: raw?.description?.ch,
@@ -26,7 +28,10 @@ export class NewsRecordsMapper {
       persistenceSchema._id = domainEntity.id;
     }
     persistenceSchema.orderId = toMongoId(domainEntity.orderId);
-    persistenceSchema.materialId = toMongoId(domainEntity.materialId);
+    if (!!domainEntity.materialId) {
+      persistenceSchema.materialId = toMongoId(domainEntity.materialId);
+    }
+    persistenceSchema.action = domainEntity.action;
     persistenceSchema.description = domainEntity.description;
     persistenceSchema.createdAt = domainEntity.createdAt;
     persistenceSchema.updatedAt = domainEntity.updatedAt;

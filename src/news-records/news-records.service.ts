@@ -63,9 +63,14 @@ export class NewsRecordsService {
         label.ch = `订单动态: 订单已驳回,订单ID:${orderId}`;
         break;
       default:
-        throw new UnprocessableEntityException(errorBody(''));
+        throw new UnprocessableEntityException(
+          errorBody('News record action type invalid'),
+        );
     }
-    return this.newsRecordsRepository.create(createNewsRecordsDto);
+    return this.newsRecordsRepository.create({
+      ...createNewsRecordsDto,
+      description: label,
+    });
   }
 
   findAllWithPagination(filterOptions: FindAllNewsRecordsDto) {

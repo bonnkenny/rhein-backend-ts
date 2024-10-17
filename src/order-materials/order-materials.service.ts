@@ -34,7 +34,7 @@ export class OrderMaterialsService {
 
   async create(createOrderMaterialDto: CreateOrderMaterialDto) {
     const { orderId } = createOrderMaterialDto;
-    console.log('orderId', orderId);
+    // console.log('orderId', orderId);
     const order = await this.orderService.findOne(orderId);
     if (!order) {
       throw new BadRequestException(errorBody('Order not found'));

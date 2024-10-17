@@ -22,7 +22,7 @@ export class NewsRecordsSchemaClass extends EntityDocumentHelper {
   orderId: Types.ObjectId;
 
   @ApiProperty({ type: String })
-  @Prop({ type: Types.ObjectId, required: true })
+  @Prop({ type: Types.ObjectId, default: null })
   materialId: Types.ObjectId;
 
   @ApiProperty({ type: String })
