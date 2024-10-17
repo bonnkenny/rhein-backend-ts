@@ -9,7 +9,10 @@ import { BaseRolesGuard } from '@src/utils/guards/base-roles.guard';
 import { BaseRoles } from '@src/utils/guards/base-roles.decorator';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 
-@Controller('dashboard')
+@Controller({
+  path: 'dashboard',
+  version: '1',
+})
 @ApiTags('Dashboard')
 @ApiBearerAuth()
 @BaseRoles(BaseRoleEnum.SUPER.toString(), BaseRoleEnum.ADMIN.toString())
