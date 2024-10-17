@@ -19,6 +19,8 @@ import { FindAllOrderMaterialsDto } from '@src/order-materials/dto/find-all-orde
 import { JwtPayloadType } from '@src/auth/strategies/types/jwt-payload.type';
 import { OrderStatusEnum } from '@src/utils/enums/order-type.enum';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+import { NewsRecordsService } from '@src/news-records/news-records.service';
+import { NewsActionEnum } from '@src/utils/enums/news-action.enum';
 
 @Injectable()
 export class OrderMaterialsService {
@@ -26,11 +28,13 @@ export class OrderMaterialsService {
     private readonly orderMaterialRepository: OrderMaterialRepository,
     @Inject(forwardRef(() => OrdersService))
     private orderService: OrdersService,
+    @Inject(NewsRecordsService)
+    private readonly newsRecordsService: NewsRecordsService,
   ) {}
 
   async create(createOrderMaterialDto: CreateOrderMaterialDto) {
     const { orderId } = createOrderMaterialDto;
-    console.log('orderId', orderId);
+    // console.log('orderId', orderId);
     const order = await this.orderService.findOne(orderId);
     if (!order) {
       throw new BadRequestException(errorBody('Order not found'));
@@ -46,11 +50,22 @@ export class OrderMaterialsService {
     return this.orderMaterialRepository.findById(id);
   }
 
-  update(
+  async update(
     id: OrderMaterial['id'],
     updateOrderMaterialDto: UpdateOrderMaterialDto,
   ) {
-    return this.orderMaterialRepository.update(id, updateOrderMaterialDto);
+    const entity = await this.orderMaterialRepository.findById(id);
+    if (!entity) {
+      throw new NotFoundException(errorBody('Data undefined'));
+    }
+    const ret = this.orderMaterialRepository.update(id, updateOrderMaterialDto);
+    await this.newsRecordsService.create({
+      orderId: entity.orderId,
+      materialId: id,
+      materialLabel: entity.label,
+      action: entity?.filledAt ? NewsActionEnum.UPDATE : NewsActionEnum.FILLED,
+    });
+    return ret;
   }
 
   remove(id: OrderMaterial['id']) {
@@ -82,7 +97,22 @@ export class OrderMaterialsService {
         errorBody('Has no permission for this order'),
       );
     }
-    return this.orderMaterialRepository.updateCheckStatus(id, updateBody);
+    const entity = await this.orderMaterialRepository.findById(id);
+    if (!entity) {
+      throw new NotFoundException(errorBody('Data undefined'));
+    }
+    const checkRet = this.orderMaterialRepository.updateCheckStatus(
+      id,
+      updateBody,
+    );
+    await this.newsRecordsService.create({
+      orderId: entity.orderId,
+      materialId: id,
+      materialLabel: entity.label,
+      action: updateBody.checkStatus,
+    });
+
+    return checkRet;
   }
 
   async setCustomOptional(

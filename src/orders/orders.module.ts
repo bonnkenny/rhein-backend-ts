@@ -8,6 +8,7 @@ import { OrderMaterialTemplatesModule } from '@src/order-material-templates/orde
 import { OrderUsersModule } from '@src/order-users/order-users.module';
 import { MailModule } from '@src/mail/mail.module';
 import { PdfModule } from '@src/pdf-lib/pdf.module';
+import { NewsRecordsModule } from '@src/news-records/news-records.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PdfModule } from '@src/pdf-lib/pdf.module';
     OrderUsersModule,
     MailModule,
     PdfModule,
+    NewsRecordsModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

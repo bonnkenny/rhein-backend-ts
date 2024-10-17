@@ -37,9 +37,13 @@ import { OrderMaterialTemplatesModule } from './order-material-templates/order-m
 
 import { OrderUsersModule } from './order-users/order-users.module';
 import { PdfModule } from '@src/pdf-lib/pdf.module';
+import { DashboardModule } from '@src/dashboard/dashboard.module';
+
+import { NewsRecordsModule } from './news-records/news-records.module';
 
 @Module({
   imports: [
+    NewsRecordsModule,
     OrderUsersModule,
     // OrderMaterialColumnsModule,
     OrderMaterialTemplatesModule,
@@ -83,6 +87,7 @@ import { PdfModule } from '@src/pdf-lib/pdf.module';
     MailModule,
     MailerModule,
     PdfModule,
+    DashboardModule,
     // HomeModule,
   ],
 })

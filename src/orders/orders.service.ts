@@ -3,6 +3,7 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -25,6 +26,8 @@ import {
   MaterialTemplateTypeEnum,
   TraderArray,
 } from '@src/utils/enums/order-type.enum';
+import { NewsRecordsService } from '@src/news-records/news-records.service';
+import { NewsActionEnum } from '@src/utils/enums/news-action.enum';
 // import { OrderMapper } from '@src/orders/infrastructure/persistence/document/mappers/order.mapper';
 // import { MailService } from '@src/mail/mail.service';
 // import { MailDataWithAccount } from '@src/mail/interfaces/mail-data.interface';
@@ -38,6 +41,8 @@ export class OrdersService {
     private orderUsersService: OrderUsersService,
     @Inject(forwardRef(() => OrderMaterialsService))
     private orderMaterialService: OrderMaterialsService,
+    @Inject(NewsRecordsService)
+    private readonly newsRecordsService: NewsRecordsService,
     // private mailService: MailService,
   ) {}
 
@@ -80,74 +85,83 @@ export class OrdersService {
       baseRole: BaseRoleEnum.SUPPLIER,
     });
     let orderUserId: string | null | undefined = orderUser?.id.toString();
-    if (!orderUser) {
-      const { password } = createOrderDto;
-      if (!password) {
-        throw new BadRequestException(errorBody('Password is required!'));
-      }
-      const createOrderUser = await this.usersService.create(user, {
-        email,
-        baseRole: BaseRoleEnum.SUPPLIER,
-        status: UserStatusEnum.ACTIVE,
-        password: password,
-        provider: 'email',
-        username: 'Supplier' + random(1000, 9999).toString(),
-      });
-      // 发送邮件
-      // await this.usersService.sendMail(createOrderUser, {
-      //   password: password,
-      // });
-
-      orderUserId = createOrderUser?.id.toString();
-    }
-    const order = await this.create(user, {
-      ...createOrderDto,
-      userId: orderUserId,
-    });
-    let templateType: MaterialTemplateTypeEnum | undefined;
-    switch (true) {
-      case ManufacturerArray.includes(order.orderType):
-        templateType = MaterialTemplateTypeEnum.MANUFACTURER;
-        break;
-      case TraderArray.includes(order.orderType):
-        templateType = MaterialTemplateTypeEnum.TRADER;
-        break;
-      case order.orderType === MaterialTemplateTypeEnum.FOREST_OWNER.toString():
-        templateType = MaterialTemplateTypeEnum.FOREST_OWNER;
-        break;
-      default:
-        templateType = undefined;
-    }
-    if (!templateType) {
-      throw new BadRequestException(errorBody('Material type not found'));
-    }
-    const templates = await this.orderMaterialTemplateService.findAll({
-      templateType,
-    });
-    const materials: OrderMaterial[] = [];
-    if (templates.length) {
-      for (const template of templates) {
-        // console.log('template >>> ', template);
-        const material = await this.orderMaterialService.create({
-          orderId: order.id.toString(),
-          orderType: order.orderType,
-          templateType: templateType,
-          label: template.label,
-          description: template.description,
-          subDescription: template?.subDescription ?? null,
-          columns: template.columns,
-          filledAt: null,
-          isOptional: template.isOptional,
-          isOptionalCustom: template.isOptional,
-          isMultiple: template.isMultiple,
+    try {
+      if (!orderUser) {
+        const { password } = createOrderDto;
+        if (!password) {
+          throw new BadRequestException(errorBody('Password is required!'));
+        }
+        const createOrderUser = await this.usersService.create(user, {
+          email,
+          baseRole: BaseRoleEnum.SUPPLIER,
+          status: UserStatusEnum.ACTIVE,
+          password: password,
+          provider: 'email',
+          username: 'Supplier' + random(1000, 9999).toString(),
         });
-        materials.push(material);
+        // 发送邮件
+        // await this.usersService.sendMail(createOrderUser, {
+        //   password: password,
+        // });
+
+        orderUserId = createOrderUser?.id.toString();
       }
+      const order = await this.create(user, {
+        ...createOrderDto,
+        userId: orderUserId,
+      });
+      let templateType: MaterialTemplateTypeEnum | undefined;
+      switch (true) {
+        case ManufacturerArray.includes(order.orderType):
+          templateType = MaterialTemplateTypeEnum.MANUFACTURER;
+          break;
+        case TraderArray.includes(order.orderType):
+          templateType = MaterialTemplateTypeEnum.TRADER;
+          break;
+        case order.orderType ===
+          MaterialTemplateTypeEnum.FOREST_OWNER.toString():
+          templateType = MaterialTemplateTypeEnum.FOREST_OWNER;
+          break;
+        default:
+          templateType = undefined;
+      }
+      if (!templateType) {
+        throw new BadRequestException(errorBody('Material type not found'));
+      }
+      const templates = await this.orderMaterialTemplateService.findAll({
+        templateType,
+      });
+      const materials: OrderMaterial[] = [];
+      if (templates.length) {
+        for (const template of templates) {
+          // console.log('template >>> ', template);
+          const material = await this.orderMaterialService.create({
+            orderId: order.id.toString(),
+            orderType: order.orderType,
+            templateType: templateType,
+            label: template.label,
+            description: template.description,
+            subDescription: template?.subDescription ?? null,
+            columns: template.columns,
+            filledAt: null,
+            isOptional: template.isOptional,
+            isOptionalCustom: template.isOptional,
+            isMultiple: template.isMultiple,
+          });
+          materials.push(material);
+        }
+      }
+      await this.newsRecordsService.create({
+        action: NewsActionEnum.CREATE,
+        orderId: order.id.toString(),
+      });
+      return {
+        ...order,
+        materials,
+      };
+    } catch (e) {
+      throw new InternalServerErrorException(errorBody(e.toString()));
     }
-    return {
-      ...order,
-      materials,
-    };
   }
 
   async findAllWithPagination(

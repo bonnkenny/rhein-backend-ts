@@ -94,8 +94,8 @@ export class OrderDocumentRepository implements OrderRepository {
 
   async findById(id: Order['id']): Promise<NullableType<Order>> {
     const entityObject = await this.orderModel.findById(toMongoId(id));
-    console.log('id', id);
-    console.log('entityObject', entityObject);
+    // console.log('id', id);
+    // console.log('entityObject', entityObject);
     return entityObject ? OrderMapper.toDomain(entityObject) : null;
   }
 
