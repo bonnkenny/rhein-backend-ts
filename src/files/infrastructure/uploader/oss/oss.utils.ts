@@ -93,7 +93,7 @@ export class OssUtils {
   public getSrcSign(path: string, width?: number, height?: number) {
     const clientOption = this.options.client;
     const { bucket, accessKeySecret, accessKeyId } = clientOption;
-    const ossPrefix = this.getOssPrefix(true);
+    const ossPrefix = this.getOssPrefix(false);
     // 读取配置初始化参数
     const signDateTime = parseInt(moment().format('X'), 10);
     const outTime = 2 * 3600; // 失效时间

@@ -27,6 +27,7 @@ import { OssUtils } from '@src/files/infrastructure/uploader/oss/oss.utils';
       useFactory: (configService: ConfigService<AllConfigType>) => {
         return {
           fileFilter: (request, file, callback) => {
+            console.log('file originalname ->', file?.originalname);
             if (!file.originalname.match(/\.(jpg|jpeg|png|pdf)$/i)) {
               return callback(
                 new UnprocessableEntityException({

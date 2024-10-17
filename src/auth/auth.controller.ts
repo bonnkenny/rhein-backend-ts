@@ -10,6 +10,7 @@ import {
   Patch,
   // Delete,
   SerializeOptions,
+  Get,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
@@ -156,6 +157,14 @@ export class AuthController {
   ): Promise<InfinityApiResponseDto<User | null>> {
     const updated = await this.service.update(request.user, userDto);
     return infinityResponse(updated);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  me(@Request() request) {
+    console.log('request.user', request.user);
+    return infinityResponse(this.service.me(request.user));
   }
 
   // @ApiBearerAuth()

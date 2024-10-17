@@ -4,7 +4,7 @@ import { now, HydratedDocument, Types, Query } from 'mongoose';
 // We use class-transformer in schema and domain entity.
 // We duplicate these rules because you can choose not to use adapters
 // in your project and return an schema entity directly in response.
-import { Exclude, Expose, Type } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { AuthProvidersEnum } from '@src/auth/auth-providers.enum';
 import { FileSchemaClass } from '@src/files/infrastructure/persistence/document/entities/file.schema';
 import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
@@ -13,6 +13,7 @@ import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 import { GroupTypesEnum } from '@src/utils/enums/groups.enum';
 import { RoleSchemaClass } from '@src/roles/infrastructure/persistence/document/entities/role.schema';
+// import { DeepPartial } from '@src/utils/types/deep-partial.type';
 
 export type UserSchemaDocument = HydratedDocument<UserSchemaClass>;
 
@@ -102,8 +103,7 @@ export class UserSchemaClass extends EntityDocumentHelper {
   @Prop({
     type: FileSchemaClass,
   })
-  @Type(() => FileSchemaClass)
-  avatar?: FileSchemaClass | null;
+  avatar: FileSchemaClass;
 
   @ApiProperty({
     type: String,
