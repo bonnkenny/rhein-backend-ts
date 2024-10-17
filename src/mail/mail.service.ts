@@ -10,6 +10,7 @@ import { MaybeType } from '../utils/types/maybe.type';
 import { MailerService } from '../mailer/mailer.service';
 import path from 'path';
 import { AllConfigType } from '../config/config.type';
+import { Order } from '@src/orders/domain/order';
 
 @Injectable()
 export class MailService {
@@ -70,14 +71,14 @@ export class MailService {
     mailData: MailDataWithAccount<{ hash: string }>,
   ): Promise<void> {
     const i18n = I18nContext.current();
-    let emailConfirmTitle: MaybeType<string>;
+    let title: MaybeType<string>;
     let text1: MaybeType<string>;
     let text2: MaybeType<string>;
     let text3: MaybeType<string>;
 
     if (i18n) {
-      [emailConfirmTitle, text1, text2, text3] = await Promise.all([
-        i18n.t('common.confirmEmail'),
+      [title, text1, text2, text3] = await Promise.all([
+        'TUV通知邮件',
         '您的供应商邀请您使用TUV莱茵供应链信息管理系统,以下是您的账户信息:',
         `登录名称: ${mailData.account}`,
         `登陆密码: ${mailData.password}`,
@@ -87,33 +88,95 @@ export class MailService {
     const url = new URL(
       this.configService.getOrThrow('app.frontendDomain', {
         infer: true,
-      }) + '/confirm-email',
+      }),
     );
     url.searchParams.set('hash', mailData.data.hash);
     console.log('before send ->', url.toString());
-    await this.mailerService.sendMail({
-      to: mailData.to,
-      subject: emailConfirmTitle,
-      text: `${url.toString()} ${emailConfirmTitle}`,
-      templatePath: path.join(
-        this.configService.getOrThrow('app.workingDirectory', {
-          infer: true,
-        }),
-        'src',
-        'mail',
-        'mail-templates',
-        'activation.hbs',
-      ),
-      context: {
-        title: emailConfirmTitle,
-        url: url.toString(),
-        actionTitle: emailConfirmTitle,
-        app_name: this.configService.get('app.name', { infer: true }),
-        text1,
-        text2,
-        text3,
-      },
-    });
+    await this.mailerService
+      .sendMail({
+        to: mailData.to,
+        subject: title,
+        text: `${url.toString()} ${title}`,
+        templatePath: path.join(
+          this.configService.getOrThrow('app.workingDirectory', {
+            infer: true,
+          }),
+          'src',
+          'mail',
+          'mail-templates',
+          'new-user-email.hbs',
+        ),
+        context: {
+          title: title,
+          url: url.toString(),
+          actionTitle: title,
+          app_name: this.configService.get('app.name', { infer: true }),
+          text1,
+          text2,
+          text3,
+          buttonTitle: '查看',
+        },
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }
+
+  async newOrder(
+    mailData: MailData<{
+      order: Pick<Order, 'orderName'>;
+    }>,
+  ) {
+    const { to, data } = mailData;
+    const { order } = data;
+    const i18n = I18nContext.current();
+    let title: MaybeType<string>;
+    let text1: MaybeType<string>;
+    let text2: MaybeType<string>;
+    let text3: MaybeType<string>;
+
+    if (i18n) {
+      [title, text1, text2, text3] = await Promise.all([
+        'TUV订单通知邮件',
+        '您有新的供应链订单,请您及时提供资料',
+        `订单名称: ${order.orderName}`,
+        '详情请点击按钮查看',
+      ]);
+    }
+
+    const url = new URL(
+      this.configService.getOrThrow('app.frontendDomain', {
+        infer: true,
+      }),
+    );
+    await this.mailerService
+      .sendMail({
+        to,
+        subject: title,
+        text: `${url.toString()}`,
+        templatePath: path.join(
+          this.configService.getOrThrow('app.workingDirectory', {
+            infer: true,
+          }),
+          'src',
+          'mail',
+          'mail-templates',
+          'new-order-email.hbs',
+        ),
+        context: {
+          title: title,
+          url: url.toString(),
+          actionTitle: title,
+          app_name: this.configService.get('app.name', { infer: true }),
+          text1,
+          text2,
+          text3,
+          buttonTitle: '查看',
+        },
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }
 
   async forgotPassword(

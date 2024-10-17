@@ -29,7 +29,7 @@ import {
 import { NewsRecordsService } from '@src/news-records/news-records.service';
 import { NewsActionEnum } from '@src/utils/enums/news-action.enum';
 // import { OrderMapper } from '@src/orders/infrastructure/persistence/document/mappers/order.mapper';
-// import { MailService } from '@src/mail/mail.service';
+import { MailService } from '@src/mail/mail.service';
 // import { MailDataWithAccount } from '@src/mail/interfaces/mail-data.interface';
 
 @Injectable()
@@ -43,7 +43,7 @@ export class OrdersService {
     private orderMaterialService: OrderMaterialsService,
     @Inject(NewsRecordsService)
     private readonly newsRecordsService: NewsRecordsService,
-    // private mailService: MailService,
+    private mailService: MailService,
   ) {}
 
   async create(user: JwtPayloadType, createOrderDto: CreateOrderDto) {
@@ -100,11 +100,17 @@ export class OrdersService {
           username: 'Supplier' + random(1000, 9999).toString(),
         });
         // 发送邮件
-        // await this.usersService.sendMail(createOrderUser, {
-        //   password: password,
-        // });
-
+        await this.usersService.sendMail(createOrderUser, {
+          password: password,
+        });
         orderUserId = createOrderUser?.id.toString();
+      } else {
+        if (orderUser.email) {
+          await this.mailService.newOrder({
+            to: orderUser.email,
+            data: { order: { orderName: createOrderDto.orderName } },
+          });
+        }
       }
       const order = await this.create(user, {
         ...createOrderDto,
