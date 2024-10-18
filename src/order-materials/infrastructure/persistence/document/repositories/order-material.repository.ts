@@ -116,6 +116,9 @@ export class OrderMaterialDocumentRepository
     if (!entity?.filledAt) {
       updateBody = { ...updateBody, filledAt: new Date() };
     }
+    if (entity.checkStatus === OrderStatusEnum.REJECTED) {
+      updateBody = { ...updateBody, checkStatus: OrderStatusEnum.PENDING };
+    }
 
     const update = OrderMaterialMapper.toPersistence(updateBody);
 
