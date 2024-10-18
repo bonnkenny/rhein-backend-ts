@@ -80,12 +80,16 @@ export class OrderDocumentRepository implements OrderRepository {
 
     // console.log('where', where);
     const total = await this.orderModel.find(where).countDocuments();
-    const entityObjects = await this.orderModel
+    const entities = this.orderModel
       .find(where)
       .skip((page - 1) * limit)
       .sort({ createdAt: -1 })
       .limit(limit);
-
+    const entityObjects = await entities.populate([
+      { path: 'user', select: ['username', 'id', 'email'] },
+      { path: 'fromUser', select: ['username', 'id', 'email'] },
+    ]);
+    console.log('entity', entityObjects[0].fromUser);
     return [
       entityObjects.map((entityObject) => OrderMapper.toDomain(entityObject)),
       total,

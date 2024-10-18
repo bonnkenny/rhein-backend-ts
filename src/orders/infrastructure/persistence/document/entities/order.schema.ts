@@ -101,6 +101,7 @@ export class OrderSchemaClass extends EntityDocumentHelper {
   updatedAt: Date;
 
   user?: UserSchemaClass;
+  fromUser?: UserSchemaClass;
   materials?: [OrderMaterialSchemaClass];
 }
 
@@ -115,6 +116,13 @@ OrderSchema.index({ fillStatus: 1 });
 OrderSchema.virtual('user', {
   ref: UserSchemaClass.name,
   localField: 'userId',
+  foreignField: '_id',
+  justOne: true,
+});
+
+OrderSchema.virtual('fromUser', {
+  ref: UserSchemaClass.name,
+  localField: 'fromUserId',
   foreignField: '_id',
   justOne: true,
 });

@@ -69,6 +69,14 @@ export class OrderMapper {
     if (raw.user) {
       domainEntity.user = pick(UserMapper.toDomain(raw.user), [
         'username',
+        'email',
+        'id',
+      ]);
+    }
+    if (raw.fromUser) {
+      domainEntity.fromUser = pick(UserMapper.toDomain(raw.fromUser), [
+        'username',
+        'email',
         'id',
       ]);
     }

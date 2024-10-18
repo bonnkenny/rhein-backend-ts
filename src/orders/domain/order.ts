@@ -94,6 +94,11 @@ export class Order {
   user?: DeepPartial<User>;
 
   @ApiPropertyOptional({
+    type: () => User,
+  })
+  fromUser?: DeepPartial<User>;
+
+  @ApiPropertyOptional({
     type: () => Array<string>,
   })
   nodeLines?: string[];
