@@ -5,7 +5,6 @@ import {
   // decorators here
   IsEmail,
   IsEnum,
-  IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -50,7 +49,6 @@ export class CreateUserDto {
   username: string;
 
   @ApiPropertyOptional({ type: () => FileDto })
-  @IsMongoId()
   @IsOptional()
   avatar?: FileDto | null;
 

@@ -4,6 +4,7 @@ import { FileSchemaClass } from '@src/files/infrastructure/persistence/document/
 import { FileMapper } from '@src/files/infrastructure/persistence/document/mappers/file.mapper';
 import { Types } from 'mongoose';
 import { RoleMapper } from '@src/roles/infrastructure/persistence/document/mappers/role.mapper';
+// import { toMongoId } from '@src/utils/functions';
 // import { findKey } from 'lodash';
 // import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 
@@ -20,9 +21,15 @@ export class UserMapper {
     // domainEntity.lastName = raw.lastName;
     domainEntity.username = raw?.username;
     if (raw.avatar) {
-      domainEntity.avatar = FileMapper.toDomain(raw.avatar);
-    } else if (raw.avatar === null) {
-      domainEntity.avatar = null;
+      domainEntity.avatar = FileMapper.toDomain({
+        path: raw.avatar?.path ?? '',
+        _id: raw.avatar?._id ?? '',
+        size: raw.avatar?.size ?? 0,
+        mime: raw.avatar?.mime ?? '',
+        driver: raw.avatar?.driver ?? '',
+      });
+    } else if (!raw.avatar) {
+      domainEntity.avatar = { path: '', id: '' };
     }
 
     domainEntity.baseRole = raw.baseRole?.toString();
@@ -46,17 +53,21 @@ export class UserMapper {
   static toPersistence(domainEntity: User): UserSchemaClass {
     let photo: FileSchemaClass | undefined = undefined;
 
-    if (domainEntity.avatar) {
-      photo = new FileSchemaClass();
-      photo._id = domainEntity.avatar.id;
-      photo.path = domainEntity.avatar.path;
-    }
     const persistenceSchema = new UserSchemaClass();
     if (!!domainEntity?.roleIds && domainEntity.roleIds.length) {
       persistenceSchema.roleIds = domainEntity.roleIds.map(
         (v) => new Types.ObjectId(v),
       );
     }
+    if (domainEntity.avatar) {
+      photo = new FileSchemaClass();
+      photo._id = domainEntity.avatar?.id ?? '';
+      photo.path = domainEntity.avatar?.path ?? '';
+      photo.size = domainEntity.avatar?.size ?? 0;
+      photo.mime = domainEntity.avatar?.mime ?? '';
+      persistenceSchema.avatar = photo;
+    }
+    console.log('avatar', persistenceSchema.avatar);
 
     if (domainEntity.id && typeof domainEntity.id === 'string') {
       persistenceSchema._id = domainEntity.id;
@@ -69,10 +80,7 @@ export class UserMapper {
     persistenceSchema.previousPassword = domainEntity.previousPassword;
     persistenceSchema.provider = domainEntity.provider;
     persistenceSchema.socialId = domainEntity.socialId;
-    // persistenceSchema.firstName = domainEntity.firstName;
-    // persistenceSchema.lastName = domainEntity.lastName;
     persistenceSchema.username = domainEntity.username;
-    persistenceSchema.avatar = photo;
     // persistenceSchema.role = role;
     // persistenceSchema.status = status;
     persistenceSchema.createdAt = domainEntity.createdAt;

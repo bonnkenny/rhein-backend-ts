@@ -5,6 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 import { Role } from '@src/roles/domain/role';
 import { Menu } from '@src/menus/domain/menu';
+import { DeepPartial } from '@src/utils/types/deep-partial.type';
 
 const idType = String;
 
@@ -62,7 +63,7 @@ export class User {
   @ApiProperty({
     type: () => FileType,
   })
-  avatar?: FileType | null;
+  avatar?: DeepPartial<FileType>;
 
   @ApiProperty({
     type: String,

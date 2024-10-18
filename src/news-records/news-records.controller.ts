@@ -34,10 +34,14 @@ import {
 } from '../utils/infinity-response';
 
 import { FindAllNewsRecordsDto } from './dto/find-all-news-records.dto';
+import { BaseRoles } from '@src/utils/guards/base-roles.decorator';
+import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+import { BaseRolesGuard } from '@src/utils/guards/base-roles.guard';
 
 @ApiTags('NewsRecords')
 @ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
+@BaseRoles(BaseRoleEnum.SUPER, BaseRoleEnum.ADMIN)
+@UseGuards(AuthGuard('jwt'), BaseRolesGuard)
 @Controller({
   path: 'news-records',
   version: '1',
