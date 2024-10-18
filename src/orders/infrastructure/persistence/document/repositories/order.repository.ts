@@ -89,7 +89,7 @@ export class OrderDocumentRepository implements OrderRepository {
       { path: 'user', select: ['username', 'id', 'email'] },
       { path: 'fromUser', select: ['username', 'id', 'email'] },
     ]);
-    console.log('entity', entityObjects[0].fromUser);
+    // console.log('entity', entityObjects[0].fromUser);
     return [
       entityObjects.map((entityObject) => OrderMapper.toDomain(entityObject)),
       total,
