@@ -109,7 +109,10 @@ export class OrderMaterialsService {
       orderId: entity.orderId,
       materialId: id,
       materialLabel: entity.label,
-      action: updateBody.checkStatus,
+      action:
+        updateBody.checkStatus === OrderStatusEnum.APPROVED
+          ? NewsActionEnum.MATERIAL_APPROVED
+          : NewsActionEnum.MATERIAL_REJECTED,
     });
 
     return checkRet;
