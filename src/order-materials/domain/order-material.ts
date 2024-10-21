@@ -68,6 +68,11 @@ export class OrderMaterial {
   @ApiProperty()
   filledAt: Date | null;
 
+  @ApiProperty({
+    type: Boolean,
+  })
+  agreement: boolean;
+
   @ApiPropertyOptional({
     type: String,
     enum: OrderStatusEnum,

@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { CreateOrderMaterialDto } from './dto/create-order-material.dto';
 import {
@@ -39,7 +40,10 @@ export class OrderMaterialsService {
     if (!order) {
       throw new BadRequestException(errorBody('Order not found'));
     }
-    return this.orderMaterialRepository.create(createOrderMaterialDto);
+    return this.orderMaterialRepository.create({
+      ...createOrderMaterialDto,
+      agreement: false,
+    });
   }
 
   findAllWithPagination(filterOptions: FindAllOrderMaterialsDto) {
@@ -57,6 +61,11 @@ export class OrderMaterialsService {
     const entity = await this.orderMaterialRepository.findById(id);
     if (!entity) {
       throw new NotFoundException(errorBody('Data undefined'));
+    }
+    if (!updateOrderMaterialDto?.agreement) {
+      throw new UnprocessableEntityException(
+        errorBody('Please agree to the content authenticity guarantee first!'),
+      );
     }
     const ret = this.orderMaterialRepository.update(id, updateOrderMaterialDto);
     await this.newsRecordsService.create({

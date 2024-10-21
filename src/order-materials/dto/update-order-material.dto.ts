@@ -6,6 +6,7 @@ import { CreateOrderMaterialDto } from './create-order-material.dto';
 import { OrderStatusEnum } from '@src/utils/enums/order-type.enum';
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsMongoId,
   IsNotEmpty,
@@ -18,7 +19,25 @@ import { OrderMaterial } from '@src/order-materials/domain/order-material';
 
 export class UpdateOrderMaterialDto extends PartialType(
   CreateOrderMaterialDto,
-) {}
+) {
+  @ApiProperty({
+    type: Boolean,
+    default: false,
+    description: '是否同意资料真实性责任认定书',
+  })
+  @IsBoolean()
+  @Transform(({ value }) => {
+    if (value === 'true') {
+      return true;
+    }
+    if (value === 'false') {
+      return false;
+    }
+    return value;
+  })
+  @IsNotEmpty()
+  agreement: boolean;
+}
 
 export class UpdateOrderMaterialStatusDto {
   @ApiProperty({ type: String, enum: OrderStatusEnum })

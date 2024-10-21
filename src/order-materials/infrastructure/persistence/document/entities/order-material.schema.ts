@@ -65,6 +65,10 @@ export class OrderMaterialSchemaClass extends EntityDocumentHelper {
   @Prop({ default: null, type: Date })
   filledAt: Date | null;
 
+  @ApiProperty({ type: Boolean, default: false })
+  @Prop({ default: false, type: Boolean })
+  agreement: boolean;
+
   @Prop({ type: Types.ObjectId })
   files: Array<Types.ObjectId>;
 

@@ -17,6 +17,7 @@ export class OrderMaterialMapper {
     domainEntity.orderId = raw.orderId.toString();
     domainEntity.orderType = raw.orderType;
     domainEntity.templateType = raw.templateType;
+    domainEntity.agreement = raw.agreement ?? false;
 
     domainEntity.label = {
       ch: raw.label?.ch ?? '',
@@ -107,6 +108,12 @@ export class OrderMaterialMapper {
       domainEntity.checkStatus ?? OrderStatusEnum.PENDING;
     if (domainEntity.reason) {
       persistenceSchema.reason = domainEntity.reason;
+    }
+    if (
+      domainEntity?.agreement !== undefined &&
+      domainEntity?.agreement !== null
+    ) {
+      persistenceSchema.agreement = domainEntity.agreement;
     }
     persistenceSchema.createdAt = domainEntity.createdAt;
     persistenceSchema.updatedAt = domainEntity.updatedAt;
