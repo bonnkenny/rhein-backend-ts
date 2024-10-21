@@ -6,7 +6,10 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import {
+  UpdateCustomOptionalOrderDto,
+  UpdateOrderDto,
+} from './dto/update-order.dto';
 import { OrderRepository } from './infrastructure/persistence/order.repository';
 import { Order } from './domain/order';
 import { UsersService } from '../users/users.service';
@@ -24,6 +27,7 @@ import { OrderUsersService } from '@src/order-users/order-users.service';
 import {
   ManufacturerArray,
   MaterialTemplateTypeEnum,
+  OrderCheckStatusEnum,
   TraderArray,
 } from '@src/utils/enums/order-type.enum';
 import { NewsRecordsService } from '@src/news-records/news-records.service';
@@ -71,6 +75,7 @@ export class OrdersService {
       fromUserId: user.id.toString(),
       proxySet: false,
       customerOptionalCheck: null,
+      customerOptionalReason: null,
     });
   }
 
@@ -291,8 +296,17 @@ export class OrdersService {
 
   checkCustomOptional(
     id: Order['id'],
-    updateOrderDto: Pick<UpdateOrderDto, 'customerOptionalCheck'>,
+    updateOrderDto: UpdateCustomOptionalOrderDto,
   ) {
+    const { customerOptionalCheck, customerOptionalReason } = updateOrderDto;
+    if (
+      customerOptionalCheck === OrderCheckStatusEnum.REJECTED.toString() &&
+      !customerOptionalReason
+    ) {
+      throw new BadRequestException(
+        errorBody('Customer optional reason is required'),
+      );
+    }
     return this.orderRepository.updateCustomerOptionalCheck(id, updateOrderDto);
   }
 }

@@ -104,7 +104,7 @@ export class OrderSchemaClass extends EntityDocumentHelper {
 
   @ApiProperty({ type: String })
   @Prop({ default: null, type: String })
-  customerOptionalCheckReason: string;
+  customerOptionalReason: string;
 
   @ApiProperty()
   @Prop()

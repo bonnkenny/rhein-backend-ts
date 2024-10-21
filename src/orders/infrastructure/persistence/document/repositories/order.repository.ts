@@ -15,7 +15,7 @@ import { FilterOrdersDto } from '@src/orders/dto/filter-orders.dto';
 import { errorBody } from '@src/utils/infinity-response';
 import { toMongoId } from '@src/utils/functions';
 import { omit } from 'lodash';
-import { UpdateOrderDto } from '@src/orders/dto/update-order.dto';
+import { UpdateCustomOptionalOrderDto } from '@src/orders/dto/update-order.dto';
 import { OrderCheckStatusEnum } from '@src/utils/enums/order-type.enum';
 import { OrderMaterialSchemaClass } from '@src/order-materials/infrastructure/persistence/document/entities/order-material.schema';
 
@@ -341,7 +341,7 @@ export class OrderDocumentRepository implements OrderRepository {
 
   async updateCustomerOptionalCheck(
     id: Order['id'],
-    body: Pick<UpdateOrderDto, 'customerOptionalCheck'>,
+    body: UpdateCustomOptionalOrderDto,
   ) {
     const entityObject = await this.orderModel.findById(id);
     const { customerOptionalCheck } = body;

@@ -79,6 +79,9 @@ export class Order {
   @ApiProperty({ type: String, enum: OrderCheckStatusEnum, default: null })
   customerOptionalCheck: string | null;
 
+  @ApiProperty({ type: String, default: null })
+  customerOptionalReason: string | null;
+
   @ApiProperty()
   createdAt: Date;
 
