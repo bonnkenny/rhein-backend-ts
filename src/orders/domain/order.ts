@@ -7,6 +7,7 @@ import {
   OrderFillStatusEnum,
   OrderCheckStatusEnum,
   OrderTypeEnum,
+  OrderStatusEnum,
 } from '@src/utils/enums/order-type.enum';
 import { OrderMaterial } from '@src/order-materials/domain/order-material';
 import { User } from '@src/users/domain/user';
@@ -68,6 +69,15 @@ export class Order {
   @IsEnum(Object.keys(OrderCheckStatusEnum))
   @IsOptional()
   checkStatus?: string;
+
+  @ApiProperty({
+    type: String,
+    enum: OrderStatusEnum,
+  })
+  @IsEnum(OrderStatusEnum)
+  @IsOptional()
+  status: string;
+
   @ApiProperty({
     type: String,
     enum: Object.keys(OrderFillStatusEnum),

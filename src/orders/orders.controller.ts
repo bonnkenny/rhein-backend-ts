@@ -16,6 +16,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import {
   UpdateCustomOptionalOrderDto,
   UpdateOrderDto,
+  SetOrderStatusDto,
 } from './dto/update-order.dto';
 import {
   ApiBearerAuth,
@@ -207,5 +208,16 @@ export class OrdersController {
       updateOrderDto,
     );
     return infinityResponse({}, !!ret ? 'Ok' : 'Operation failed!', !!ret);
+  }
+
+  @Patch(':id/set-completed')
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  @ApiOkResponse({ type: InfinityApiResponse(Order) })
+  async setCompleted(@Query('id') id: string, @Body() body: SetOrderStatusDto) {
+    return infinityResponse(await this.ordersService.setCompleted(id, body));
   }
 }

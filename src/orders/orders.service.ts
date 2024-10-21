@@ -4,11 +4,14 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import {
   UpdateCustomOptionalOrderDto,
   UpdateOrderDto,
+  SetOrderStatusDto,
 } from './dto/update-order.dto';
 import { OrderRepository } from './infrastructure/persistence/order.repository';
 import { Order } from './domain/order';
@@ -28,12 +31,14 @@ import {
   ManufacturerArray,
   MaterialTemplateTypeEnum,
   OrderCheckStatusEnum,
+  OrderStatusEnum,
   TraderArray,
 } from '@src/utils/enums/order-type.enum';
 import { NewsRecordsService } from '@src/news-records/news-records.service';
 import { NewsActionEnum } from '@src/utils/enums/news-action.enum';
 // import { OrderMapper } from '@src/orders/infrastructure/persistence/document/mappers/order.mapper';
 import { MailService } from '@src/mail/mail.service';
+
 // import { MailDataWithAccount } from '@src/mail/interfaces/mail-data.interface';
 
 @Injectable()
@@ -76,6 +81,8 @@ export class OrdersService {
       proxySet: false,
       customerOptionalCheck: null,
       customerOptionalReason: null,
+      checkStatus: OrderCheckStatusEnum.PENDING,
+      status: OrderStatusEnum.PENDING,
     });
   }
 
@@ -308,5 +315,33 @@ export class OrdersService {
       );
     }
     return this.orderRepository.updateCustomerOptionalCheck(id, updateOrderDto);
+  }
+
+  async setCompleted(id: Order['id'], updateOrderStatus: SetOrderStatusDto) {
+    const { isCompleted } = updateOrderStatus;
+    const entity = await this.orderRepository.findById(id);
+    if (!entity) {
+      throw new NotFoundException(errorBody('Order not found'));
+    }
+    if (isCompleted) {
+      if (entity.status !== OrderStatusEnum.REPORTING)
+        throw new UnprocessableEntityException(
+          errorBody('Order status is not reporting now, cant complete it'),
+        );
+    } else {
+      if (
+        entity.status !== OrderStatusEnum.COMPLETED &&
+        entity.status !== OrderStatusEnum.REPORTING
+      )
+        throw new UnprocessableEntityException(
+          errorBody('Cant change order status'),
+        );
+    }
+    const updateBody: Partial<Order> = {
+      status: isCompleted
+        ? OrderStatusEnum.COMPLETED
+        : OrderStatusEnum.REPORTING,
+    };
+    return this.orderRepository.update(id, updateBody);
   }
 }

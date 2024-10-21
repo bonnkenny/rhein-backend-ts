@@ -18,7 +18,10 @@ import { BadRequestException } from '@nestjs/common/exceptions/bad-request.excep
 import { errorBody } from '@src/utils/infinity-response';
 import { FindAllOrderMaterialsDto } from '@src/order-materials/dto/find-all-order-materials.dto';
 import { JwtPayloadType } from '@src/auth/strategies/types/jwt-payload.type';
-import { OrderCheckStatusEnum } from '@src/utils/enums/order-type.enum';
+import {
+  OrderCheckStatusEnum,
+  OrderStatusEnum,
+} from '@src/utils/enums/order-type.enum';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { NewsRecordsService } from '@src/news-records/news-records.service';
 import { NewsActionEnum } from '@src/utils/enums/news-action.enum';
@@ -94,6 +97,14 @@ export class OrderMaterialsService {
     const material = await this.orderMaterialRepository.findById(id);
     if (!material) {
       throw new NotFoundException(errorBody('Data undefined'));
+    }
+
+    const order = await this.orderService.findOne(material?.orderId);
+    if (!order) {
+      throw new NotFoundException(errorBody('Order not found'));
+    }
+    if (order.status === OrderStatusEnum.COMPLETED) {
+      throw new BadRequestException(errorBody('Order has been completed'));
     }
     // const checkerId = checker.id;
     // if (checkerId !== material?.order?.fromUserId) {

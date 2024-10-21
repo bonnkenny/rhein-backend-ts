@@ -85,6 +85,7 @@ export class OrderMapper {
     domainEntity.customerOptionalCheck = raw.customerOptionalCheck ?? null;
     domainEntity.customerOptionalReason = raw.customerOptionalReason ?? null;
     domainEntity.checkStatus = raw.checkStatus;
+    domainEntity.status = raw.status;
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
     // console.log('order domain', domainEntity);
@@ -124,6 +125,9 @@ export class OrderMapper {
     if (domainEntity.customerOptionalReason) {
       persistenceSchema.customerOptionalReason =
         domainEntity.customerOptionalReason;
+    }
+    if (domainEntity.status) {
+      persistenceSchema.status = domainEntity.status;
     }
     persistenceSchema.orderNo = domainEntity.orderNo;
     persistenceSchema.email = domainEntity?.email || '';

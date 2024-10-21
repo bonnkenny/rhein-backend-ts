@@ -4,6 +4,7 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateOrderDto } from './create-order.dto';
 import {
+  IsBoolean,
   IsEmail,
   IsEnum,
   IsMongoId,
@@ -111,4 +112,20 @@ export class UpdateCustomOptionalOrderDto extends PartialType(UpdateOrderDto) {
   @MaxLength(255)
   @IsOptional()
   customerOptionalReason?: string;
+}
+
+export class SetOrderStatusDto {
+  @ApiProperty({ type: Boolean })
+  @IsBoolean()
+  @Transform(({ value }) => {
+    if (value === 'true') {
+      return true;
+    }
+    if (value === 'false') {
+      return false;
+    }
+    return value;
+  })
+  @IsNotEmpty()
+  isCompleted: boolean;
 }

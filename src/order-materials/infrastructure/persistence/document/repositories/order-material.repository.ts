@@ -18,6 +18,7 @@ import { UpdateOrderMaterialStatusDto } from '@src/order-materials/dto/update-or
 import {
   OrderFillStatusEnum,
   OrderCheckStatusEnum,
+  OrderStatusEnum,
 } from '@src/utils/enums/order-type.enum';
 import { errorBody } from '@src/utils/infinity-response';
 import { OrderSchemaClass } from '@src/orders/infrastructure/persistence/document/entities/order.schema';
@@ -141,7 +142,10 @@ export class OrderMaterialDocumentRepository
       if (otherMaterial.length === 0) {
         await this.orderModel.findOneAndUpdate(
           { _id: entity.orderId },
-          { fillStatus: OrderFillStatusEnum.FILLED },
+          {
+            fillStatus: OrderFillStatusEnum.FILLED,
+            status: OrderStatusEnum.COLLECTING,
+          },
           { new: false },
         );
         console.log('here-4');
@@ -204,14 +208,20 @@ export class OrderMaterialDocumentRepository
           //更新订单状态为APPROVED
           await this.orderModel.findOneAndUpdate(
             { _id: entity.orderId },
-            { checkStatus: OrderCheckStatusEnum.APPROVED },
+            {
+              checkStatus: OrderCheckStatusEnum.APPROVED,
+              status: OrderStatusEnum.REPORTING,
+            },
             { new: false },
           );
         } else {
           //更新订单状态为REJECTED
           await this.orderModel.findOneAndUpdate(
             { _id: entity.orderId },
-            { checkStatus: OrderCheckStatusEnum.REJECTED },
+            {
+              checkStatus: OrderCheckStatusEnum.REJECTED,
+              status: OrderStatusEnum.COLLECTING,
+            },
             { new: false },
           );
         }
