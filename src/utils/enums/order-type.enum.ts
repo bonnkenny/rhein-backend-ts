@@ -35,13 +35,25 @@ export const TraderArray = [
   OrderTypeEnum.SUPPLIER.toString(),
 ];
 
-export enum OrderStatusEnum {
+export enum OrderCheckStatusEnum {
   // 待审核
   PENDING = 'PENDING',
   // 已审核
   APPROVED = 'APPROVED',
   // 已取消
   REJECTED = 'REJECTED',
+}
+
+export enum OrderStatusEnum {
+  // new order
+  PENDING = 'PENDING',
+  // part filled or part rejected
+  COLLECTING = 'COLLECTING',
+  // part approved and have no rejected
+  REVIEWING = 'REVIEWING',
+  // all approved
+  REPORTING = 'REPORTING',
+  COMPLETED = 'REJECTED',
 }
 
 // 订单填写状态

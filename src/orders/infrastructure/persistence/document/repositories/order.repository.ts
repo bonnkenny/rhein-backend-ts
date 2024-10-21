@@ -16,7 +16,7 @@ import { errorBody } from '@src/utils/infinity-response';
 import { toMongoId } from '@src/utils/functions';
 import { omit } from 'lodash';
 import { UpdateOrderDto } from '@src/orders/dto/update-order.dto';
-import { OrderStatusEnum } from '@src/utils/enums/order-type.enum';
+import { OrderCheckStatusEnum } from '@src/utils/enums/order-type.enum';
 import { OrderMaterialSchemaClass } from '@src/order-materials/infrastructure/persistence/document/entities/order-material.schema';
 
 @Injectable()
@@ -349,7 +349,8 @@ export class OrderDocumentRepository implements OrderRepository {
       throw new NotFoundException(errorBody('Order not found'));
     }
     if (
-      entityObject.customerOptionalCheck !== OrderStatusEnum.PENDING.toString()
+      entityObject.customerOptionalCheck !==
+      OrderCheckStatusEnum.PENDING.toString()
     ) {
       throw new UnprocessableEntityException(
         errorBody('Check status is not pending'),
@@ -359,7 +360,7 @@ export class OrderDocumentRepository implements OrderRepository {
       await this.orderModel.findByIdAndUpdate(id, {
         customerOptionalCheck,
       });
-      if (customerOptionalCheck === OrderStatusEnum.APPROVED.toString()) {
+      if (customerOptionalCheck === OrderCheckStatusEnum.APPROVED.toString()) {
         await this.orderMaterialModel.updateMany({ orderId: id }, [
           { $set: { isOptionalCustom: '$isOptional' } },
         ]);

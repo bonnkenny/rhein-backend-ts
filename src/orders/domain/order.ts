@@ -5,7 +5,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional } from 'class-validator';
 import {
   OrderFillStatusEnum,
-  OrderStatusEnum,
+  OrderCheckStatusEnum,
   OrderTypeEnum,
 } from '@src/utils/enums/order-type.enum';
 import { OrderMaterial } from '@src/order-materials/domain/order-material';
@@ -63,9 +63,9 @@ export class Order {
 
   @ApiProperty({
     type: String,
-    enum: Object.keys(OrderStatusEnum),
+    enum: Object.keys(OrderCheckStatusEnum),
   })
-  @IsEnum(Object.keys(OrderStatusEnum))
+  @IsEnum(Object.keys(OrderCheckStatusEnum))
   @IsOptional()
   checkStatus?: string;
   @ApiProperty({
@@ -76,7 +76,7 @@ export class Order {
   @IsOptional()
   fillStatus?: string;
 
-  @ApiProperty({ type: String, enum: OrderStatusEnum, default: null })
+  @ApiProperty({ type: String, enum: OrderCheckStatusEnum, default: null })
   customerOptionalCheck: string | null;
 
   @ApiProperty()

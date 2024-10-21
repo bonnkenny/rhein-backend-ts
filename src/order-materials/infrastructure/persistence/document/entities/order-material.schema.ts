@@ -6,7 +6,7 @@ import { LabelType } from '@src/utils/types/order-types';
 import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
 import {
   MaterialTemplateTypeEnum,
-  OrderStatusEnum,
+  OrderCheckStatusEnum,
   OrderTypeEnum,
 } from '@src/utils/enums/order-type.enum';
 import { OrderSchemaClass } from '@src/orders/infrastructure/persistence/document/entities/order.schema';
@@ -69,9 +69,9 @@ export class OrderMaterialSchemaClass extends EntityDocumentHelper {
   files: Array<Types.ObjectId>;
 
   @ApiProperty({
-    enum: OrderStatusEnum,
+    enum: OrderCheckStatusEnum,
   })
-  @Prop({ default: OrderStatusEnum.PENDING, enum: OrderStatusEnum })
+  @Prop({ default: OrderCheckStatusEnum.PENDING, enum: OrderCheckStatusEnum })
   checkStatus: string;
 
   @ApiProperty({ type: String, nullable: true })

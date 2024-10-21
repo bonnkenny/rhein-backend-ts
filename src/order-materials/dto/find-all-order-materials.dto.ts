@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsMongoId, IsOptional } from 'class-validator';
 import {
-  OrderStatusEnum,
+  OrderCheckStatusEnum,
   OrderTypeEnum,
 } from '@src/utils/enums/order-type.enum';
 import { InfinityFindAllDto } from '@src/utils/dto/infinity-query-all.dto';
@@ -20,17 +20,17 @@ export class FindAllOrderMaterialsDto extends InfinityFindAllDto {
     type: String,
     enum: Object.keys(OrderTypeEnum),
   })
-  @IsEnum(OrderStatusEnum)
+  @IsEnum(OrderCheckStatusEnum)
   @Transform(({ value }) => (!!value ? value : undefined))
   @IsOptional()
   orderType: string;
 
   @ApiPropertyOptional({
     type: String,
-    enum: OrderStatusEnum,
+    enum: OrderCheckStatusEnum,
     description: '审核状态',
   })
-  @IsEnum(OrderStatusEnum)
+  @IsEnum(OrderCheckStatusEnum)
   @Transform(({ value }) => (!!value ? value : undefined))
   @IsOptional()
   checkStatus: string;
