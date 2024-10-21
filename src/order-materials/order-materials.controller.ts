@@ -93,8 +93,9 @@ export class OrderMaterialsController {
     required: true,
   })
   @ApiOkResponse({
-    type: InfinityPaginationResponse(OrderMaterial),
+    type: InfinityApiResponse(OrderMaterial),
   })
+  @ApiBody({ type: UpdateOrderMaterialDto })
   update(
     @Param('id') id: string,
     @Body()
