@@ -13,7 +13,10 @@ import {
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import {
+  UpdateCustomOptionalOrderDto,
+  UpdateOrderDto,
+} from './dto/update-order.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -188,6 +191,7 @@ export class OrdersController {
           type: 'string',
           enum: ['APPROVED', 'REJECTED'],
         },
+        customerOptionalReason: { type: 'string' },
       },
       required: ['customerOptionalCheck'],
     },
@@ -196,7 +200,7 @@ export class OrdersController {
   async checkCustomerOptional(
     @Param('id') id: string,
     @Body()
-    updateOrderDto: Pick<UpdateOrderDto, 'customerOptionalCheck'>,
+    updateOrderDto: UpdateCustomOptionalOrderDto,
   ) {
     const ret = await this.ordersService.checkCustomOptional(
       id,

@@ -3,7 +3,7 @@
 
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { CreateOrderMaterialDto } from './create-order-material.dto';
-import { OrderStatusEnum } from '@src/utils/enums/order-type.enum';
+import { OrderCheckStatusEnum } from '@src/utils/enums/order-type.enum';
 import {
   IsArray,
   IsBoolean,
@@ -40,8 +40,8 @@ export class UpdateOrderMaterialDto extends PartialType(
 }
 
 export class UpdateOrderMaterialStatusDto {
-  @ApiProperty({ type: String, enum: OrderStatusEnum })
-  @IsEnum(OrderStatusEnum)
+  @ApiProperty({ type: String, enum: OrderCheckStatusEnum })
+  @IsEnum(OrderCheckStatusEnum)
   @IsNotEmpty({ message: 'checkStatus is required' })
   checkStatus: string;
 

@@ -17,7 +17,7 @@ import { omit, pick } from 'lodash';
 import { UpdateOrderMaterialStatusDto } from '@src/order-materials/dto/update-order-material.dto';
 import {
   OrderFillStatusEnum,
-  OrderStatusEnum,
+  OrderCheckStatusEnum,
 } from '@src/utils/enums/order-type.enum';
 import { errorBody } from '@src/utils/infinity-response';
 import { OrderSchemaClass } from '@src/orders/infrastructure/persistence/document/entities/order.schema';
@@ -106,7 +106,7 @@ export class OrderMaterialDocumentRepository
     if (!entity) {
       throw new NotFoundException(errorBody('Record not found'));
     }
-    if (entity.checkStatus === OrderStatusEnum.APPROVED) {
+    if (entity.checkStatus === OrderCheckStatusEnum.APPROVED) {
       throw new BadRequestException(errorBody('Material has been approved'));
     }
     let updateBody = {
@@ -116,8 +116,8 @@ export class OrderMaterialDocumentRepository
     if (!entity?.filledAt) {
       updateBody = { ...updateBody, filledAt: new Date() };
     }
-    if (entity.checkStatus === OrderStatusEnum.REJECTED) {
-      updateBody = { ...updateBody, checkStatus: OrderStatusEnum.PENDING };
+    if (entity.checkStatus === OrderCheckStatusEnum.REJECTED) {
+      updateBody = { ...updateBody, checkStatus: OrderCheckStatusEnum.PENDING };
     }
 
     const update = OrderMaterialMapper.toPersistence(updateBody);
@@ -177,12 +177,12 @@ export class OrderMaterialDocumentRepository
     // );
     // console.log('other materials count ->', otherMaterials.length);
     const rejectedCount = otherMaterials.filter(
-      (material) => material.checkStatus === OrderStatusEnum.REJECTED,
+      (material) => material.checkStatus === OrderCheckStatusEnum.REJECTED,
     ).length;
 
     const pendingCount = otherMaterials.filter(
       (material) =>
-        material.checkStatus === OrderStatusEnum.PENDING &&
+        material.checkStatus === OrderCheckStatusEnum.PENDING &&
         !material?.isOptional,
     ).length;
     const currentStatus = updateBody.checkStatus;
@@ -196,19 +196,22 @@ export class OrderMaterialDocumentRepository
         { new: false },
       );
       if (pendingCount === 0) {
-        if (currentStatus === OrderStatusEnum.APPROVED && rejectedCount === 0) {
+        if (
+          currentStatus === OrderCheckStatusEnum.APPROVED &&
+          rejectedCount === 0
+        ) {
           // console.log('order update ->', entity.orderId);
           //更新订单状态为APPROVED
           await this.orderModel.findOneAndUpdate(
             { _id: entity.orderId },
-            { checkStatus: OrderStatusEnum.APPROVED },
+            { checkStatus: OrderCheckStatusEnum.APPROVED },
             { new: false },
           );
         } else {
           //更新订单状态为REJECTED
           await this.orderModel.findOneAndUpdate(
             { _id: entity.orderId },
-            { checkStatus: OrderStatusEnum.REJECTED },
+            { checkStatus: OrderCheckStatusEnum.REJECTED },
             { new: false },
           );
         }
@@ -241,7 +244,7 @@ export class OrderMaterialDocumentRepository
       throw new NotFoundException(errorBody('Order not found'));
     }
 
-    if (orderEntity.checkStatus === OrderStatusEnum.APPROVED) {
+    if (orderEntity.checkStatus === OrderCheckStatusEnum.APPROVED) {
       throw new UnprocessableEntityException(
         errorBody('Order has been approved'),
       );
@@ -257,7 +260,7 @@ export class OrderMaterialDocumentRepository
       );
       await this.orderModel.findOneAndUpdate(
         { _id: orderId },
-        { customerOptionalCheck: OrderStatusEnum.PENDING },
+        { customerOptionalCheck: OrderCheckStatusEnum.PENDING },
         { new: false },
       );
     } catch (e) {

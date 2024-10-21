@@ -14,7 +14,7 @@ import {
 } from 'class-validator';
 import {
   OrderFillStatusEnum,
-  OrderStatusEnum,
+  OrderCheckStatusEnum,
 } from '@src/utils/enums/order-type.enum';
 import { Transform } from 'class-transformer';
 
@@ -70,9 +70,9 @@ export class UpdateOrderDto extends PartialType(CreateOrderDto) {
 
   @ApiProperty({
     type: String,
-    enum: Object.keys(OrderStatusEnum),
+    enum: Object.keys(OrderCheckStatusEnum),
   })
-  @IsEnum(Object.keys(OrderStatusEnum))
+  @IsEnum(Object.keys(OrderCheckStatusEnum))
   @IsOptional()
   checkStatus?: string;
 
@@ -98,10 +98,17 @@ export class UpdateOrderDto extends PartialType(CreateOrderDto) {
   })
   @IsOptional()
   proxySet?: boolean;
+}
 
-  @ApiProperty({ type: String, enum: OrderStatusEnum })
-  @IsEnum(OrderStatusEnum)
+export class UpdateCustomOptionalOrderDto extends PartialType(UpdateOrderDto) {
+  @ApiProperty({ type: String, enum: OrderCheckStatusEnum })
+  @IsEnum(OrderCheckStatusEnum)
   @Transform(({ value }) => (!!value ? value : undefined))
-  @IsOptional()
+  @IsNotEmpty()
   customerOptionalCheck: string;
+
+  @ApiProperty({ type: String, enum: OrderCheckStatusEnum })
+  @MaxLength(255)
+  @IsOptional()
+  customerOptionalReason?: string;
 }

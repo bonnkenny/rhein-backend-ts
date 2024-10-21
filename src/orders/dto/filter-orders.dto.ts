@@ -6,7 +6,7 @@ import { IsArray, IsMongoId, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   OrderFillStatusEnum,
-  OrderStatusEnum,
+  OrderCheckStatusEnum,
   OrderTypeEnum,
 } from '@src/utils/enums/order-type.enum';
 import { OrderSchemaClass } from '@src/orders/infrastructure/persistence/document/entities/order.schema';
@@ -76,7 +76,7 @@ export class FilterOrdersDto extends InfinityFindAllDto {
 
   @ApiProperty({
     type: String,
-    enum: Object.keys(OrderStatusEnum),
+    enum: Object.keys(OrderCheckStatusEnum),
     description: '审核状态',
     required: false,
   })

@@ -18,7 +18,7 @@ import { BadRequestException } from '@nestjs/common/exceptions/bad-request.excep
 import { errorBody } from '@src/utils/infinity-response';
 import { FindAllOrderMaterialsDto } from '@src/order-materials/dto/find-all-order-materials.dto';
 import { JwtPayloadType } from '@src/auth/strategies/types/jwt-payload.type';
-import { OrderStatusEnum } from '@src/utils/enums/order-type.enum';
+import { OrderCheckStatusEnum } from '@src/utils/enums/order-type.enum';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { NewsRecordsService } from '@src/news-records/news-records.service';
 import { NewsActionEnum } from '@src/utils/enums/news-action.enum';
@@ -87,7 +87,7 @@ export class OrderMaterialsService {
     checker: JwtPayloadType,
   ) {
     const { checkStatus, reason } = updateBody;
-    if (checkStatus === OrderStatusEnum.REJECTED && !reason) {
+    if (checkStatus === OrderCheckStatusEnum.REJECTED && !reason) {
       throw new BadRequestException(errorBody('Reason is required'));
     }
 
@@ -119,7 +119,7 @@ export class OrderMaterialsService {
       materialId: id,
       materialLabel: entity.label,
       action:
-        updateBody.checkStatus === OrderStatusEnum.APPROVED
+        updateBody.checkStatus === OrderCheckStatusEnum.APPROVED
           ? NewsActionEnum.MATERIAL_APPROVED
           : NewsActionEnum.MATERIAL_REJECTED,
     });

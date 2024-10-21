@@ -4,8 +4,9 @@ import { EntityDocumentHelper } from '@src/utils/document-entity-helper';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   OrderFillStatusEnum,
-  OrderStatusEnum,
+  OrderCheckStatusEnum,
   OrderTypeEnum,
+  OrderStatusEnum,
 } from '@src/utils/enums/order-type.enum';
 import { UserSchemaClass } from '@src/users/infrastructure/persistence/document/entities/user.schema';
 // import { DeepPartial } from '@src/utils/types/deep-partial.type';
@@ -68,14 +69,27 @@ export class OrderSchemaClass extends EntityDocumentHelper {
 
   @ApiProperty({
     type: String,
-    enum: Object.keys(OrderStatusEnum),
+    enum: OrderCheckStatusEnum,
+    default: OrderCheckStatusEnum.PENDING,
   })
   @Prop({
-    default: OrderStatusEnum.PENDING,
-    enum: Object.keys(OrderStatusEnum),
+    default: OrderCheckStatusEnum.PENDING,
+    enum: Object.keys(OrderCheckStatusEnum),
     nullable: false,
   })
   checkStatus: string;
+
+  @ApiProperty({
+    type: String,
+    enum: OrderStatusEnum,
+    default: OrderStatusEnum.PENDING,
+  })
+  @Prop({
+    type: String,
+    enum: OrderStatusEnum,
+    default: OrderStatusEnum.PENDING,
+  })
+  status: string;
 
   @ApiProperty({
     type: Boolean,
@@ -84,9 +98,13 @@ export class OrderSchemaClass extends EntityDocumentHelper {
   @Prop({ default: false })
   proxySet: boolean;
 
-  @ApiProperty({ type: String, enum: OrderStatusEnum, default: null })
-  @Prop({ default: null, enum: OrderStatusEnum })
+  @ApiProperty({ type: String, enum: OrderCheckStatusEnum, default: null })
+  @Prop({ default: null, enum: OrderCheckStatusEnum })
   customerOptionalCheck: string;
+
+  @ApiProperty({ type: String })
+  @Prop({ default: null, type: String })
+  customerOptionalReason: string;
 
   @ApiProperty()
   @Prop()

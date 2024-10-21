@@ -83,6 +83,7 @@ export class OrderMapper {
     domainEntity.proxySet = raw?.proxySet ?? false;
     domainEntity.fillStatus = raw.fillStatus;
     domainEntity.customerOptionalCheck = raw.customerOptionalCheck ?? null;
+    domainEntity.customerOptionalReason = raw.customerOptionalReason ?? null;
     domainEntity.checkStatus = raw.checkStatus;
     domainEntity.createdAt = raw.createdAt;
     domainEntity.updatedAt = raw.updatedAt;
@@ -119,6 +120,10 @@ export class OrderMapper {
     if (domainEntity.customerOptionalCheck) {
       persistenceSchema.customerOptionalCheck =
         domainEntity.customerOptionalCheck;
+    }
+    if (domainEntity.customerOptionalReason) {
+      persistenceSchema.customerOptionalReason =
+        domainEntity.customerOptionalReason;
     }
     persistenceSchema.orderNo = domainEntity.orderNo;
     persistenceSchema.email = domainEntity?.email || '';

@@ -2,7 +2,7 @@ import { OrderMaterial } from '@src/order-materials/domain/order-material';
 import { OrderMaterialSchemaClass } from '../entities/order-material.schema';
 import {
   MaterialTemplateTypeEnum,
-  OrderStatusEnum,
+  OrderCheckStatusEnum,
   OrderTypeEnum,
 } from '@src/utils/enums/order-type.enum';
 import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
@@ -50,7 +50,7 @@ export class OrderMaterialMapper {
     }
 
     domainEntity.filledAt = raw.filledAt ?? null;
-    domainEntity.checkStatus = raw.checkStatus ?? OrderStatusEnum.PENDING;
+    domainEntity.checkStatus = raw.checkStatus ?? OrderCheckStatusEnum.PENDING;
     domainEntity.reason = raw.reason ?? null;
     domainEntity.isOptional = raw.isOptional;
     domainEntity.isOptionalCustom = raw.isOptional;
@@ -105,7 +105,7 @@ export class OrderMaterialMapper {
     persistenceSchema.isMultiple = domainEntity.isMultiple ?? false;
     persistenceSchema.filledAt = domainEntity.filledAt ?? null;
     persistenceSchema.checkStatus =
-      domainEntity.checkStatus ?? OrderStatusEnum.PENDING;
+      domainEntity.checkStatus ?? OrderCheckStatusEnum.PENDING;
     if (domainEntity.reason) {
       persistenceSchema.reason = domainEntity.reason;
     }
