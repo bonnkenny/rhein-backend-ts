@@ -358,7 +358,7 @@ export class OrderDocumentRepository implements OrderRepository {
     }
     try {
       await this.orderModel.findByIdAndUpdate(id, {
-        customerOptionalCheck,
+        ...UpdateCustomOptionalOrderDto,
       });
       if (customerOptionalCheck === OrderCheckStatusEnum.APPROVED.toString()) {
         await this.orderMaterialModel.updateMany({ orderId: id }, [
