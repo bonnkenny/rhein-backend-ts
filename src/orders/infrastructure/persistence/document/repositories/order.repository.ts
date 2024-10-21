@@ -356,9 +356,10 @@ export class OrderDocumentRepository implements OrderRepository {
         errorBody('Check status is not pending'),
       );
     }
+    console.log('update-customer-optional-check', body);
     try {
       await this.orderModel.findByIdAndUpdate(id, {
-        ...UpdateCustomOptionalOrderDto,
+        ...body,
       });
       if (customerOptionalCheck === OrderCheckStatusEnum.APPROVED.toString()) {
         await this.orderMaterialModel.updateMany({ orderId: id }, [
