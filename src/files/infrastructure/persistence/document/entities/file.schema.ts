@@ -32,6 +32,13 @@ export class FileSchemaClass extends EntityDocumentHelper {
 
   @ApiProperty({
     type: String,
+    example: 'file.jpg',
+  })
+  @Prop({ type: String, default: null })
+  name: string;
+
+  @ApiProperty({
+    type: String,
     enum: FileDriver,
   })
   @Prop({ type: String, enum: FileDriver })

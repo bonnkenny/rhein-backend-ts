@@ -26,7 +26,7 @@ export class FilesOssController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   public async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    // console.log('file -> ', file);
+    console.log('file -> ', file);
     return await this.oSSService.upload(file);
   }
 }

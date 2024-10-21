@@ -15,6 +15,7 @@ export class FileMapper {
     }
     domainEntity.mime = raw.mime;
     domainEntity.size = raw.size;
+    domainEntity.name = raw.name;
     return domainEntity;
   }
   static toPersistence(domainEntity: FileType): FileSchemaClass {
@@ -29,6 +30,9 @@ export class FileMapper {
 
     persistenceSchema.size = domainEntity.size;
     persistenceSchema.mime = domainEntity.mime;
+    if (domainEntity?.name) {
+      persistenceSchema.name = domainEntity.name;
+    }
     return persistenceSchema;
   }
 }

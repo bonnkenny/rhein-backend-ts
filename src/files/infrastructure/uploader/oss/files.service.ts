@@ -59,6 +59,7 @@ export class FilesOssService extends OSSBase {
         path: `/${fileInfo.path}`,
         size: size,
         mime: mimetype,
+        name: file?.originalname ?? null,
       };
       console.log('upload ret ->', fileInfo);
       console.log('save-data ->', saveData);

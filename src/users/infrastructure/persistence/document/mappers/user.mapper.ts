@@ -27,6 +27,7 @@ export class UserMapper {
         size: raw.avatar?.size ?? 0,
         mime: raw.avatar?.mime ?? '',
         driver: raw.avatar?.driver ?? '',
+        name: raw.avatar?.name ?? null,
       });
     } else if (!raw.avatar) {
       domainEntity.avatar = { path: '', id: '' };

@@ -71,4 +71,11 @@ export class FileType {
   })
   @Allow()
   size: number;
+
+  @ApiProperty({
+    type: String,
+    example: 'file.jpg',
+  })
+  @Allow()
+  name?: string;
 }
