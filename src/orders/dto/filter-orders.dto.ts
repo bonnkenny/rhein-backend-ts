@@ -8,6 +8,7 @@ import {
   OrderFillStatusEnum,
   OrderCheckStatusEnum,
   OrderTypeEnum,
+  OrderStatusEnum,
 } from '@src/utils/enums/order-type.enum';
 import { OrderSchemaClass } from '@src/orders/infrastructure/persistence/document/entities/order.schema';
 import { Transform } from 'class-transformer';
@@ -83,6 +84,15 @@ export class FilterOrdersDto extends InfinityFindAllDto {
   // @IsEnum(Object.keys(OrderStatusEnum))
   @IsOptional()
   checkStatus?: string;
+
+  @ApiProperty({
+    type: String,
+    enum: OrderStatusEnum,
+    description: '订单状态',
+    required: false,
+  })
+  @IsOptional()
+  status?: string;
 
   @ApiProperty({
     type: String,

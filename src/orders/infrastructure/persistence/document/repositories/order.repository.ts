@@ -49,6 +49,9 @@ export class OrderDocumentRepository implements OrderRepository {
     if (filterOrderOptions.checkStatus) {
       where.checkStatus = filterOrderOptions.checkStatus;
     }
+    if (filterOrderOptions.status) {
+      where.status = filterOrderOptions.status;
+    }
     if (!!filterOrderOptions.userId && !!filterOrderOptions.fromUserId) {
       where.$or = [
         { userId: toMongoId(filterOrderOptions.userId) },
