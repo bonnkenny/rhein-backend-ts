@@ -172,7 +172,8 @@ export class OrderMaterialDocumentRepository
     }
     const otherMaterials = await this.orderMaterialModel.find({
       orderId: entity.orderId,
-      checkStatus: 'PENDING',
+      // checkStatus: 'PENDING',
+      isOptional: false,
       _id: { $ne: id },
     });
     // console.log(
@@ -185,9 +186,7 @@ export class OrderMaterialDocumentRepository
     ).length;
 
     const pendingCount = otherMaterials.filter(
-      (material) =>
-        material.checkStatus === OrderCheckStatusEnum.PENDING &&
-        !material?.isOptional,
+      (material) => material.checkStatus === OrderCheckStatusEnum.PENDING,
     ).length;
     const currentStatus = updateBody.checkStatus;
     // const session = await this.orderMaterialModel.db.startSession();
@@ -199,13 +198,22 @@ export class OrderMaterialDocumentRepository
         updateBody,
         { new: false },
       );
-      if (pendingCount === 0) {
-        if (
-          currentStatus === OrderCheckStatusEnum.APPROVED &&
-          rejectedCount === 0
-        ) {
-          // console.log('order update ->', entity.orderId);
-          //更新订单状态为APPROVED
+      if (
+        currentStatus === OrderCheckStatusEnum.REJECTED.toString() ||
+        rejectedCount > 0
+      ) {
+        // 更新订单状态为REJECTED
+        await this.orderModel.findOneAndUpdate(
+          { _id: entity.orderId },
+          {
+            checkStatus: OrderCheckStatusEnum.REJECTED,
+            status: OrderStatusEnum.COLLECTING,
+          },
+          { new: false },
+        );
+      } else {
+        if (pendingCount === 0) {
+          //更新订单状态为REPORTING
           await this.orderModel.findOneAndUpdate(
             { _id: entity.orderId },
             {
@@ -215,18 +223,17 @@ export class OrderMaterialDocumentRepository
             { new: false },
           );
         } else {
-          //更新订单状态为REJECTED
+          //更新订单状态为REVIEWING
           await this.orderModel.findOneAndUpdate(
             { _id: entity.orderId },
             {
-              checkStatus: OrderCheckStatusEnum.REJECTED,
-              status: OrderStatusEnum.COLLECTING,
+              checkStatus: OrderCheckStatusEnum.APPROVED,
+              status: OrderStatusEnum.REVIEWING,
             },
             { new: false },
           );
         }
       }
-
       // await session.commitTransaction();
     } catch (error) {
       // await session.abortTransaction();

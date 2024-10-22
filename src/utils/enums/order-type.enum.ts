@@ -53,7 +53,7 @@ export enum OrderStatusEnum {
   REVIEWING = 'REVIEWING',
   // all approved
   REPORTING = 'REPORTING',
-  COMPLETED = 'REJECTED',
+  COMPLETED = 'COMPLETED',
 }
 
 // 订单填写状态

@@ -75,7 +75,9 @@ export class OrderMaterialsService {
       orderId: entity.orderId,
       materialId: id,
       materialLabel: entity.label,
-      action: entity?.filledAt ? NewsActionEnum.UPDATE : NewsActionEnum.FILLED,
+      action: entity?.filledAt
+        ? NewsActionEnum.MATERIAL_UPDATE
+        : NewsActionEnum.MATERIAL_FILLED,
     });
     return ret;
   }
