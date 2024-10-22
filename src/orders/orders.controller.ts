@@ -217,7 +217,7 @@ export class OrdersController {
     required: true,
   })
   @ApiOkResponse({ type: InfinityApiResponse(Order) })
-  async setCompleted(@Query('id') id: string, @Body() body: SetOrderStatusDto) {
+  async setCompleted(@Param('id') id: string, @Body() body: SetOrderStatusDto) {
     return infinityResponse(await this.ordersService.setCompleted(id, body));
   }
 }
