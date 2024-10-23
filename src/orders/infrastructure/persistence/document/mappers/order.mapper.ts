@@ -46,6 +46,7 @@ export class OrderMapper {
         }
         domainEntity.nodeLines = lines;
       } else if (columnDomain === 'export') {
+        // 此条件暂时废弃
         const materialLines = raw.materials.map((item) => {
           return OrderMaterialExportMapper.toDomain(item);
         });

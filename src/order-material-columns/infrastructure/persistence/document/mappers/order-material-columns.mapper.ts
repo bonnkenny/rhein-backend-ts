@@ -27,8 +27,11 @@ export class OrderMaterialColumnsMapper {
     }
     let fieldValue = raw?.value ?? undefined;
     if (raw.prop === 'file' && fieldValue) {
-      fieldValue = new OssUtils().getOssSign(fieldValue.toString());
-      fieldValue = fieldValue ? fieldValue : undefined;
+      const filesArr: Array<string> = fieldValue.toString().split(',');
+      const fieldValueArr: Array<string> = filesArr.map((v) =>
+        new OssUtils().getOssSign(v),
+      );
+      fieldValue = fieldValueArr.join(',');
     }
 
     domain.value = fieldValue;
