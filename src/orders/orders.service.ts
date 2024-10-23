@@ -32,12 +32,14 @@ import {
   MaterialTemplateTypeEnum,
   OrderCheckStatusEnum,
   OrderStatusEnum,
+  OrderTypeEnum,
   TraderArray,
 } from '@src/utils/enums/order-type.enum';
 import { NewsRecordsService } from '@src/news-records/news-records.service';
 import { NewsActionEnum } from '@src/utils/enums/news-action.enum';
 // import { OrderMapper } from '@src/orders/infrastructure/persistence/document/mappers/order.mapper';
 import { MailService } from '@src/mail/mail.service';
+import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
 
 // import { MailDataWithAccount } from '@src/mail/interfaces/mail-data.interface';
 
@@ -151,6 +153,16 @@ export class OrdersService {
       });
       const materials: OrderMaterial[] = [];
       if (templates.length) {
+        if (order.orderType === OrderTypeEnum.PRODUCT_MANUFACTURER.toString()) {
+          const declaration = await this.constDeclarationMaterial(order.id);
+          materials.push(declaration);
+        }
+        if (order.orderType === OrderTypeEnum.PAPER_MANUFACTURER.toString()) {
+          const selfDeclaration = await this.constSelfDeclarationMaterial(
+            order.id,
+          );
+          materials.push(selfDeclaration);
+        }
         for (const template of templates) {
           // console.log('template >>> ', template);
           const material = await this.orderMaterialService.create({
@@ -180,6 +192,79 @@ export class OrdersService {
     } catch (e) {
       throw new InternalServerErrorException(errorBody(e.toString()));
     }
+  }
+
+  constDeclarationMaterial(orderId: Order['id']) {
+    const column = new OrderMaterialColumn();
+    column.label = { ch: '承诺声明', en: 'Declaration of Commitment' };
+    column.prop = 'declaration';
+    column.valueType = 'img';
+    column.rules = [
+      {
+        required: true,
+        message: {
+          en: 'Declaration of Commitment is required',
+          ch: '承诺声明必传',
+        },
+      },
+    ];
+    column.tooltip = {
+      ch: '请上传您的承诺声明。',
+      en: 'Please upload your declaration of commitment.',
+    };
+    column.value = undefined;
+    return this.orderMaterialService.create({
+      orderId: orderId,
+      orderType: OrderTypeEnum.PRODUCT_MANUFACTURER,
+      templateType: MaterialTemplateTypeEnum.MANUFACTURER,
+      label: { ch: '承诺声明', en: 'Declaration of Commitment' },
+      description: { ch: '', en: '' },
+      subDescription: {
+        ch: '承诺宣言声明 ',
+        en: 'Declaration of Commitment Statement ',
+      },
+      columns: [[column]],
+      filledAt: null,
+      isOptional: false,
+      isOptionalCustom: false,
+      isMultiple: false,
+    });
+  }
+  constSelfDeclarationMaterial(orderId: Order['id']) {
+    const column = new OrderMaterialColumn();
+    column.label = { ch: '自我承诺', en: 'Self-Declaration' };
+    column.prop = 'declaration';
+    column.valueType = 'img';
+    column.rules = [
+      {
+        required: true,
+        message: {
+          en: 'Self-Declaration is required',
+          ch: '自我承诺必传',
+        },
+      },
+    ];
+    column.tooltip = {
+      ch: '请上传您的自我承诺。',
+      en: 'Please upload your Self-Declaration.',
+    };
+    column.value = undefined;
+    return this.orderMaterialService.create({
+      orderId: orderId,
+      orderType: OrderTypeEnum.PAPER_MANUFACTURER,
+      templateType: MaterialTemplateTypeEnum.MANUFACTURER,
+      label: { ch: '自我承诺', en: 'Self-Declaration' },
+      description: { ch: '', en: '' },
+      subDescription: {
+        ch: '自我承诺,请下载模板,签名后上传',
+        en: 'Self-Declaration, please download the template, sign and upload it',
+      },
+      columns: [[column]],
+      filledAt: null,
+      isOptional: false,
+      isOptionalCustom: false,
+      isMultiple: false,
+    });
   }
 
   async findAllWithPagination(
