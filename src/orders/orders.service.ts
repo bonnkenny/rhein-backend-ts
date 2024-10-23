@@ -40,6 +40,7 @@ import { NewsActionEnum } from '@src/utils/enums/news-action.enum';
 // import { OrderMapper } from '@src/orders/infrastructure/persistence/document/mappers/order.mapper';
 import { MailService } from '@src/mail/mail.service';
 import { OrderMaterialColumn } from '@src/order-material-columns/domain/order-material-column';
+import { PdfObjectDto } from '@src/pdf-lib/dto/pdf-object.dto';
 
 // import { MailDataWithAccount } from '@src/mail/interfaces/mail-data.interface';
 
@@ -370,20 +371,50 @@ export class OrdersService {
    * 获取订单链路文件
    * @param id
    */
-  async getChainFiles(id: Order['id']) {
+  async getChainFiles(id: Order['id']): Promise<Array<PdfObjectDto>> {
     const chainsIds = await this.getOrderChainIds(id);
     // console.log('id ->', id);
     // console.log('chainsIds ->', chainsIds);
     const orders = await this.orderRepository.findChainsFilesByIds(chainsIds);
-    const filesArray = orders.map((order) => order.nodeFiles);
-    const files: string[] = [];
-    for (const filesArr of filesArray) {
-      if (filesArr?.length) {
-        files.push(...filesArr);
+    const pdfArray: Array<PdfObjectDto> = [];
+    //遍历订单
+    for (const order of orders) {
+      const { materials } = order;
+      if (materials?.length) {
+        // 遍历资料
+        for (const material of materials) {
+          const { columns } = material;
+          if (columns?.length) {
+            //遍历资料 表单
+            for (const column of columns) {
+              const pdf: PdfObjectDto = new PdfObjectDto();
+              pdf.paths = [];
+              pdf.columns = [];
+              //遍历资料 表单字段
+              for (const row of column) {
+                const { prop, value } = row;
+                if (prop === 'file' && !!value) {
+                  console.log('file values -> ', value);
+                  pdf.paths = value.toString().split(',');
+                  continue;
+                }
+                pdf.columns.push(row);
+              }
+              if (pdf?.paths?.length) pdfArray.push(pdf);
+            }
+          }
+        }
       }
     }
-    console.log(' ->', files);
-    return files;
+    // const filesArray = orders.map((order) => order.nodeFiles);
+    // const files: string[] = [];
+    // for (const filesArr of filesArray) {
+    //   if (filesArr?.length) {
+    //     files.push(...filesArr);
+    //   }
+    // }
+    console.log('pdfArray ->', pdfArray);
+    return pdfArray;
   }
 
   checkCustomOptional(

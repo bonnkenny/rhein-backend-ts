@@ -276,7 +276,8 @@ export class OrderDocumentRepository implements OrderRepository {
       },
     ]);
     return entityObjects.map((entityObject) =>
-      OrderMapper.toDomain(entityObject, 'export'),
+      // OrderMapper.toDomain(entityObject, 'export'),
+      OrderMapper.toDomain(entityObject),
     );
   }
 

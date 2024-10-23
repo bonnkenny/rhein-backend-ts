@@ -177,7 +177,7 @@ export class OrdersController {
   // @ApiOkResponse({ type: () })
   async pdfExport(@Param('id') id: string, @Res() res: Response) {
     const files = await this.ordersService.getChainFiles(id);
-    const pdfBuffer = await this.pdfService.mergePdfs(files);
+    const pdfBuffer = await this.pdfService.mergeMultiplePdfs(files);
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'attachment; filename=order.pdf');
     res.send(pdfBuffer);
