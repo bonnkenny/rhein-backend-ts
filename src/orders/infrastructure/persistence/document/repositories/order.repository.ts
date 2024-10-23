@@ -263,9 +263,11 @@ export class OrderDocumentRepository implements OrderRepository {
   }
 
   async findChainsFilesByIds(ids: Order['id'][]) {
-    const entities = this.orderModel.find({
-      _id: { $in: ids.map(toMongoId) },
-    });
+    const entities = this.orderModel
+      .find({
+        _id: { $in: ids.map(toMongoId) },
+      })
+      .sort({ createdAt: 1 });
     const entityObjects = await entities.populate([
       {
         path: 'materials',
