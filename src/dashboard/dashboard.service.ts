@@ -1,7 +1,10 @@
 import { DashboardRepository } from '@src/dashboard/infrastructure/dashboard.repository';
 import { Inject, Injectable } from '@nestjs/common';
 import { DashboardOverview } from '@src/dashboard/domain/dashboard-overview';
-import { OrderCheckStatusEnum } from '@src/utils/enums/order-type.enum';
+import {
+  OrderCheckStatusEnum,
+  OrderStatusEnum,
+} from '@src/utils/enums/order-type.enum';
 import { round } from 'lodash';
 
 @Injectable()
@@ -14,10 +17,10 @@ export class DashboardService {
   async getOverView() {
     const data = new DashboardOverview();
     data.delayedOrder = await this.repository.getDelayOrder();
-    data.newOrder = 0;
-    data.pendingOrder = await this.repository.getOrderTotalByStatus(
-      OrderCheckStatusEnum.PENDING,
+    data.newOrder = await this.repository.getOrderTotalByStatus(
+      OrderStatusEnum.PENDING,
     );
+    data.runningOrder = await this.repository.getRunningOrderTotal();
     data.totalOrder = await this.repository.getOrderTotal();
     data.completedOrder = await this.repository.getOrderTotalByStatus(
       OrderCheckStatusEnum.APPROVED,

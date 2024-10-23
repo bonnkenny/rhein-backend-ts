@@ -4,6 +4,7 @@ import { OrderSchemaClass } from '@src/orders/infrastructure/persistence/documen
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Order } from '@src/orders/domain/order';
+import { OrderStatusEnum } from '@src/utils/enums/order-type.enum';
 
 @Injectable()
 export class DashboardRepository {
@@ -15,7 +16,7 @@ export class DashboardRepository {
     const data = new DashboardOverview();
     data.delayedOrder = 1;
     data.newOrder = 2;
-    data.pendingOrder = 3;
+    data.runningOrder = 3;
     data.totalOrder = 4;
     data.completedOrder = 5;
     data.completeRate = 6;
@@ -27,6 +28,18 @@ export class DashboardRepository {
   }
   async getOrderTotalByStatus(status: Order['checkStatus']): Promise<number> {
     return this.orderModel.countDocuments({ checkStatus: status });
+  }
+
+  async getRunningOrderTotal(): Promise<number> {
+    return this.orderModel.countDocuments({
+      checkStatus: {
+        $in: [
+          OrderStatusEnum.COLLECTING.toString(),
+          OrderStatusEnum.REVIEWING.toString(),
+          OrderStatusEnum.REPORTING.toString(),
+        ],
+      },
+    });
   }
   async getDelayOrder(): Promise<number> {
     return this.orderModel.countDocuments({ checkStatus: 'delay' });
