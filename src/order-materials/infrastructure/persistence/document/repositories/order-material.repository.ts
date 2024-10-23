@@ -120,6 +120,10 @@ export class OrderMaterialDocumentRepository
     if (entity.checkStatus === OrderCheckStatusEnum.REJECTED) {
       updateBody = { ...updateBody, checkStatus: OrderCheckStatusEnum.PENDING };
     }
+    const order = await this.orderModel.findById(entity.orderId);
+    if (order?.status === OrderStatusEnum.COMPLETED) {
+      throw new BadRequestException(errorBody('Order has been completed'));
+    }
 
     const update = OrderMaterialMapper.toPersistence(updateBody);
 
@@ -139,12 +143,18 @@ export class OrderMaterialDocumentRepository
         update,
         { new: true },
       );
+      if (order?.status === OrderStatusEnum.PENDING) {
+        await this.orderModel.findOneAndUpdate(
+          { _id: entity.orderId },
+          { status: OrderStatusEnum.COLLECTING },
+          { new: false },
+        );
+      }
       if (otherMaterial.length === 0) {
         await this.orderModel.findOneAndUpdate(
           { _id: entity.orderId },
           {
             fillStatus: OrderFillStatusEnum.FILLED,
-            status: OrderStatusEnum.COLLECTING,
           },
           { new: false },
         );
