@@ -1,12 +1,34 @@
 import { Order } from '../../../../domain/order';
 import { OrderSchemaClass } from '../entities/order.schema';
-import { OrderTypeEnum } from '@src/utils/enums/order-type.enum';
+import {
+  OrderCheckStatusEnum,
+  OrderTypeEnum,
+} from '@src/utils/enums/order-type.enum';
 import { Types } from 'mongoose';
-import { findKey, isBoolean, omit, pick } from 'lodash';
+import { findKey, isBoolean, omit, pick, round } from 'lodash';
 import { OrderMaterialMapper } from '@src/order-materials/infrastructure/persistence/document/mappers/order-material.mapper';
 import { OrderMaterialChainMapper } from '@src/order-materials/infrastructure/persistence/document/mappers/order-material-chain.mapper';
 import { UserMapper } from '@src/users/infrastructure/persistence/document/mappers/user.mapper';
 import { OrderMaterialExportMapper } from '@src/order-materials/infrastructure/persistence/document/mappers/order-material-export.mapper';
+import { OrderMaterial } from '@src/order-materials/domain/order-material';
+
+function computeRunningRate(materials: Array<OrderMaterial>) {
+  let requiredCount: number = 0,
+    runningCount: number = 0;
+  for (const material of materials) {
+    if (material.isOptional) {
+      continue;
+    }
+    requiredCount += 1;
+    if (
+      !!material?.filledAt &&
+      material?.checkStatus !== OrderCheckStatusEnum.REJECTED.toString()
+    ) {
+      runningCount += 1;
+    }
+  }
+  return requiredCount ? round((runningCount / requiredCount) * 100, 2) : 0;
+}
 
 export class OrderMapper {
   public static toDomain(raw: OrderSchemaClass, columnDomain?: string): Order {
@@ -28,7 +50,7 @@ export class OrderMapper {
     if (raw.parentId) {
       domainEntity.parentId = raw?.parentId?.toString();
     }
-
+    domainEntity.runningRate = null;
     if (raw.materials) {
       if (columnDomain === 'chain') {
         const materialLines = raw.materials.map((item) => {
@@ -65,6 +87,7 @@ export class OrderMapper {
         domainEntity.materials = raw.materials.map((item) => {
           return OrderMaterialMapper.toDomain(omit(item, ['order']));
         });
+        domainEntity.runningRate = computeRunningRate(domainEntity.materials);
       }
     }
     if (raw.user) {

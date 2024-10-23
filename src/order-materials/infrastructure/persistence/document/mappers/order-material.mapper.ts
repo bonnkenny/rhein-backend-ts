@@ -25,7 +25,7 @@ export class OrderMaterialMapper {
     };
     // console.log('raw columns >>>>> ', raw.columns);
     const domainColumns: Array<Array<OrderMaterialColumn>> = [];
-    if (raw?.columns.length) {
+    if (raw?.columns?.length) {
       for (const column of raw.columns) {
         const columnArray: OrderMaterialColumn[] = [];
         for (const row of column) {

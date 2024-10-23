@@ -91,6 +91,13 @@ export class OrderDocumentRepository implements OrderRepository {
     const entityObjects = await entities.populate([
       { path: 'user', select: ['username', 'id', 'email'] },
       { path: 'fromUser', select: ['username', 'id', 'email'] },
+      {
+        path: 'materials',
+        select: ['id', 'checkStatus', 'filledAt', 'isOptional'],
+        match: {
+          isOptional: false,
+        },
+      },
     ]);
     // console.log('entity', entityObjects[0].fromUser);
     return [

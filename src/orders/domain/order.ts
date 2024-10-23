@@ -120,4 +120,9 @@ export class Order {
     type: () => Array<string>,
   })
   nodeFiles?: string[];
+  @ApiPropertyOptional({
+    type: () => Number,
+    description: '订单进度',
+  })
+  runningRate?: number | null;
 }

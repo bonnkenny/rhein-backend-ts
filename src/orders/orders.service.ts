@@ -271,7 +271,7 @@ export class OrdersService {
   async findAllWithPagination(
     user: JwtPayloadType,
     filterOrderOptions: FilterOrdersDto,
-  ) {
+  ): Promise<[Order[], number]> {
     const { baseRole, id } = user;
     let options: FilterOrdersDto = {
       ...filterOrderOptions,
@@ -299,8 +299,12 @@ export class OrdersService {
         fromUserId: id,
       };
     }
-
-    return this.orderRepository.findAllWithPagination(options);
+    const [orders, total] =
+      await this.orderRepository.findAllWithPagination(options);
+    orders.forEach((order) => {
+      delete order?.materials;
+    });
+    return [orders, total];
   }
 
   findOne(id: Order['id']) {
