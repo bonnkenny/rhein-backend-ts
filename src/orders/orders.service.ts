@@ -388,16 +388,19 @@ export class OrdersService {
             //遍历资料 表单
             for (const column of columns) {
               const pdf: PdfObjectDto = new PdfObjectDto();
+              pdf.paths = [];
+              pdf.columns = [];
               //遍历资料 表单字段
               for (const row of column) {
                 const { prop, value } = row;
                 if (prop === 'file' && !!value) {
+                  console.log('file values -> ', value);
                   pdf.paths = value.toString().split(',');
                   continue;
                 }
                 pdf.columns.push(row);
               }
-              pdfArray.push(pdf);
+              if (pdf?.paths?.length) pdfArray.push(pdf);
             }
           }
         }
@@ -410,7 +413,7 @@ export class OrdersService {
     //     files.push(...filesArr);
     //   }
     // }
-    // console.log(' ->', files);
+    console.log('pdfArray ->', pdfArray);
     return pdfArray;
   }
 

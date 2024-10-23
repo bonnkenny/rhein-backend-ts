@@ -2,6 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { PDFDocument } from 'pdf-lib';
 import { FilesOssService } from '@src/files/infrastructure/uploader/oss/files.service';
 import { PdfObjectDto } from '@src/pdf-lib/dto/pdf-object.dto';
+import { OssUtils } from '@src/files/infrastructure/uploader/oss/oss.utils';
+import fs from 'node:fs/promises';
+
+import fontkit from 'fontkit';
 
 @Injectable()
 export class PdfService {
@@ -31,12 +35,18 @@ export class PdfService {
   async mergeMultiplePdfs(pdfs: Array<PdfObjectDto>) {
     // 创建一个新的 PDF 文档
     const mergedPdf = await PDFDocument.create();
-
-    pdfs.forEach((pdf) => {
+    mergedPdf.registerFontkit(fontkit);
+    const fontBytes = await fs.readFile('storage/fonts/OPPOSans-Medium.ttf'); // 替换为你的字体路径
+    const customFont = await mergedPdf.embedFont(fontBytes);
+    for (const pdf of pdfs) {
+      // console.log('pdf -> ', pdf);
       const { paths, columns } = pdf;
-      paths.forEach(async (path) => {
+      // console.log('paths -> ', paths);
+      for (const path of paths) {
         const basePath = path.split('?')[0] ?? null;
-        const file = await this.ossService.getObject(path);
+        const file = await this.ossService.getObject(
+          new OssUtils().getOssResourcePath(path),
+        );
         const fileBytes = file.content;
         // 拼接pdf
         if (
@@ -58,7 +68,7 @@ export class PdfService {
           // 将页面加入合并文档
           copiedPages.forEach((page) => mergedPdf.addPage(page));
         }
-      });
+      }
       // 写入资料简介
       let text: string = '';
       for (const column of columns) {
@@ -66,16 +76,24 @@ export class PdfService {
         if (['file', 'img'].includes(prop)) {
           continue;
         }
-        text += `${column.label}: ${column.value}\r\n`;
+        text += `${column.label?.en}: ${column.value} \n`;
       }
+
       if (text) {
+        console.log('text -> ', text);
         const blankPage = mergedPdf.addPage();
         blankPage.drawText(text, {
           x: 50,
           y: blankPage.getHeight() - 50,
-          size: 24,
+          size: 18,
+          font: customFont,
         });
       }
-    });
+    }
+
+    // 保存合并后的 PDF 文档
+    const mergedPdfBytes = await mergedPdf.save();
+    // 返回结果
+    return Buffer.from(mergedPdfBytes);
   }
 }
