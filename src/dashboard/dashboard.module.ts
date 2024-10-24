@@ -13,10 +13,15 @@ import {
 } from '@src/order-materials/infrastructure/persistence/document/entities/order-material.schema';
 import { DashboardRepository } from '@src/dashboard/infrastructure/dashboard.repository';
 import { OrdersModule } from '@src/orders/orders.module';
+import {
+  UserSchema,
+  UserSchemaClass,
+} from '@src/users/infrastructure/persistence/document/entities/user.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
+      { name: UserSchemaClass.name, schema: UserSchema },
       { name: OrderSchemaClass.name, schema: OrderSchema },
       { name: OrderMaterialSchemaClass.name, schema: OrderMaterialSchema },
     ]),

@@ -25,6 +25,7 @@ export class DashboardService {
     data.completedOrder = await this.repository.getOrderTotalByStatus(
       OrderCheckStatusEnum.APPROVED,
     );
+    data.supplier = await this.repository.getSupplierCount();
     data.completeRate =
       data.totalOrder > 0
         ? round((data.completedOrder / data.totalOrder) * 100, 2)
