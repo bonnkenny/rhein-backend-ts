@@ -13,13 +13,19 @@ export class Menu {
 
   @ApiProperty({
     type: String,
+    description: 'i18n key',
+  })
+  name_key: string;
+
+  @ApiProperty({
+    type: String,
   })
   path: string;
 
   @ApiProperty({
     type: String,
   })
-  parentId: string;
+  parentId: string | null;
 
   @ApiProperty()
   createdAt: Date;

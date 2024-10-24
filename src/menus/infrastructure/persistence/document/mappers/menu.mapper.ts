@@ -7,7 +7,9 @@ export class MenuMapper {
     const domainEntity = new Menu();
     domainEntity.id = raw._id.toString();
     domainEntity.name = raw.name;
+    domainEntity.name_key = raw.name_key ?? '';
     domainEntity.path = raw.path;
+    domainEntity.parentId = null;
     if (!!raw.parentId) {
       domainEntity.parentId = raw.parentId.toString();
     }
@@ -26,6 +28,7 @@ export class MenuMapper {
       persistenceSchema.parentId = new Types.ObjectId(domainEntity.parentId);
     }
     persistenceSchema.name = domainEntity.name;
+    persistenceSchema.name_key = domainEntity.name_key;
     persistenceSchema.path = domainEntity.path;
     persistenceSchema.createdAt = domainEntity.createdAt;
     persistenceSchema.updatedAt = domainEntity.updatedAt;

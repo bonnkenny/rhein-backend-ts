@@ -10,6 +10,11 @@ export class CreateMenuDto {
   @MaxLength(20)
   name: string;
 
+  @ApiProperty({ type: String, description: 'i18 key' })
+  @IsNotEmpty()
+  @MaxLength(100)
+  name_key: string;
+
   @ApiProperty({ type: String })
   @IsNotEmpty()
   @Transform(({ value }) => {

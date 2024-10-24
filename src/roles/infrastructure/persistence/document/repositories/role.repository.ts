@@ -59,7 +59,8 @@ export class RoleDocumentRepository implements RoleRepository {
   }
 
   async findById(id: Role['id']): Promise<NullableType<Role>> {
-    const entityObject = await this.roleModel.findById(id);
+    const entityObject = await this.roleModel.findById(id).populate('menus');
+    console.log('entityObject', entityObject);
     return entityObject ? RoleMapper.toDomain(entityObject) : null;
   }
 

@@ -14,9 +14,11 @@ export class RoleMapper {
     domainEntity.status = raw?.status;
     // console.log('domain,type', domainEntity.type);
     // console.log('raw,type', raw.type);
+    domainEntity.menuIds = [];
     if (raw?.menuIds && raw.menuIds.length) {
       domainEntity.menuIds = raw.menuIds.map((menu) => menu.toString());
     }
+    domainEntity.menus = [];
     console.log('raw.menus', raw.menuIds);
     if (raw?.menus && raw.menus.length) {
       domainEntity.menus = raw.menus.map(MenuMapper.toDomain);

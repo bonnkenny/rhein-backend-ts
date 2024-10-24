@@ -179,22 +179,24 @@ export class UsersDocumentRepository implements UserRepository {
 
   async update(id: User['id'], payload: Partial<User>): Promise<User | null> {
     const clonedPayload = { ...payload };
-    delete clonedPayload.id;
-
-    const filter = { _id: id.toString() };
-    const user = await this.usersModel.findOne(filter);
+    delete clonedPayload?.id;
+    delete clonedPayload?.baseRole;
+    const user = await this.usersModel.findById(id);
 
     if (!user) {
       return null;
     }
-    delete clonedPayload?.baseRole;
+
+    const userDomain = UserMapper.toDomain(user);
+    const userUpdate = UserMapper.toPersistence({
+      ...userDomain,
+      ...clonedPayload,
+    });
+    console.log('userUpdate', userUpdate);
     const userObject = await this.usersModel.findOneAndUpdate(
-      filter,
-      UserMapper.toPersistence({
-        ...UserMapper.toDomain(user),
-        ...clonedPayload,
-      }),
-      { new: true },
+      { _id: user.id },
+      { ...userUpdate },
+      { new: false },
     );
 
     return userObject ? UserMapper.toDomain(userObject) : null;

@@ -5,6 +5,7 @@ import { FileMapper } from '@src/files/infrastructure/persistence/document/mappe
 import { Types } from 'mongoose';
 import { RoleMapper } from '@src/roles/infrastructure/persistence/document/mappers/role.mapper';
 // import { toMongoId } from '@src/utils/functions';
+// import { toMongoId } from '@src/utils/functions';
 // import { findKey } from 'lodash';
 // import { UserStatusEnum } from '@src/utils/enums/user-status.enum';
 
@@ -60,7 +61,7 @@ export class UserMapper {
         (v) => new Types.ObjectId(v),
       );
     }
-    if (domainEntity.avatar) {
+    if (domainEntity?.avatar?.id) {
       photo = new FileSchemaClass();
       photo._id = domainEntity.avatar?.id ?? '';
       photo.path = domainEntity.avatar?.path ?? '';
@@ -70,16 +71,18 @@ export class UserMapper {
     }
     console.log('avatar', persistenceSchema.avatar);
 
-    if (domainEntity.id && typeof domainEntity.id === 'string') {
-      persistenceSchema._id = domainEntity.id;
-    }
     if (domainEntity.status) persistenceSchema.status = domainEntity.status;
     if (domainEntity.baseRole)
       persistenceSchema.baseRole = domainEntity.baseRole;
+    if (domainEntity?.roleIds?.length) {
+      persistenceSchema.roleIds = domainEntity.roleIds.map(
+        (v) => new Types.ObjectId(v),
+      );
+    }
     persistenceSchema.email = domainEntity.email;
     persistenceSchema.password = domainEntity.password;
     persistenceSchema.previousPassword = domainEntity.previousPassword;
-    persistenceSchema.provider = domainEntity.provider;
+    persistenceSchema.provider = domainEntity?.provider ?? '';
     persistenceSchema.socialId = domainEntity.socialId;
     persistenceSchema.username = domainEntity.username;
     // persistenceSchema.role = role;

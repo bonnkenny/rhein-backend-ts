@@ -17,6 +17,9 @@ export class MenuSchemaClass extends EntityDocumentHelper {
   @Prop({ required: true })
   name: string;
 
+  @Prop({ required: true })
+  name_key: string;
+
   @ApiProperty()
   @Prop({ required: true })
   path: string;

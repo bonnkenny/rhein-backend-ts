@@ -12,6 +12,8 @@ export abstract class MenuRepository {
     filterOptions: FilterMenuOptionsDto,
   ): Promise<[Menu[], number]>;
 
+  abstract findAll(): Promise<Menu[]>;
+
   abstract findById(id: Menu['id']): Promise<NullableType<Menu>>;
 
   abstract update(

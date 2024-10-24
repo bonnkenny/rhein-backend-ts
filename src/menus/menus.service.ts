@@ -16,6 +16,9 @@ export class MenusService {
   findAllWithPagination(filterOptions: FilterMenuOptionsDto) {
     return this.menuRepository.findAllWithPagination(filterOptions);
   }
+  findAll() {
+    return this.menuRepository.findAll();
+  }
 
   findOne(id: Menu['id']) {
     return this.menuRepository.findById(id);

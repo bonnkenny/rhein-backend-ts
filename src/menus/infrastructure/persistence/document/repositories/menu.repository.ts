@@ -52,6 +52,13 @@ export class MenuDocumentRepository implements MenuRepository {
     ];
   }
 
+  async findAll(): Promise<Menu[]> {
+    const entityObjects = await this.menuModel.find().sort({ createdAt: -1 });
+    return entityObjects.map((entityObject) =>
+      MenuMapper.toDomain(entityObject),
+    );
+  }
+
   async findById(id: Menu['id']): Promise<NullableType<Menu>> {
     const entityObject = await this.menuModel.findById(id);
     return entityObject ? MenuMapper.toDomain(entityObject) : null;

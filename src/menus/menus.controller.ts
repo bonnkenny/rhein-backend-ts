@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  Query,
 } from '@nestjs/common';
 import { MenusService } from './menus.service';
 import { CreateMenuDto } from './dto/create-menu.dto';
@@ -22,16 +21,11 @@ import {
 import { Menu } from './domain/menu';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  InfinityApiResponse,
   InfinityApiResponseDto,
-  InfinityPaginationResponse,
   // InfinityPaginationResponse,
-  InfinityPaginationResponseDto,
 } from '../utils/dto/infinity-base-response.dto';
-import {
-  infinityPagination,
-  infinityResponse,
-} from '../utils/infinity-response';
-import { FilterMenuOptionsDto } from './dto/filter-menu-options.dto';
+import { infinityResponse } from '../utils/infinity-response';
 import { BaseRoles } from '@src/utils/guards/base-roles.decorator';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { BaseRolesGuard } from '@src/utils/guards/base-roles.guard';
@@ -57,13 +51,11 @@ export class MenusController {
 
   @Get()
   @ApiOkResponse({
-    type: InfinityPaginationResponse(Menu),
+    type: InfinityApiResponse(Array<Menu>),
   })
-  async findAll(
-    @Query() query: FilterMenuOptionsDto,
-  ): Promise<InfinityPaginationResponseDto<Menu>> {
-    const [items, total] = await this.menusService.findAllWithPagination(query);
-    return infinityPagination(items, total, query);
+  async findAll() {
+    const items = await this.menusService.findAll();
+    return infinityResponse(items);
   }
 
   @Get(':id')
