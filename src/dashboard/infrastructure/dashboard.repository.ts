@@ -7,6 +7,7 @@ import { Order } from '@src/orders/domain/order';
 import { OrderStatusEnum } from '@src/utils/enums/order-type.enum';
 import { UserSchemaClass } from '@src/users/infrastructure/persistence/document/entities/user.schema';
 import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
+import moment from 'moment';
 
 @Injectable()
 export class DashboardRepository {
@@ -52,6 +53,10 @@ export class DashboardRepository {
     });
   }
   async getDelayOrder(): Promise<number> {
-    return this.orderModel.countDocuments({ checkStatus: 'delay' });
+    const twoWeeksAgo = moment().subtract(14, 'days');
+    return this.orderModel.countDocuments({
+      status: { $ne: OrderStatusEnum.COMPLETED },
+      createdAt: { $lt: twoWeeksAgo },
+    });
   }
 }

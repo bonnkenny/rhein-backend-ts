@@ -16,8 +16,12 @@ import { errorBody } from '@src/utils/infinity-response';
 import { toMongoId } from '@src/utils/functions';
 import { omit } from 'lodash';
 import { UpdateCustomOptionalOrderDto } from '@src/orders/dto/update-order.dto';
-import { OrderCheckStatusEnum } from '@src/utils/enums/order-type.enum';
+import {
+  OrderCheckStatusEnum,
+  OrderStatusEnum,
+} from '@src/utils/enums/order-type.enum';
 import { OrderMaterialSchemaClass } from '@src/order-materials/infrastructure/persistence/document/entities/order-material.schema';
+import moment from 'moment';
 
 @Injectable()
 export class OrderDocumentRepository implements OrderRepository {
@@ -50,7 +54,21 @@ export class OrderDocumentRepository implements OrderRepository {
       where.checkStatus = filterOrderOptions.checkStatus;
     }
     if (filterOrderOptions.status) {
-      where.status = filterOrderOptions.status;
+      if ('RUNNING' === filterOrderOptions.status) {
+        where.status = {
+          $in: [
+            OrderStatusEnum.COLLECTING.toString(),
+            OrderStatusEnum.REVIEWING.toString(),
+            OrderStatusEnum.REPORTING.toString(),
+          ],
+        };
+      } else if ('DELAYED' === filterOrderOptions.status) {
+        const twoWeeksAgo = moment().subtract(14, 'days');
+        where.createdAt = { $lt: twoWeeksAgo };
+        where.status = { $ne: OrderStatusEnum.COMPLETED };
+      } else {
+        where.status = filterOrderOptions.status;
+      }
     }
     if (!!filterOrderOptions.userId && !!filterOrderOptions.fromUserId) {
       where.$or = [

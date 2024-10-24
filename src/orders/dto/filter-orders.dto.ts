@@ -87,7 +87,7 @@ export class FilterOrdersDto extends InfinityFindAllDto {
 
   @ApiProperty({
     type: String,
-    enum: OrderStatusEnum,
+    enum: [...Object.keys(OrderStatusEnum), 'RUNNING', 'DELAYED'],
     description: '订单状态',
     required: false,
   })
