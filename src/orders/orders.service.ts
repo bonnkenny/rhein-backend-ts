@@ -198,7 +198,7 @@ export class OrdersService {
   constDeclarationMaterial(orderId: Order['id']) {
     const column = new OrderMaterialColumn();
     column.label = { ch: '承诺声明', en: 'Declaration of Commitment' };
-    column.prop = 'declaration';
+    column.prop = 'file';
     column.valueType = 'img';
     column.rules = [
       {
@@ -229,12 +229,13 @@ export class OrdersService {
       isOptional: false,
       isOptionalCustom: false,
       isMultiple: false,
+      specialType: 'declaration',
     });
   }
   constSelfDeclarationMaterial(orderId: Order['id']) {
     const column = new OrderMaterialColumn();
     column.label = { ch: '自我承诺', en: 'Self-Declaration' };
-    column.prop = 'declaration';
+    column.prop = 'file';
     column.valueType = 'img';
     column.rules = [
       {
@@ -265,6 +266,7 @@ export class OrdersService {
       isOptional: false,
       isOptionalCustom: false,
       isMultiple: false,
+      specialType: 'declaration',
     });
   }
 

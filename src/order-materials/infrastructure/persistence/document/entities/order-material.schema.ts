@@ -33,6 +33,10 @@ export class OrderMaterialSchemaClass extends EntityDocumentHelper {
   @Prop({ required: true, enum: MaterialTemplateTypeEnum })
   templateType: string;
 
+  @ApiProperty({ type: String })
+  @Prop({ default: null, type: String })
+  specialType: string;
+
   @ApiProperty({ type: Object })
   @Prop({ required: true, type: { en: String, ch: String } })
   label: LabelType;

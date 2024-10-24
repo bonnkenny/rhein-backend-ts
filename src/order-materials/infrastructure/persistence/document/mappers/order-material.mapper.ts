@@ -17,6 +17,7 @@ export class OrderMaterialMapper {
     domainEntity.orderId = raw.orderId.toString();
     domainEntity.orderType = raw.orderType;
     domainEntity.templateType = raw.templateType;
+    domainEntity.specialType = raw.specialType ?? null;
     domainEntity.agreement = raw.agreement ?? false;
 
     domainEntity.label = {
@@ -115,6 +116,11 @@ export class OrderMaterialMapper {
     ) {
       persistenceSchema.agreement = domainEntity.agreement;
     }
+
+    if (domainEntity?.specialType) {
+      persistenceSchema.specialType = domainEntity.specialType;
+    }
+
     persistenceSchema.createdAt = domainEntity.createdAt;
     persistenceSchema.updatedAt = domainEntity.updatedAt;
 

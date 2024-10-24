@@ -7,6 +7,7 @@ import {
 import { LabelType } from '@src/utils/types/order-types';
 import { Order } from '@src/orders/domain/order';
 import { OrderCheckStatusEnum } from '@src/utils/enums/order-type.enum';
+import { Transform } from 'class-transformer';
 
 export class OrderMaterial {
   @ApiProperty({
@@ -25,6 +26,17 @@ export class OrderMaterial {
     type: String,
   })
   templateType: string;
+
+  @ApiProperty({
+    type: String,
+    description: '特殊类型,比如声明',
+    default: null,
+  })
+  @Transform(({ value }) => {
+    return value ?? null;
+  })
+  specialType?: string | null;
+
   @ApiProperty({
     type: LabelTypeClass,
     default: defaultLabelTemplate,
