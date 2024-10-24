@@ -10,6 +10,7 @@ import {
   IsMongoId,
   IsNotEmpty,
   IsOptional,
+  IsString,
   Validate,
 } from 'class-validator';
 import {
@@ -57,6 +58,14 @@ export class CreateOrderMaterialDto {
   @IsEnum(OrderTypeEnum)
   @IsNotEmpty()
   templateType: string;
+
+  @ApiProperty({
+    type: String,
+    description: '特殊类型 比如声明',
+  })
+  @IsString()
+  @IsOptional()
+  specialType?: string;
 
   @ApiProperty({
     type: () => [[OrderMaterialColumn]],
