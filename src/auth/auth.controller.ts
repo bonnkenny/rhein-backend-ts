@@ -84,14 +84,14 @@ export class AuthController {
     return this.service.forgotPassword(forgotPasswordDto.email);
   }
 
-  @Post('reset/password')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  resetPassword(@Body() resetPasswordDto: AuthResetPasswordDto): Promise<void> {
-    return this.service.resetPassword(
-      resetPasswordDto.hash,
-      resetPasswordDto.password,
-    );
-  }
+  // @Post('reset/password')
+  // @HttpCode(HttpStatus.NO_CONTENT)
+  // resetPassword(@Body() resetPasswordDto: AuthResetPasswordDto): Promise<void> {
+  //   return this.service.resetPassword(
+  //     resetPasswordDto.hash,
+  //     resetPasswordDto.password,
+  //   );
+  // }
 
   // @ApiBearerAuth()
   // @SerializeOptions({
@@ -106,6 +106,17 @@ export class AuthController {
   // public me(@Request() request): Promise<NullableType<User>> {
   //   return this.service.me(request.user);
   // }
+
+  @ApiBearerAuth()
+  @Post('reset-password')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async resetPassword(
+    @Request() request,
+    @Body() resetPasswordDto: AuthResetPasswordDto,
+  ): Promise<void> {
+    return this.service.resetPassword(resetPasswordDto, request.user);
+  }
 
   @ApiBearerAuth()
   @ApiOkResponse({

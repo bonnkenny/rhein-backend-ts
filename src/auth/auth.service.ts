@@ -32,6 +32,8 @@ import { BaseRoleEnum } from '@src/utils/enums/base-role.enum';
 import { Role } from '@src/roles/domain/role';
 import { Menu } from '@src/menus/domain/menu';
 import { errorBody } from '@src/utils/infinity-response';
+import { AuthResetPasswordDto } from '@src/auth/dto/auth-reset-password.dto';
+import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
 
 @Injectable()
 export class AuthService {
@@ -368,46 +370,67 @@ export class AuthService {
     });
   }
 
-  async resetPassword(hash: string, password: string): Promise<void> {
-    let userId: User['id'];
+  // async resetPassword(hash: string, password: string): Promise<void> {
+  //   let userId: User['id'];
+  //
+  //   try {
+  //     const jwtData = await this.jwtService.verifyAsync<{
+  //       forgotUserId: User['id'];
+  //     }>(hash, {
+  //       secret: this.configService.getOrThrow('auth.forgotSecret', {
+  //         infer: true,
+  //       }),
+  //     });
+  //
+  //     userId = jwtData.forgotUserId;
+  //   } catch {
+  //     throw new UnprocessableEntityException({
+  //       status: HttpStatus.UNPROCESSABLE_ENTITY,
+  //       errors: {
+  //         hash: `invalidHash`,
+  //       },
+  //     });
+  //   }
+  //
+  //   const user = await this.usersService.findById(userId);
+  //
+  //   if (!user) {
+  //     throw new UnprocessableEntityException({
+  //       status: HttpStatus.UNPROCESSABLE_ENTITY,
+  //       errors: {
+  //         hash: `notFound`,
+  //       },
+  //     });
+  //   }
+  //
+  //   user.password = password;
+  //
+  //   await this.sessionService.deleteByUserId({
+  //     userId: user.id,
+  //   });
+  //
+  //   await this.usersService.update(user.id, user);
+  // }
 
-    try {
-      const jwtData = await this.jwtService.verifyAsync<{
-        forgotUserId: User['id'];
-      }>(hash, {
-        secret: this.configService.getOrThrow('auth.forgotSecret', {
-          infer: true,
-        }),
-      });
-
-      userId = jwtData.forgotUserId;
-    } catch {
-      throw new UnprocessableEntityException({
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
-        errors: {
-          hash: `invalidHash`,
-        },
-      });
+  async resetPassword(
+    payload: AuthResetPasswordDto,
+    user: JwtPayloadType,
+  ): Promise<void> {
+    const { password, passwordConfirm } = payload;
+    if (password != passwordConfirm) {
+      throw new BadRequestException(errorBody('Please confirm password!'));
     }
-
-    const user = await this.usersService.findById(userId);
-
-    if (!user) {
-      throw new UnprocessableEntityException({
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
-        errors: {
-          hash: `notFound`,
-        },
-      });
+    const { id } = user;
+    const userEntity = await this.usersService.findById(id);
+    if (!userEntity) {
+      throw new UnprocessableEntityException(errorBody('User not found!'));
     }
-
-    user.password = password;
-
-    await this.sessionService.deleteByUserId({
-      userId: user.id,
+    await this.usersService.update(id, {
+      password: password,
     });
-
-    await this.usersService.update(user.id, user);
+    await this.sessionService.deleteByUserId({
+      userId: id,
+    });
   }
 
   async me(userJwtPayload: JwtPayloadType): Promise<NullableType<User>> {

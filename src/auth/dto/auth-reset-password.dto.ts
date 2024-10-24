@@ -8,5 +8,5 @@ export class AuthResetPasswordDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  hash: string;
+  passwordConfirm: string;
 }
