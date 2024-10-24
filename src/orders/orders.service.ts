@@ -229,7 +229,7 @@ export class OrdersService {
       isOptional: false,
       isOptionalCustom: false,
       isMultiple: false,
-      specialType: 'declaration',
+      specialType: 'DECLARATION',
     });
   }
   constSelfDeclarationMaterial(orderId: Order['id']) {
@@ -266,7 +266,7 @@ export class OrdersService {
       isOptional: false,
       isOptionalCustom: false,
       isMultiple: false,
-      specialType: 'declaration',
+      specialType: 'SELF_DECLARATION',
     });
   }
 
